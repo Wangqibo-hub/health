@@ -58,6 +58,11 @@ public class UserController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public Result add(@RequestBody com.itheima.pojo.User user, Integer[] roleIds) {
         try {
+            String username = user.getUsername();
+            com.itheima.pojo.User user1 = userService.findUserByUsername(username);
+            if(user1 != null){
+                return new Result(false, MessageConstant.ADD_USER_FAIL2);
+            }
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
             userService.add(user, roleIds);
             return new Result(true, MessageConstant.ADD_USER_SUCCESS);
