@@ -86,7 +86,7 @@ public class MembershipStatisticsServiceImpl implements MembershipStatisticsServ
         list1.add(map2);
 
         //30年前
-        calendar.add(Calendar.YEAR,-30);
+        calendar.add(Calendar.YEAR,-30-18);
         String format30 = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
         Map<String,Object> map3=new HashMap<>();
         //调用Dao查询各个年龄段人数18-30
@@ -96,7 +96,7 @@ public class MembershipStatisticsServiceImpl implements MembershipStatisticsServ
         //年龄段自己设计
         list1.add(map3);
         //60年前
-        calendar.add(Calendar.YEAR,-60);
+        calendar.add(Calendar.YEAR,-60-30);
         String format60 = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
         Map<String,Object> map4=new HashMap<>();
         //调用Dao查询各个年龄段人数18-30
