@@ -11,7 +11,7 @@ import java.util.Map;
 
 public interface MenuDao {
     /**
-     * 保存检查组表
+     * 保存菜单表
      *
      */
     void add(Menu menu);
@@ -25,36 +25,40 @@ public interface MenuDao {
 
 
     /**
-     * 根据检查组id 更新检查组数据
+     * 根据菜单id 更新菜单数据
      */
     void edit(Menu menu);
 
     /**
-     * 根据检查组id删除检查组记录
+     * 根据菜单id删除菜单记录
      * @param id
      */
     void deleteById(Integer id);
     /**
-     * 查询所有检查组
+     * 查询所有菜单
      */
     List<Menu> findAll();
 
-
-    Menu findById(Integer id);
-
-    List<Integer> findRoleIdsByMenuId(Integer menuId);
-
-
-
     /**
-     * 设置菜单和权限中间表
-
+     * 根据id查询菜单
+     */
+    Menu findById(Integer id);
+    /**
+     * 根据菜单id查询角色id
+     */
+    List<Integer> findRoleIdsByMenuId(Integer menuId);
+    /**
+     * 设置菜单和角色中间表
      */
     void setMenuAndRole(Map<String, Object> map);
-
+    /**
+     * 根据菜单id查询菜单角色中间表
+     */
 
     int findCountRoleByMenuId(Integer id);
-
+    /**
+     * 根据菜单id查询菜单角色中间表删除联系
+     */
     void deleteRoleMenuIdByMenuId(Integer id);
 
 
@@ -75,4 +79,12 @@ public interface MenuDao {
     * @Date: 2020/7/22/0022
     */
     List<Menu> findChildrenByParentId(Integer id);
+    /**
+     * 查询菜单名是否重复
+     */
+    int findByName(String menuName);
+    /**
+     * 查询菜单linkUrl是否重复
+     */
+    int findByLinkUrl(String linkUrl);
 }

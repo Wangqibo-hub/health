@@ -96,7 +96,7 @@
                     <template>
                         <el-tabs v-model="activeName" type="card">
                             <el-tab-pane label="基本信息" name="first">
-                                <el-form label-position="right" label-width="100px" :rules="rules">
+                                <el-form label-position="right" label-width="100px" :rules="rules" ref="dataAddForm" :model="formData">
                                     <el-row>
                                         <el-col :span="12">
                                             <el-form-item label="用户名" prop="username">
@@ -104,7 +104,7 @@
                                             </el-form-item>
                                         </el-col>
                                         <el-col :span="12">
-                                            <el-form-item label="密码" prop="pass">
+                                            <el-form-item label="密码" prop="password">
                                                 <el-input type="password" v-model="formData.password" placeholder="密码"/>
                                             </el-form-item>
                                         </el-col>
@@ -203,7 +203,7 @@
                                             </el-form-item>
                                         </el-col>
                                         <el-col :span="12">
-                                            <el-form-item label="密码" prop="pass">
+                                            <el-form-item label="密码" prop="password">
                                                 <el-input type="password" v-model="formData.password" placeholder="密码"/>
                                             </el-form-item>
                                         </el-col>
@@ -303,15 +303,15 @@
                 total: 100,
                 queryString: null,
             },
-            dataList: [],//列表数据
-            formData: {},//表单数据
-            tableData: [],//新增和编辑表单中对应的角色列表数据
-            roleIds: [],//新增和编辑表单中角色对应的复选框，基于双向绑定可以进行回显和数据提交
-            dialogFormVisible: false,//控制添加窗口显示/隐藏
+            dataList:[],//列表数据
+            formData:{},//表单数据
+            tableData:[],//新增和编辑表单中对应的角色列表数据
+            roleIds:[],//新增和编辑表单中角色对应的复选框，基于双向绑定可以进行回显和数据提交
+            dialogFormVisible:false,//控制添加窗口显示/隐藏
             dialogFormVisible4Edit: false,//控制编辑窗口显示/隐藏
             rules: {//校验规则
                 username: [{required: true, message: '用户名为必填项', trigger: 'blur'}],
-                pass: [{required: true, message: '密码为必填项', trigger: 'blur'}]
+                password: [{required: true, message: '密码为必填项', trigger: 'blur'}]
             }
         },
         created() {
@@ -333,18 +333,22 @@
             },
             //添加
             handleAdd() {
-                //验证表单（省略了。。。）
-                //提交表单数据  提交用户(user)以及勾选角色ids Integer[] roleIds
-                axios.post("/user/add.do?roleIds=" + this.roleIds, this.formData).then(res => {
-                    this.resetForm();
-                    //弹出窗口
-                    this.dialogFormVisible = false;
-                    this.$message({
-                        message: res.data.message,
-                        type: res.data.flag ? 'success' : 'error'
-                    });
-                    this.findPage();//分页查询
-                })
+                //1.验证新建表单数据
+                this.$refs["dataAddForm"].validate((valid) => {
+                    if (valid) {
+                        //提交表单数据  提交用户(user)以及勾选角色ids Integer[] roleIds
+                        axios.post("/user/add.do?roleIds=" + this.roleIds, this.formData).then(res => {
+                            this.resetForm();
+                            //弹出窗口
+                            this.dialogFormVisible = false;
+                            this.$message({
+                                message: res.data.message,
+                                type: res.data.flag ? 'success' : 'error'
+                            });
+                            this.findPage();//分页查询
+                        })
+                    }
+                });
             },
             //分页查询
             findPage() {
@@ -354,33 +358,34 @@
                     queryString: this.pagination.queryString
                 }
 
-                axios.post("/user/findPage.do", parms).then(res => {
-                    //后台返回的是PageResult total rows
-                    this.pagination.total = res.data.total;
-                    this.dataList = res.data.rows;
-                })
-            },
-            // 重置表单
-            resetForm() {
-                this.formData = {};
-                this.roleIds = [];
-                this.activeName = 'first';
-            },
-            // 弹出添加窗口
-            handleCreate() {
-                //清空表单数据 以及 默认选中第一个选项卡
-                this.resetForm();
-                this.dialogFormVisible = true;
-                axios.get("/role/findAll.do").then(res => {
-                    //res.data;//Result对象
-                    if (res.data.flag) {
-                        this.tableData = res.data.data;
-                        this.$message({
-                            message: res.data.message,
-                            type: 'success'
-                        });
-                    } else {
-                        this.$message.error(res.data.message);
+                    axios.post("/user/findPage.do",parms).then(res=>{
+                        //后台返回的是PageResult total rows
+                        this.pagination.total = res.data.total;
+                        this.dataList = res.data.rows;
+                    })
+                },
+                // 重置表单
+                resetForm() {
+                    this.formData = {};
+                    this.roleIds = [];
+                    this.activeName ='first';
+                },
+                // 弹出添加窗口
+                handleCreate() {
+                    //清空表单数据 以及 默认选中第一个选项卡
+                    this.resetForm();
+                    this.dialogFormVisible = true;
+                    axios.get("/role/findAll.do").then(res=>{
+                        //res.data;//Result对象
+                        if(res.data.flag){
+                            this.tableData = res.data.data;
+                            this.$message({
+                                message: res.data.message,
+                                type: 'success'
+                            });
+                        }
+                        else {
+                            this.$message.error(res.data.message);
 
                     }
                 })

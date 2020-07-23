@@ -42,6 +42,7 @@ public class MenuServiceImpl implements MenuService {
     * @Author: Wangqibo
     * @Date: 2020/7/22/0022
     */
+    @Override
     public String generateMenuListInRedis(String username) {
         //调用MenuDao查询菜单列表
         List<Menu> menuList = menuDao.getMenuListByUsername(username);
@@ -74,16 +75,30 @@ public class MenuServiceImpl implements MenuService {
         return jsonStr;
     }
 
+    /**
+     * 新增菜单
+     */
     @Override
-    public void add(Menu menu ,Integer roleId) {
-        //第一步：保存检查组表
+    public void add(Menu menu ) {
+
+        String menuName = menu.getName();
+        String linkUrl = menu.getLinkUrl();
+        int count1 =menuDao.findByLinkUrl(linkUrl);
+        if (count1 > 0){
+            throw new RuntimeException(MessageConstant.ADD_MENU_FAIL3);
+        }
+        int count = menuDao.findByName(menuName);
+        if (count > 0){
+            throw new RuntimeException(MessageConstant.ADD_MENU_FAIL3);
+        }
+
         menuDao.add(menu);
-        //第二步：获取检查组id
-        Integer menuId = menu.getId();
-        //第三步：往检查组检查项中间表 遍历插入关系数据
-        setMenuAndRole(menuId,roleId);
+
     }
 
+    /**
+     * 分页
+     */
     @Override
     public PageResult findPage(Integer currentPage, Integer pageSize, String queryString) {
         //第一步：设置分页参数
@@ -101,7 +116,7 @@ public class MenuServiceImpl implements MenuService {
         return menuDao.findById(id);
     }
     /**
-     * 根据菜单id 查询权限id
+     * 根据菜单id 查询角色id
      */
     @Override
     public List<Integer> findRoleIdsByMenuId(Integer menuId) {
@@ -109,23 +124,26 @@ public class MenuServiceImpl implements MenuService {
 
 
     }
+    /**
+     * 编辑菜单
+     */
     @Override
     public void edit(Menu menu,Integer roleId) {
 
-    //1.先根据菜单id从菜单权限中间表 删除关系数据
+    //1.先根据菜单id从菜单角色中间表 删除关系数据
         menuDao.deleteRoleMenuIdByMenuId(menu.getId());
-    //2.根据页面传入的权限id 和 菜单重新建立关系
+    //2.根据页面传入的角色id 和 菜单重新建立关系
          setMenuAndRole(menu.getId(),roleId);
-    //3根据菜单id 更新检查组数据
+    //3根据菜单id 更新菜单表数据
         menuDao.edit(menu);
 }
 
     /**
-     * 根据检查组id删除检查组
+     * 根据菜单id删除菜单
      */
     @Override
     public void deleteById(Integer id) {
-        //1.根据检查组id查询检查组检查项中间表（count(*)）
+        //1.根据菜单id查询菜单角色中间表（count(*)）
         int count1 = menuDao.findCountRoleByMenuId(id);
         if(count1>0){
             throw new RuntimeException(MessageConstant.DELETE_MENU_FAIL2);
@@ -135,6 +153,9 @@ public class MenuServiceImpl implements MenuService {
         menuDao.deleteById(id);
     }
 
+    /**
+     * 查询所有菜单
+     */
     @Override
     public List<Menu> findAll() {
         return menuDao.findAll();
@@ -145,7 +166,7 @@ public class MenuServiceImpl implements MenuService {
 
 
     /**
-     * 设置菜单和权限中间表
+     * 设置菜单和角色中间表
 
      */
     private void setMenuAndRole(Integer groupId, Integer roleId) {

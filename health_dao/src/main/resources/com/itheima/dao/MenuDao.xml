@@ -22,19 +22,19 @@
         select * from t_menu where parentMenuId = #{parentId} order by priority
     </select>
 
-    <!--新增检查项-->
+    <!--新增菜单-->
     <insert id="add" parameterType="com.itheima.pojo.Menu">
     insert into t_menu(name,linkUrl,path,priority,icon,description,parentMenuId)
         values(#{name},#{linkUrl},#{path},#{priority},#{icon},#{description},#{parentMenuId})
 </insert>
 
-    <!--先根据检查组id从检查组检查项中间表-->
+    <!--根据菜单id从菜单角色中间表删除联系-->
     <delete id="deleteRoleMenuIdByMenuId" parameterType="int">
     delete from t_role_menu where menu_id = #{id}
 </delete>
 
 
-    <!--检查项分页查询-->
+    <!--菜单分页查询-->
     <select id="selectByCondition" parameterType="string" resultType="com.itheima.pojo.Menu">
         select * from t_menu
         <if test="value != null and value.length > 0">
@@ -43,7 +43,7 @@
     </select>
 
 
-    <!--根据检查组id 更新检查组数据-->
+    <!--根据菜单id 更新菜单数据-->
     <update id="edit" parameterType="com.itheima.pojo.Menu">
         update t_menu
         <set>
@@ -73,32 +73,41 @@
         where id = #{id}
     </update>
 
-
+    <!-- 根据菜单id查询菜单权限中间表 -->
     <select id="findCountRoleByMenuId" parameterType="int" resultType="int">
     select count(*) from t_role_menu where menu_id =#{id}
 </select>
-    <!--根据检查组id删除检查组记录-->
+    <!--根据菜单id删除菜单记录-->
     <delete id="deleteById" parameterType="int">
     delete from t_menu where id =#{id}
 </delete>
 
 
-    <!-- 查询所有检查组 -->
+    <!-- 查询所有菜单 -->
     <select id="findAll" resultType="com.itheima.pojo.Menu">
     select * from t_menu
 </select>
-
+    <!-- 根据菜单id查询所有菜单 -->
     <select id="findById" parameterType="int" resultType="com.itheima.pojo.Menu">
     select * from t_menu where id = #{id}
 </select>
-
+    <!-- 根据菜单id查询角色id -->
     <select id="findRoleIdsByMenuId" parameterType="int" resultType="int">
     select role_id from t_role_menu where menu_id = #{id}
 </select>
 
-    <!--设置菜单和权限中间表-->
+    <!--设置菜单和角色中间表-->
     <insert id="setMenuAndRole" parameterType="map">
     insert into t_role_menu(menu_id,role_id)
     values(#{menuId},#{roleId})
+
 </insert>
+    <select id="findByLinkUrl" parameterType="String" resultType="int">
+    select count(*) from t_menu where linkUrl =#{linkUrl}
+</select>
+
+    <select id="findByName" parameterType="String" resultType="int">
+    select count(*) from t_menu where name =#{name}
+</select>
+
 </mapper>
