@@ -20,7 +20,7 @@
     <bean id="dataSource"
           class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
         <property name="username" value="root" />
-        <property name="password" value="root" />
+        <property name="password" value="11111" />
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/itcast_health" />
     </bean>
