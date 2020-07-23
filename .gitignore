@@ -27,4 +27,4 @@ hs_err_pid*
 .idea/
 target/
 *.iml
-applicationContext-dao.xml
+health_dao/src/main/resources/applicationContext-dao.xml
