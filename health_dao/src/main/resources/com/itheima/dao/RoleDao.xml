@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.dao.RoleDao">
+    <!--定义userMap-->
+    <resultMap id="roleMap" type="com.itheima.pojo.Role">
+        <id column="id" property="id"></id>
+        <!--根据角色id关联查询权限集合-->
+        <collection property="permissions" column="id" select="com.itheima.dao.PermissionDao.findPermissionsByRoleId"/>
+    </resultMap>
+
+    <!--设置检查组和检查项中间表-->
+    <insert id="setRoleAndMenu" parameterType="map">
+        insert into t_role_menu(role_id,menu_id)
+        values(#{menuId},#{roleId})
+    </insert>
+    <!--更新角色数据-->
+    <update id="edit">
+        update t_role
+        <set>
+            <if test="name!=null and name.length>0">
+                name=#{name},
+            </if>
+            <if test="keyword!=null and keyword.length>0">
+                keyword=#{keyword},
+            </if>
+            <if test="description!=null and description.length>0">
+                description=#{description},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <delete id="deleteRelByRoleById">
+        delete from t_role_menu where role_id = #{id}
+    </delete>
+    <delete id="deleteById" parameterType="int">
+        delete from t_role where id=#{id}
+    </delete>
+
+    <!--根据用户id关联查询角色集合-->
+    <select id="findRolesByUserId" parameterType="int" resultMap="roleMap" >
+        select tr.* from t_role tr,t_user_role tur where tr.id = tur.role_id and tur.user_id = #{userId}
+    </select>
+
+    <select id="selectByCondition" resultType="com.itheima.pojo.Role">
+        select * from t_role
+        <if test="value != null and value.length > 0">
+            where name = #{name} or description = #{description}
+        </if>
+    </select>
+    <select id="findById" resultType="com.itheima.pojo.Role" parameterType="int">
+        select * from t_role where id=#{id}
+    </select>
+    <!--根据角色id 查询菜单项ids-->
+    <select id="findMenuIdsByRoleId" resultType="java.lang.Integer" parameterType="int">
+        select menu_id from t_role_menu where role_id=#{roleId}
+    </select>
+    <!--根据角色id查询角色/菜单中间表（count(*)）-->
+    <select id="findCountMenuByMenuId" resultType="java.lang.Integer" parameterType="int">
+        select count(*) from t_role_menu where role_id=#{id}
+    </select>
+    <!--根据角色id查询权限数据（count(*)）-->
+    <select id="findCountPermissionByRoleId" resultType="java.lang.Integer">
+        select count(*) from t_role_permission where role_id = #{id}
+    </select>
+    <!--查询所有检查组-->
+    <select id="findAll" resultType="com.itheima.pojo.Role">
+        select * from t_role
+    </select>
+
+    <select id="findCountUserByRoleId" resultType="java.lang.Integer">
+        select count(*) from t_user_role where role_id = #{id}
+    </select>
+
+    <!--添加角色-->
+    <insert id="add" parameterType="com.itheima.pojo.Role">
+        /*添加完角色后获取该角色的id*/
+        <selectKey resultType="int" order="AFTER" keyProperty="id">
+            select LAST_INSERT_ID()
+        </selectKey>
+        insert into t_role values(null,#{name},#{keyword},#{description})
+    </insert>
+
+</mapper>

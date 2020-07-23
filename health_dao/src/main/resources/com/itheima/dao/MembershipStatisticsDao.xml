@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace属性: 接口类的全限定名-->
+<mapper namespace="com.itheima.dao.MembershipStatisticsDao">
+    <!--会员统计图-->
+    <select id="getSexNumber" resultType="int" parameterType="int">
+        select count(*) from t_member where sex=#{sex}
+    </select>
+
+    <!--根据年龄段查询人数1-->
+    <select id="getNumberOfAgeGroups1" parameterType="map" resultType="int">
+     select count(*) from t_member where birthday between #{ho}and#{qian}
+    </select>
+    <!--根据年龄段查询人数2-->
+    <select id="getNumberOfAgeGroups2" resultType="int" parameterType="string">
+        select count(*) from t_member where birthday &lt;#{value}
+    </select>
+</mapper>

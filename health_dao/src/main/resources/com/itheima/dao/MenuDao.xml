@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itheima.dao.MenuDao">
+
+    <resultMap id="menuMap" type="com.itheima.pojo.Menu">
+        <id column="id" property="id"/>
+        <!--关联查询子菜单-->
+        <collection property="children" column="id" select="com.itheima.dao.MenuDao.findChildrenByParentId"/>
+    </resultMap>
+
+    <!--根据用户名称查询菜单列表-->
+    <select id="getMenuListByUsername" parameterType="string" resultMap="menuMap">
+        select * from t_menu
+        where id in(select menu_id from t_role_menu where role_id in (select role_id from t_user_role where user_id = (select id from t_user where username = #{username}))) and level = 1  order by priority
+    </select>
+
+    <!--根据父菜单id查询子菜单-->
+    <select id="findChildrenByParentId" parameterType="int" resultType="com.itheima.pojo.Menu">
+        select * from t_menu where parentMenuId = #{parentId} order by priority
+    </select>
+
+    <!--新增检查项-->
+    <insert id="add" parameterType="com.itheima.pojo.Menu">
+    insert into t_menu(name,linkUrl,path,priority,icon,description,parentMenuId)
+        values(#{name},#{linkUrl},#{path},#{priority},#{icon},#{description},#{parentMenuId})
+</insert>
+
+    <!--先根据检查组id从检查组检查项中间表-->
+    <delete id="deleteRoleMenuIdByMenuId" parameterType="int">
+    delete from t_role_menu where menu_id = #{id}
+</delete>
+
+
+    <!--检查项分页查询-->
+    <select id="selectByCondition" parameterType="string" resultType="com.itheima.pojo.Menu">
+        select * from t_menu
+        <if test="value != null and value.length > 0">
+            where name like concat('%',#{value},'%')
+        </if>
+    </select>
+
+
+    <!--根据检查组id 更新检查组数据-->
+    <update id="edit" parameterType="com.itheima.pojo.Menu">
+        update t_menu
+        <set>
+            <if test="name!=null and name.length>0">
+                name=#{name},
+            </if>
+            <if test="linkUrl!=null and linkUrl.length>0">
+                linkUrl=#{linkUrl},
+            </if>
+            <if test="path!=null and path.length>0">
+                path=#{path},
+            </if>
+
+            <if test="priority!=null">
+                priority=#{priority},
+            </if>
+            <if test="icon!=null and icon.length>0">
+                icon=#{icon},
+            </if>
+            <if test="description!=null and description.length>0">
+                description=#{description},
+            </if>
+            <if test="parentMenuId!=null">
+                parentMenuId=#{parentMenuId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+
+    <select id="findCountRoleByMenuId" parameterType="int" resultType="int">
+    select count(*) from t_role_menu where menu_id =#{id}
+</select>
+    <!--根据检查组id删除检查组记录-->
+    <delete id="deleteById" parameterType="int">
+    delete from t_menu where id =#{id}
+</delete>
+
+
+    <!-- 查询所有检查组 -->
+    <select id="findAll" resultType="com.itheima.pojo.Menu">
+    select * from t_menu
+</select>
+
+    <select id="findById" parameterType="int" resultType="com.itheima.pojo.Menu">
+    select * from t_menu where id = #{id}
+</select>
+
+    <select id="findRoleIdsByMenuId" parameterType="int" resultType="int">
+    select role_id from t_role_menu where menu_id = #{id}
+</select>
+
+    <!--设置菜单和权限中间表-->
+    <insert id="setMenuAndRole" parameterType="map">
+    insert into t_role_menu(menu_id,role_id)
+    values(#{menuId},#{roleId})
+</insert>
+</mapper>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.dao.UserDao">
+    <!-- 用户对象 -->
+    <!--<select id="findUserByUsername" resultType="com.itheima.pojo.User" parameterType="string">
+        select * from t_user where username = #{username}
+    </select>-->
+
+    <!--定义userMap-->
+    <resultMap id="userMap" type="com.itheima.pojo.User">
+        <id column="id" property="id"></id>
+        <!--根据用户id关联查询角色集合-->
+        <collection property="roles" column="id" select="com.itheima.dao.RoleDao.findRolesByUserId"/>
+    </resultMap>
+
+    <!--根据用户名查询用户对象-->
+    <select id="findUserByUsername" parameterType="string" resultMap="userMap">
+        select * from t_user where username = #{username}
+    </select>
+
+    <!--根据角色查询用户列表-->
+    <select id="findUserByRoleId"  parameterType="int" resultType="com.itheima.pojo.User">
+        select * from t_user where id in (select user_id from t_user_role where role_id = #{roleId})
+    </select>
+</mapper>
