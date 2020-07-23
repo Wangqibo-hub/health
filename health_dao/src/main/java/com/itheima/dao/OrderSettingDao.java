@@ -4,7 +4,9 @@ import com.itheima.pojo.OrderSetting;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map; /**
+import java.util.Map;
+
+/**
  * 预约设置持久接口
  */
 public interface OrderSettingDao {
@@ -41,10 +43,29 @@ public interface OrderSettingDao {
      */
     OrderSetting findByOrderDate(Date orderDateNew);
 
-
     /**
      * 根据预约日期修改已经预约人数
      * @param orderSetting
      */
     void editReservationsByOrderDate(OrderSetting orderSetting);
+
+
+    /**
+     * 根据时间,获取当前日期之前的预约设置对象集合
+     * @param date
+     * @return
+     */
+    List<OrderSetting> getHostoricalDate(Date  date);
+
+    /**
+     * 备份数据到备份表t_ordersetting_bak中
+     * @param orderSetting
+     */
+    void saveOrderSetting(OrderSetting orderSetting);
+
+    /**
+     * 删除t_ordersetting表的历史数据
+     * @param date
+     */
+    void deleteOrderSetting(Date  date);
 }

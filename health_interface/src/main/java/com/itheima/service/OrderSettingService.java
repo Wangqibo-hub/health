@@ -2,6 +2,7 @@ package com.itheima.service;
 
 import com.itheima.pojo.OrderSetting;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -22,4 +23,12 @@ public interface OrderSettingService {
      * 单个预约设置（根据预约日期修改可预约人数）
      */
     void editNumberByDate(OrderSetting orderSetting);
+
+
+    /**
+     * 清理预约信息的历史数据,并备份数据到备份表t_ordersetting_bak中
+     * (在数据库中新建了t_ordersetting_bak表用于存储历史数据)
+     * @param date
+     */
+    void clearOrderSetingJob(Date date);
 }
