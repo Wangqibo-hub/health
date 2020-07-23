@@ -44,10 +44,10 @@
     <body class="hold-transition">
         <div id="app">
             <div class="content-header">
-                <h1>用户管理<small>角色管理</small></h1>
+                <h1>系统设置<small>角色管理</small></h1>
                 <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb">
                     <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-                    <el-breadcrumb-item>用户管理</el-breadcrumb-item>
+                    <el-breadcrumb-item>系统设置</el-breadcrumb-item>
                     <el-breadcrumb-item>角色管理</el-breadcrumb-item>
                 </el-breadcrumb>
             </div>
@@ -132,6 +132,30 @@
                                         </table>
 									</div>
                                     </el-tab-pane>
+                                    <el-tab-pane label="权限信息" name="third">
+                                        <div class="checkScrol">
+                                            <table class="datatable">
+                                                <thead>
+                                                <tr>
+                                                    <th>选择</th>
+                                                    <th>权限名称</th>
+                                                    <th>关键词</th>
+                                                    <th>说明</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr v-for="r in tableData1">
+                                                    <td>
+                                                        <input :id="r.id" v-model="permissionIds" type="checkbox" :value="r.id">
+                                                    </td>
+                                                    <td><label :for="r.id">{{r.name}}</label></td>
+                                                    <td><label :for="r.id">{{r.keyword}}</label></td>
+                                                    <td><label :for="r.id">{{r.description}}</label></td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </el-tab-pane>
                                 </el-tabs>
                             </template>
                             <div slot="footer" class="dialog-footer">
@@ -193,6 +217,30 @@
 											</table>
 										</div>
                                     </el-tab-pane>
+                                    <el-tab-pane label="权限信息" name="third">
+                                        <div class="checkScrol">
+                                            <table class="datatable">
+                                                <thead>
+                                                <tr>
+                                                    <th>选择</th>
+                                                    <th>权限名称</th>
+                                                    <th>关键词</th>
+                                                    <th>说明</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr v-for="r in tableData1">
+                                                    <td>
+                                                        <input :id="r.id" v-model="permissionIds" type="checkbox" :value="r.id">
+                                                    </td>
+                                                    <td><label :for="r.id">{{r.name}}</label></td>
+                                                    <td><label :for="r.id">{{r.keyword}}</label></td>
+                                                    <td><label :for="r.id">{{r.description}}</label></td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </el-tab-pane>
                                 </el-tabs>
                             </template>
                             <div slot="footer" class="dialog-footer">
@@ -220,7 +268,9 @@
                 dataList: [],//列表数据
                 formData: {},//表单数据
                 tableData:[],//新增和编辑表单中对应的菜单列表数据
+                tableData1:[],//新增和编辑表单中对应的权限列表数据
                 menuIds:[],//新增和编辑表单中菜单对应的复选框，基于双向绑定可以进行回显和数据提交
+                permissionIds:[],//新增和编辑表单中权限对应的复选框，基于双向绑定可以进行回显和数据提交
                 dialogFormVisible: false,//控制添加窗口显示/隐藏
                 dialogFormVisible4Edit:false,//控制编辑窗口显示/隐藏
                 rules: {//校验规则
@@ -239,7 +289,7 @@
                     this.$refs['dataEditForm'].validate((valid) => {
                         if (valid) {
                             //合法，发送异步请求编辑角色
-                            axios.post("/role/edit.do?menuIds=" + this.menuIds, this.formData).then(res => {
+                            axios.post("/role/edit.do?menuIds=" + this.menuIds+"&&permissionIds="+this.permissionIds, this.formData).then(res => {
                                 this.$message({
                                     message: res.data.message,
                                     type: res.data.flag ? 'success' : 'error'
@@ -263,8 +313,7 @@
                     //检验表单项输入是否合法
                     this.$refs['dataAddForm'].validate((valid) => {
                         if (valid) {
-                            //提交表单数据  提交角色(role)以及勾选菜单项ids Integer[] menuIds
-                            axios.post("/role/add.do?menuIds=" + this.menuIds, this.formData).then(res => {
+                            axios.post("/role/add.do?menuIds=" + this.menuIds+"&&permissionIds="+this.permissionIds, this.formData).then(res => {
                                 this.$message({
                                     message: res.data.message,
                                     type: res.data.flag ? 'success' : 'error'
@@ -301,6 +350,7 @@
                 resetForm(formName) {
                     this.formData = {};
                     this.menuIds = [];
+                    this.permissionIds = [];
                     this.activeName ='first';
                     //对整个表单进行重置，将所有字段值重置为初始值并移除校验结果
                     this.$refs[formName].resetFields();
@@ -313,6 +363,20 @@
                         //res.data;//Result对象
                         if(res.data.flag){
                             this.tableData = res.data.data;
+                            this.$message({
+                                message: res.data.message,
+                                type: 'success'
+                            });
+                        }
+                        else {
+                            this.$message.error(res.data.message);
+                        }
+                    });
+                    //弹出所有权限
+                    axios.post("/permission/findAll.do").then(res=>{
+                        //res.data;//Result对象
+                        if(res.data.flag){
+                            this.tableData1 = res.data.data;
                             this.$message({
                                 message: res.data.message,
                                 type: 'success'
@@ -345,6 +409,19 @@
                             axios.get("/role/findMenuIdsByRoleId.do?roleId="+row.id).then(res=>{
                                 //后台返回的List<Integer> [28,29,30]
                                 this.menuIds = res.data;//回显的菜单项勾选
+                            })
+                        }),
+                        //查询所有权限项
+                        axios.post("/permission/findAll.do").then(res=>{
+                            this.tableData1 = res.data.data;//回显所有检查项数据
+                            this.$message({
+                                message: res.data.message,
+                                type: 'success'
+                            });
+                            // 关联的菜单项   根据角色id 查询菜单项ids
+                            axios.get("/role/findPermissionIdsByRoleId.do?roleId="+row.id).then(res=>{
+                                //后台返回的List<Integer> [28,29,30]
+                                this.permissionIds = res.data;//回显的菜单项勾选
                             })
                         })
                     })

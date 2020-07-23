@@ -12,7 +12,7 @@
     <!--设置检查组和检查项中间表-->
     <insert id="setRoleAndMenu" parameterType="map">
         insert into t_role_menu(role_id,menu_id)
-        values(#{menuId},#{roleId})
+        values(#{roleId},#{menuId})
     </insert>
     <!--更新角色数据-->
     <update id="edit">
@@ -30,11 +30,19 @@
         </set>
         where id = #{id}
     </update>
+    <insert id="setRoleAndPermission">
+         insert into t_role_permission(role_id,permission_id)
+        values(#{roleId},#{permissionId})
+    </insert>
+
     <delete id="deleteRelByRoleById">
         delete from t_role_menu where role_id = #{id}
     </delete>
     <delete id="deleteById" parameterType="int">
         delete from t_role where id=#{id}
+    </delete>
+    <delete id="deletePermissionRelByRoleById">
+        delete from t_role_permission where role_id = #{id}
     </delete>
 
     <!--根据用户id关联查询角色集合-->
@@ -70,6 +78,13 @@
 
     <select id="findCountUserByRoleId" resultType="java.lang.Integer">
         select count(*) from t_user_role where role_id = #{id}
+    </select>
+
+    <select id="findPermissionIdsByRoleId" resultType="java.lang.Integer">
+        select permission_id from t_role_permission where role_id=#{roleId}
+    </select>
+    <select id="findRoleExist" resultType="java.lang.Integer" parameterType="com.itheima.pojo.Role">
+        select count(*) from t_role where name=#{name} or keyword=#{keyword}
     </select>
 
     <!--添加角色-->

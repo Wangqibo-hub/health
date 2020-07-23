@@ -50,4 +50,12 @@ public interface RoleDao {
     List<Role> findAll();
 
     int findCountUserByRoleId(Integer id);
+    /*设置添加关联中间表(角色/权限)*/
+    void setRoleAndPermission(Map<String, Object> map);
+    /*删除关系数据 权限/角色*/
+    void deletePermissionRelByRoleById(Integer id);
+
+    List<Integer> findPermissionIdsByRoleId(Integer roleId);
+
+    int findRoleExist(Role role);
 }

@@ -6,7 +6,7 @@ import com.itheima.pojo.Role;
 import java.util.List;
 
 public interface RoleService {
-    void add(Role role, Integer[] menuIds);
+
 
     PageResult findPage(Integer currentPage, Integer pageSize, String queryString);
 
@@ -15,9 +15,14 @@ public interface RoleService {
 
     List<Integer> findMenuIdsByRoleId(Integer roleId);
 
-    void edit(Role role, Integer[] menuIds);
 
     void deleteById(Integer id);
 
     List<Role> findAll();
+
+    void add(Role role, Integer[] menuIds, Integer[] permissionIds);
+
+    void edit(Role role, Integer[] menuIds, Integer[] permissionIds);
+
+    List<Integer> findPermissionIdsByRoleId(Integer roleId);
 }
