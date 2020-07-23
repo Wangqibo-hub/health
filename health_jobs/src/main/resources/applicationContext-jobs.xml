@@ -16,8 +16,10 @@
     <context:component-scan base-package="com.itheima"></context:component-scan>
 
     <!--自定义job-->
-   <!-- <bean id="clearImgJob" class="com.itheima.jobs.ClearImgJob"/>
--->
+    <!--注册到spring容器中-->
+    <bean id="clearImgJob" class="com.itheima.jobs.ClearImgJob"/>
+    <bean id="clearOrderSetingJob" class="com.itheima.jobs.ClearOrderSetingJob"/>
+
     <!--配置任务描述 调度程序调用自定义任务类(java反射)-->
     <bean id="jobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
         <!--配置类-->
@@ -32,8 +34,26 @@
         <property name="jobDetail" ref="jobDetail"/>
         <!--配置触发时间-->
         <property name="cronExpression">
-            <!--单独说 每隔5秒钟执行一次任务-->
+            <!--每隔5秒钟执行一次任务-->
+            <value>0/5 * * * * ?</value>
+        </property>
+    </bean>
+
+    <bean id="jobDetail2" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <!--配置类-->
+        <property name="targetObject" ref="clearOrderSetingJob"/>
+        <!--配置方法-->
+        <property name="targetMethod" value="clearOrderSetingJob"/>
+    </bean>
+
+    <bean id="cronTrigger2" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobDetail2"/>
+        <property name="cronExpression">
+            <!--每月最后一天凌晨2点执行一次-->
+            <!--<value>0 0 0 L ? ? *</value>-->
+            <!--测试用  每隔10秒钟执行一次任务-->
             <value>0/10 * * * * ?</value>
+            <!--<value>0 0 0 1/1 * ?</value>-->
         </property>
     </bean>
 
@@ -42,9 +62,8 @@
         <property name="triggers">
             <list>
                 <ref bean="cronTrigger"/>
+                <ref bean="cronTrigger2"/>
             </list>
         </property>
     </bean>
-
-
 </beans>

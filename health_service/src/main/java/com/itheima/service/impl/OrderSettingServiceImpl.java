@@ -7,10 +7,7 @@ import com.itheima.service.OrderSettingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 预约设置业务逻辑处理层
@@ -84,5 +81,23 @@ public class OrderSettingServiceImpl implements OrderSettingService {
             //3.如果不存在，则插入数据
             orderSettingDao.add(orderSetting);
         }
+    }
+
+
+    /**
+     * 清理预约信息的历史数据,并备份到备份表t_orderseting_bak中
+     * (在数据库中新建了t_orderseting_bak表用于存储历史数据)
+     * @param date
+     */
+    @Override
+    public void clearOrderSetingJob(Date date) {
+        //根据时间,获取当前日期之前的预约设置对象集合
+        List<OrderSetting> orderSettings = orderSettingDao.getHostoricalDate(date);
+        //遍历集合,备份数据到备份表t_ordersetting_bak中
+        for (OrderSetting orderSetting : orderSettings) {
+            orderSettingDao.saveOrderSetting(orderSetting);
+        }
+        //删除t_ordersetting表的历史数据
+        orderSettingDao.deleteOrderSetting(date);
     }
 }
