@@ -1,6 +1,9 @@
 # Created by .ignore support plugin (hsz.mobi)
 ### Java template
 # Compiled class file
+
+health_dao/src/main/resources/applicationContext-dao.xml
+
 *.class
 
 # Log file
@@ -27,4 +30,3 @@ hs_err_pid*
 .idea/
 target/
 *.iml
-health_dao/src/main/resources/applicationContext-dao.xml
