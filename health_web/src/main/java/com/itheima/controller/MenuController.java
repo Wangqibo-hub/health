@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 检查组控制层 contrl+alt+o 去除多余的包
+ * 菜单控制层 contrl+alt+o 去除多余的包
  */
 @RestController
 @RequestMapping("/menu")
@@ -36,18 +36,21 @@ public class MenuController {
      * 新增菜单
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public Result add(@RequestBody Menu menu,Integer roleId) {
+    public Result add(@RequestBody Menu menu) {
+       // if(menu.getName()!=null){
         try {
-            menuService.add(menu,roleId);
+            menuService.add(menu);
             return new Result(true, MessageConstant.ADD_MENU_SUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Result(false, MessageConstant.ADD_MENU_FAIL);
+            return new Result(false, MessageConstant.ADD_MENU_FAIL3);
         }
+        //  }
+       // return new Result(false, MessageConstant.ADD_MENU_FAIL2);
     }
 
     /**
-     * 检查分页查询
+     * 菜单分页查询
      */
     @RequestMapping(value = "/findPage", method = RequestMethod.POST)
     public PageResult findPage(@RequestBody QueryPageBean queryPageBean) {
@@ -118,7 +121,7 @@ public class MenuController {
         }
     }
     /**
-     * 根据菜单id 查询权限id
+     * 根据菜单id 查询角色id
      */
     @RequestMapping(value = "/findRoleIdsByMenuId", method = RequestMethod.GET)
     public List<Integer> findCheckItemIdsByGroupId(Integer menuId) {

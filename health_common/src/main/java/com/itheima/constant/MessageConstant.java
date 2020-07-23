@@ -6,6 +6,8 @@ package com.itheima.constant;
 public class MessageConstant {
     public static final String ADD_MENU_SUCCESS = "新增菜单成功";
     public static final String ADD_MENU_FAIL = "新增菜单失败";
+    public static final String ADD_MENU_FAIL3 = "菜单名称或者详情页面地址已存在,请重新输入";
+    public static final String ADD_MENU_FAIL2 = "菜单名称不能为空,请重新输入";
     public static final String EDIT_MENU_SUCCESS = "编辑菜单成功";
     public static final String EDIT_MENU_FAIL = "编辑菜单失败";
     public static final String QUERY_MENU_SUCCESS = "查询所有菜单成功";

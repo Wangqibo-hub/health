@@ -9,15 +9,12 @@ public interface MenuService {
     /**
      * 新增菜单
      */
-    void add(Menu menu,Integer roleId);
-
-
+    void add(Menu menu);
 
     /**
      * 分页
      */
     PageResult findPage(Integer currentPage, Integer pageSize, String queryString);
-
 
     /**
      * 编辑菜单
@@ -38,7 +35,7 @@ public interface MenuService {
      */
     Menu findById(Integer id);
     /**
-     * 根据菜单id 查询权限id
+     * 根据菜单id 查询角色id
      */
     List<Integer> findRoleIdsByMenuId(Integer menuId);
 
@@ -50,4 +47,9 @@ public interface MenuService {
     * @Date: 2020/7/22/0022
     */
     String generateMenuListInRedis(String username);
+
+
+
+
+
 }
