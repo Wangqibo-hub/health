@@ -99,4 +99,9 @@
     <select id="findAll" resultType="com.itheima.pojo.User">
         select * from t_user
     </select>
+    <!--根据菜单id查询关联的用户信息-->
+    <select id="findUserListByMenuId" parameterType="int" resultType="com.itheima.pojo.User">
+        select * from t_user
+        where id in (select user_id from t_user_role where role_id in (select role_id from t_role_menu where menu_id = #{menuId}));
+    </select>
 </mapper>

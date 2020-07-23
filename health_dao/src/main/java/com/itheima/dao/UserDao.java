@@ -79,4 +79,13 @@ public interface UserDao {
      * 查询所有用户
      */
     List<User> findAll();
+
+    /**
+    * @Description: 根据菜单id查询用户信息
+    * @Param: [id]
+    * @Return: java.util.List<com.itheima.pojo.User>
+    * @Author: Wangqibo
+    * @Date: 2020/7/23/0023
+    */
+    List<User> findUserListByMenuId(Integer id);
 }

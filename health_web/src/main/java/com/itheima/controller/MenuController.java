@@ -7,7 +7,9 @@ import com.itheima.entity.PageResult;
 import com.itheima.entity.QueryPageBean;
 import com.itheima.entity.Result;
 import com.itheima.pojo.Menu;
+import com.itheima.pojo.User;
 import com.itheima.service.MenuService;
+import com.itheima.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,11 +29,13 @@ public class MenuController {
     //引用服务
     @Reference
     private MenuService menuService;
-
-
+    @Reference
+    private UserService userService;
     //注入JedisPool
     @Autowired
     private JedisPool jedisPool;
+
+
     /**
      * 新增菜单
      */
@@ -69,6 +73,15 @@ public class MenuController {
     public Result deleteById(Integer id) {
         try {
             menuService.deleteById(id);
+            //菜单删除成功后，更新redis中用户的菜单信息
+            //获取该菜单关联的所有用户
+            List<User> userList = userService.findUserListByMenuId(id);
+            if (userList != null && userList.size() > 0) {
+                //更新redis中这些用户的菜单信息
+                for (User user : userList) {
+                    menuService.generateMenuListInRedis(user.getUsername());
+                }
+            }
             return new Result(true, MessageConstant.DELETE_MENU_SUCCESS);
         } catch (RuntimeException e) {
             e.printStackTrace();

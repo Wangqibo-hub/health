@@ -36,43 +36,53 @@ public class MenuServiceImpl implements MenuService {
     private JedisPool jedisPool;
 
     /**
-    * @Description: 根据用户名生成菜单列表，写入redis
-    * @Param: [username]
-    * @Return: java.util.List<java.util.Map<java.lang.String,java.lang.Object>>
-    * @Author: Wangqibo
-    * @Date: 2020/7/22/0022
-    */
-    @Override
+     * @Description: 根据用户名生成菜单列表，写入redis
+     * @Param: [username]
+     * @Return: java.util.List<java.util.Map<java.lang.String,java.lang.Object>>
+     * @Author: Wangqibo
+     * @Date: 2020/7/22/0022
+     */
     public String generateMenuListInRedis(String username) {
         //调用MenuDao查询菜单列表
-        List<Menu> menuList = menuDao.getMenuListByUsername(username);
-        //拼接数据
-        List<Map<String, Object>> resultList = new ArrayList<>();
-        for (Menu menu : menuList) {
-            //拼接一级菜单
-            Map<String, Object> map1 = new HashMap<>();
-            map1.put("path", menu.getPath());
-            map1.put("title", menu.getName());
-            map1.put("icon", menu.getIcon());
-            //拼接二级菜单
-            List<Map<String, Object>> childrenList = new ArrayList<>();
-            List<Menu> children = menu.getChildren();
-            for (Menu child : children) {
-                Map<String, Object> map2 = new HashMap<>();
-                map2.put("path", child.getPath());
-                map2.put("title", child.getName());
-                map2.put("linkUrl", child.getLinkUrl());
-                map2.put("children", child.getChildren());
-                childrenList.add(map2);
+        List<Menu> menuListFromDB = menuDao.getMenuListByUsername(username);
+        //定义返回给前端的list集合
+        List<Map<String, Object>> menuListForWeb = new ArrayList<>();
+        //定义存入redis的字符串
+        String menuListStr = null;
+        //判断menuList是否有效
+        if (menuListFromDB == null || menuListFromDB.size() == 0) {
+            //无效，防止缓存穿透，将空值写入redis并设置过期时间60秒
+            Object json = JSONArray.toJSON(menuListFromDB);
+            menuListStr = json.toString();
+            jedisPool.getResource().setex(username, 60, menuListStr);
+        } else {
+            //有效，拼接数据
+            for (Menu menu : menuListFromDB) {
+                //拼接一级菜单
+                Map<String, Object> map1 = new HashMap<>();
+                map1.put("path", menu.getPath());
+                map1.put("title", menu.getName());
+                map1.put("icon", menu.getIcon());
+                //拼接二级菜单
+                List<Map<String, Object>> childrenList = new ArrayList<>();
+                List<Menu> children = menu.getChildren();
+                for (Menu child : children) {
+                    Map<String, Object> map2 = new HashMap<>();
+                    map2.put("path", child.getPath());
+                    map2.put("title", child.getName());
+                    map2.put("linkUrl", child.getLinkUrl());
+                    map2.put("children", child.getChildren());
+                    childrenList.add(map2);
+                }
+                map1.put("children", childrenList);
+                menuListForWeb.add(map1);
             }
-            map1.put("children", childrenList);
-            resultList.add(map1);
+            //将结果集存入redis
+            Object json = JSONArray.toJSON(menuListForWeb);
+            menuListStr = json.toString();
+            jedisPool.getResource().set(username, menuListStr);
         }
-        //将结果集存入redis
-        Object json = JSONArray.toJSON(resultList);
-        String jsonStr = json.toString();
-        jedisPool.getResource().set(username, jsonStr);
-        return jsonStr;
+        return menuListStr;
     }
 
     /**
@@ -149,7 +159,6 @@ public class MenuServiceImpl implements MenuService {
             throw new RuntimeException(MessageConstant.DELETE_MENU_FAIL2);
         }
         //2.根据菜单id删除记录
-
         menuDao.deleteById(id);
     }
 
