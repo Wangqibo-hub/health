@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- 页面meta -->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>传智健康</title>
+        <meta name="description" content="传智健康">
+        <meta name="keywords" content="传智健康">
+        <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+        <!-- 引入样式 -->
+        <link rel="stylesheet" href="../plugins/elementui/index.css">
+        <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/style.css">
+        <!-- 引入组件库 -->
+        <script type="text/javascript" src="../js/jquery.min.js"></script>
+        <script src="../js/vue.js"></script>
+        <script src="../plugins/elementui/index.js"></script>
+        <script src="../js/axios-0.18.0.js"></script>
+        <style>
+            .datatable {
+                position: relative;
+                box-sizing: border-box;
+                -webkit-box-flex: 1;
+                width: 100%;
+                max-width: 100%;
+                font-size: 14px;
+                color: rgb(96, 98, 102);
+                overflow: hidden;
+                flex: 1 1 0%;
+            }
+            .datatable td, .datatable th {
+                padding: 12px 0;
+                min-width: 0;
+                -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+                text-overflow: ellipsis;
+                vertical-align: middle;
+                position: relative;
+                text-align: left;
+            }
+        </style>
+    </head>
+    <body class="hold-transition">
+        <div id="app">
+            <div class="content-header">
+                <h1>系统设置<small>权限管理</small></h1>
+                <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb">
+                    <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+                    <el-breadcrumb-item>系统设置</el-breadcrumb-item>
+                    <el-breadcrumb-item>权限管理</el-breadcrumb-item>
+                </el-breadcrumb>
+            </div>
+            <div class="app-container">
+                <div class="box">
+                    <div class="filter-container">
+                        <el-input placeholder="名称/权限码" v-model="pagination.queryString" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"></el-input>
+                        <el-button @click="findPage()" class="dalfBut">查询</el-button>
+                        <el-button type="primary" class="butT" @click="handleCreate()">新建</el-button>
+                    </div>
+                    <el-table size="small" current-row-key="id" :data="dataList" stripe highlight-current-row>
+                        <el-table-column type="index" align="center" label="序号"></el-table-column>
+                        <el-table-column prop="name" label="权限名称" align="center"></el-table-column>
+                        <el-table-column prop="keyword" label="权限码" align="center"></el-table-column>
+                        <el-table-column prop="description" label="说明" align="center"></el-table-column>
+                        <el-table-column label="操作" align="center">
+                            <template slot-scope="scope">
+                                <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
+                                <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <div class="pagination-container">
+                        <el-pagination
+                            class="pagiantion"
+                            @current-change="handleCurrentChange"
+                            :current-page="pagination.currentPage"
+                            :page-size="pagination.pageSize"
+                            layout="total, prev, pager, next, jumper"
+                            :total="pagination.total">
+                        </el-pagination>
+                    </div>
+                    <!-- 新增标签弹层 -->
+                    <div class="add-form">
+                        <el-dialog title="新增权限" :visible.sync="dialogFormVisible">
+                            <template>
+                                <el-tabs v-model="activeName" type="card">
+                                    <el-tab-pane label="基本信息" name="first">
+                                        <el-form :rules="rules" ref="dataAddForm" :model="formData" label-position="right" label-width="100px">
+                                            <el-row>
+                                                <el-col :span="12">
+                                                    <el-form-item label="名称" prop="name">
+                                                        <el-input v-model="formData.name"/>
+                                                    </el-form-item>
+                                                </el-col>
+                                            </el-row>
+                                            <el-row>
+                                                <el-col :span="12">
+                                                    <el-form-item label="权限码" prop="keyword">
+                                                        <el-input v-model="formData.keyword"/>
+                                                    </el-form-item>
+                                                </el-col>
+                                            </el-row>
+                                            <el-row>
+                                                <el-col :span="24">
+                                                    <el-form-item label="说明" prop="description">
+                                                        <el-input v-model="formData.description" type="textarea"></el-input>
+                                                    </el-form-item>
+                                                </el-col>
+                                            </el-row>
+                                        </el-form>
+                                    </el-tab-pane>
+                                </el-tabs>
+                            </template>
+                            <div slot="footer" class="dialog-footer">
+                                <el-button @click="handleCancel('dataAddForm')">取消</el-button>
+                                <el-button type="primary" @click="handleAdd()">确定</el-button>
+                            </div>
+                        </el-dialog>
+                    </div>
+
+                    <!-- 编辑标签弹层 -->
+                    <div class="add-form">
+                        <el-dialog title="编辑权限" :visible.sync="dialogFormVisible4Edit">
+                            <template>
+                                <el-tabs v-model="activeName" type="card">
+                                    <el-tab-pane label="基本信息" name="first">
+                                        <el-form :rules="rules" ref="dataEditForm" :model="formData" label-position="right" label-width="100px">
+                                            <el-row>
+                                                <el-col :span="12">
+                                                    <el-form-item label="名称">
+                                                        <el-input v-model="formData.name"/>
+                                                    </el-form-item>
+                                                </el-col>
+                                            </el-row>
+                                            <el-row>
+                                                <el-col :span="12">
+                                                    <el-form-item label="权限码">
+                                                        <el-input v-model="formData.keyword"/>
+                                                    </el-form-item>
+                                                </el-col>
+                                            </el-row>
+                                            <el-row>
+                                                <el-col :span="24">
+                                                    <el-form-item label="说明">
+                                                        <el-input v-model="formData.description" type="textarea"></el-input>
+                                                    </el-form-item>
+                                                </el-col>
+                                            </el-row>
+                                        </el-form>
+                                    </el-tab-pane>
+                                </el-tabs>
+                            </template>
+                            <div slot="footer" class="dialog-footer">
+                                <el-button @click="handleCancel('dataEditForm')">取消</el-button>
+                                <el-button type="primary" @click="handleEdit()">确定</el-button>
+                            </div>
+                        </el-dialog>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <script>
+        var vue = new Vue({
+            el: '#app',
+            data:{
+                activeName:'first',//添加/编辑窗口Tab标签名称
+                pagination: {//分页相关属性
+                    currentPage: 1,
+                    pageSize:10,
+                    total:100,
+                    queryString:null,
+                },
+                dataList: [],//列表数据
+                formData: {},//表单数据
+                tableData:[],//新增和编辑表单中对应的检查项列表数据
+                dialogFormVisible: false,//控制添加窗口显示/隐藏
+                dialogFormVisible4Edit:false,//控制编辑窗口显示/隐藏
+                rules: {//校验规则
+                    name: [{required: true, message: '名称为必填项', trigger: 'blur'}],
+                    keyword: [{required: true, message: '关键词为必填项', trigger: 'blur'}],
+                    description: [{required: true, message: '说明为必填项', trigger: 'blur'}]
+                }
+            },
+            created() {
+                this.findPage();
+            },
+            methods: {
+                //编辑
+                handleEdit() {
+                    //校验表单输入项是否合法
+                    this.$refs['dataEditForm'].validate((valid) => {
+                        if (valid) {
+                            //合法，发送异步请求编辑角色
+                            axios.post("/permission/edit.do",this.formData).then(res=>{
+                                this.resetForm();
+                                //弹出窗口
+                                this.dialogFormVisible4Edit = false;
+                                this.$message({
+                                    message: res.data.message,
+                                    type: res.data.flag ? 'success':'error'
+                                });
+                                //重置表单
+                                this.resetForm("dataEditForm");
+                                this.findPage();//分页查询
+                            })
+                        }else {
+                            //输入不合法，弹窗提示
+                            this.$message.error("请进行正确填写");
+                            return false;
+                        }
+                    })
+                },
+                //添加
+                handleAdd () {
+                    //检验表单项输入是否合法
+                    this.$refs['dataAddForm'].validate((valid) => {
+                        if (valid) {
+                            axios.post("/permission/add.do",this.formData).then(res=>{
+                                this.resetForm();
+                                //弹出窗口
+                                this.dialogFormVisible = false;
+                                this.$message({
+                                    message: res.data.message,
+                                    type: res.data.flag ? 'success':'error'
+                                });
+                                //重置表单
+                                this.resetForm('dataAddForm');
+                                this.findPage();//分页查询
+                            })
+                        } else {
+                            //输入不合法，弹窗提示
+                            this.$message.error("请进行正确填写");
+                            return false;
+                        }
+                    })
+                },
+                //分页查询
+                findPage() {
+                    var parms = {
+                        currentPage:this.pagination.currentPage,
+                        pageSize:this.pagination.pageSize,
+                        queryString:this.pagination.queryString
+                    };
+
+                    axios.post("/permission/findPage.do",parms).then(res=>{
+                        //后台返回的是PageResult total rows
+                        this.pagination.total = res.data.total;
+                        this.dataList = res.data.rows;
+                    })
+                },
+
+                // 重置表单
+                resetForm(formName) {
+                    this.formData = {};
+                    this.activeName ='first';
+                    //对整个表单进行重置，将所有字段值重置为初始值并移除校验结果
+                    this.$refs[formName].resetFields();
+                },
+
+                // 弹出添加窗口
+                handleCreate() {
+                    this.dialogFormVisible = true;
+                },
+
+
+                // 弹出编辑窗口
+                handleUpdate(row) {
+                    //弹出编辑窗口
+                    this.dialogFormVisible4Edit = true;
+                    // 并回显权限
+                    axios.get("/permission/findById.do?id="+row.id).then(res=>{
+                        this.formData = res.data.data;//回显权限数据
+                        this.$message({
+                            message: res.data.message,
+                            type: 'success'
+                        });
+                    })
+                },
+
+                //切换页码
+                handleCurrentChange(currentPage) {
+                    this.pagination.currentPage = currentPage;
+                    this.findPage();
+                },
+
+                // 删除
+                handleDelete(row) {
+                    this.$confirm('此操作将永久删除'+row.name+'记录, 是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        //发送删除请求
+                        axios.get("/permission/deleteById.do?id="+row.id).then(res=>{
+                            this.$message({
+                                message: res.data.message,
+                                type: res.data.flag ? 'success':'error'
+                            });
+                            this.findPage();//分页查询
+                        })
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消删除'
+                        });
+                    });
+                },
+                //取消按钮
+                handleCancel(formName){
+                    //重置表单
+                    this.resetForm(formName);
+                    //关闭窗口
+                    if (formName == 'dataEditForm') {
+                        this.dialogFormVisible4Edit = false;
+                    } else {
+                        this.dialogFormVisible = false;
+                    }
+                }
+            }
+        })
+    </script>
+</html>
