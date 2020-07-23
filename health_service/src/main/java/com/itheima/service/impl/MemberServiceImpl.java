@@ -81,6 +81,7 @@ public class MemberServiceImpl implements MemberService {
 
 
 
+
     public static void main(String[] args) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MONTH,-12);
@@ -92,4 +93,54 @@ public class MemberServiceImpl implements MemberService {
         }
         System.out.println("************************");
     }
+
+    //输入日期展示会员数量折线图
+    @Override
+    public Map<String, Object> getMemberReportByDate(List<Date> value1) {
+        //定义返回结果Map
+        Map<String,Object> rsMap = new HashMap<>();
+
+        Calendar c1 = Calendar.getInstance();
+        Calendar c2 = Calendar.getInstance();
+        c1.setTime(value1.get(0));
+        c2.setTime(value1.get(1));
+        int year1 = c1.get(Calendar.YEAR);
+        int year2 = c2.get(Calendar.YEAR);
+        int month1 = c1.get(Calendar.MONTH);
+        int month2 = c2.get(Calendar.MONTH);
+        int day1 = c1.get(Calendar.DAY_OF_MONTH);
+        int day2 = c2.get(Calendar.DAY_OF_MONTH);
+        // 获取年的差值
+        int yearInterval = year1 - year2;
+        // 如果 d1的 月-日 小于 d2的 月-日 那么 yearInterval-- 这样就得到了相差的年数
+        if (month1 < month2 || month1 == month2 && day1 < day2) {
+            yearInterval--;
+        }
+        // 获取月数差值
+        int monthInterval = (month1 + 12) - month2;
+        if (day1 < day2) {
+            monthInterval--;
+        }
+        monthInterval %= 12;
+        int monthsDiff = Math.abs(yearInterval * 12 + monthInterval);
+        //遍历获取每一个月年月 ，并将年月放入List<String>集合中
+        List<String>  months = new ArrayList<>();
+        for (int i = 1;i<=monthsDiff;i++){
+            months.add(new SimpleDateFormat("yyyy-MM").format(c1.getTime()));
+            c1.add(Calendar.MONTH,1);
+        }
+        rsMap.put("months",months);
+        List<Integer>  memberCount = new ArrayList<>();
+        if(months !=null && months.size()>0){
+            for (String month : months) {
+                //month 2020-07 ==> 2020-07-31
+                String newMonth = month + "-31";
+                Integer mc = memberDao.findMemberCountBeforeDate(newMonth);
+                memberCount.add(mc);
+            }
+        }
+        rsMap.put("memberCount",memberCount);
+        return rsMap;
+    }
+
 }
