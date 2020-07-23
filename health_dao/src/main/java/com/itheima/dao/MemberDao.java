@@ -4,6 +4,7 @@ import com.github.pagehelper.Page;
 import com.itheima.pojo.Member;
 
 import java.util.List;
+import java.util.Map;
 
 public interface MemberDao {
     public List<Member> findAll();
@@ -17,4 +18,6 @@ public interface MemberDao {
     public Integer findMemberCountByDate(String date);
     public Integer findMemberCountAfterDate(String date);
     public Integer findMemberTotalCount();
+    //输入日期展示会员数量折线图
+    Map<String, Object> getMemberReportByDate(String s1, String s2);
 }
