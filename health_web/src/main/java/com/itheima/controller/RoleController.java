@@ -41,10 +41,9 @@ public class RoleController {
      * 新增角色
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public Result add(@RequestBody Role role, Integer[] menuIds) {
+    public Result add(@RequestBody Role role, Integer[] menuIds,Integer[] permissionIds) {
         try {
-            //System.out.println("hello");
-            roleService.add(role,menuIds);
+            roleService.add(role,menuIds,permissionIds);
             return new Result(true, MessageConstant.ADD_ROLE_SUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
@@ -83,15 +82,21 @@ public class RoleController {
     public List<Integer> findMenuIdsByRoleId(Integer roleId) {
         return roleService.findMenuIdsByRoleId(roleId);
     }
-
+    /**
+     * 根据角色id 查询权限项ids
+     */
+    @RequestMapping(value = "/findPermissionIdsByRoleId", method = RequestMethod.GET)
+    public List<Integer> findPermissionIdsByRoleId(Integer roleId) {
+        return roleService.findPermissionIdsByRoleId(roleId);
+    }
 
     /**
      * 编辑角色
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    public Result edit(@RequestBody Role role,Integer[] menuIds) {
+    public Result edit(@RequestBody Role role,Integer[] menuIds,Integer[] permissionIds) {
         try {
-            roleService.edit(role,menuIds);
+            roleService.edit(role,menuIds,permissionIds);
             //根据角色查询用户列表
             List<User> userList = userService.findUserByRoleId(role.getId());
             //更新redis中用户色菜单信息

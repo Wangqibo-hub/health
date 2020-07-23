@@ -45,4 +45,20 @@
         </set>
         where orderDate = #{orderDate}
     </update>
+
+    <!--根据时间,获取当前日期之前的预约设置数据-->
+    <select id="getHostoricalDate" resultType="com.itheima.pojo.OrderSetting" parameterType="date">
+        select * from t_ordersetting where orderDate &lt; #{date}
+    </select>
+
+    <!--备份数据到备份表t_ordersetting_bak表中-->
+    <insert id="saveOrderSetting" parameterType="com.itheima.pojo.OrderSetting">
+        insert into t_ordersetting_bak(orderDate,number,reservations)
+        values (#{orderDate},#{number},#{reservations})
+    </insert>
+
+    <!--删除t_ordersetting表的历史数据-->
+    <delete id="deleteOrderSetting" parameterType="date">
+        delete from t_ordersetting where orderDate &lt; #{date}
+    </delete>
 </mapper>

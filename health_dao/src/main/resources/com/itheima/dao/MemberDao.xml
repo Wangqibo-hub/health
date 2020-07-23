@@ -95,4 +95,9 @@
     <select id="findMemberTotalCount" resultType="int">
         select count(id) from t_member
     </select>
+
+    <!--    输入日期展示会员数量折线图-->
+    <select id="getMemberReportByDate" resultType="java.util.Map" parameterType="String">
+        SELECT COUNT(id) FROM t_member WHERE regTime BETWEEN #{param1} AND #{param2}
+    </select>
 </mapper>

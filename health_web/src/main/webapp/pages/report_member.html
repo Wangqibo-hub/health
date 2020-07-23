@@ -1,67 +1,145 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <!-- 页面meta -->
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>传智健康</title>
-        <meta name="description" content="传智健康">
-        <meta name="keywords" content="传智健康">
-        <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
-        <!-- 引入样式 -->
-        <link rel="stylesheet" href="../css/style.css">
-        <script src="../plugins/echarts/echarts.js"></script>
-    </head>
-    <body class="hold-transition">
-        <div id="app">
-            <div class="content-header">
-                <h1>统计分析<small>会员数量</small></h1>
-                <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb">
-                    <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-                    <el-breadcrumb-item>统计分析</el-breadcrumb-item>
-                    <el-breadcrumb-item>会员数量</el-breadcrumb-item>
-                </el-breadcrumb>
-            </div>
-            <div class="app-container">
-                <div class="box">
-                    <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
-                    <div id="chart1" style="height:600px;"></div>
-                </div>
-            </div>
-        </div>
-    </body>
+<head>
+    <!-- 页面meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>传智健康</title>
+    <meta name="description" content="传智健康">
+    <meta name="keywords" content="传智健康">
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../plugins/elementui/index.css">
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../plugins/echarts/echarts.js"></script>
+    <link rel="stylesheet" href="../plugins/elementui_new_version/index.css">
+
     <!-- 引入组件库 -->
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
     <script src="../js/vue.js"></script>
+    <script src="../plugins/elementui/index.js"></script>
     <script src="../js/axios-0.18.0.js"></script>
-    <script type="text/javascript">
-        // 基于准备好的dom，初始化echarts实例
-        var myChart1 = echarts.init(document.getElementById('chart1'));
+    <script src="../plugins/elementui_new_version/index.js"></script>
 
-        // 使用刚指定的配置项和数据显示图表。
-        //myChart.setOption(option);
 
-        axios.get("/report/getMemberReport.do").then((res)=>{
-            myChart1.setOption(
-                                {
-                                    title: {
-                                        text: '会员数量'
-                                    },
-                                    tooltip: {},
-                                    legend: {
-                                        data:['会员数量']
-                                    },
-                                    xAxis: {
-                                        data: res.data.data.months
-                                    },
-                                    yAxis: {
-                                        type:'value'
-                                    },
-                                    series: [{
-                                        name: '会员数量',
-                                        type: 'line',
-                                        data: res.data.data.memberCount
-                                    }]
-                                });
+    <!--        <script src="//unpkg.com/element-ui@2.13.2/lib/index.js"></script>unpkg.zhimg.com-->
+<!--    <script src="//unpkg.zhimg.com/element-ui@2.13.2/lib/index.js"></script>-->
+
+
+</head>
+<body class="hold-transition">
+<div id="app">
+    <div class="content-header">
+        <h1>统计分析<small>会员数量</small></h1>
+        <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb">
+            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>统计分析</el-breadcrumb-item>
+            <el-breadcrumb-item>会员数量</el-breadcrumb-item>
+        </el-breadcrumb>
+    </div>
+    <div class="app-container">
+        <div class="box">
+            <div style="padding: 20px 20px 30px 20px;">
+                <el-date-picker
+                        v-model="value1"
+                        type="monthrange"
+                        range-separator="至"
+                        start-placeholder="开始月份"
+                        end-placeholder="结束月份">
+                </el-date-picker>
+                <el-button @click='findByDate()' type="primary">查询</el-button>
+            </div>
+
+            <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+            <div id="chart1" style="height:400px;"></div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+    let vue = new Vue({
+        el:'#app',
+        data:{
+            pickerOptions: {
+                shortcuts: [{
+                    onClick(picker) {
+                        picker.$emit('pick', [new Date(), new Date()]);
+                    }
+                }, {
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date(new Date().getFullYear(), 0);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setMonth(start.getMonth() - 6);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }]
+            },
+            value1: '',
+        },
+
+        methods: {
+            findByDate(){
+                axios.post("/report/getMemberReportByDate.do",this.value1).then((res)=>{
+                    myChart1.setOption({
+                        title: {
+                            text: '会员数量'
+                        },
+                        tooltip: {},
+                        legend: {
+                            data:['会员数量']
+                        },
+                        xAxis: {
+                            data: res.data.data.months
+                        },
+                        yAxis: {
+                            type:'value'
+                        },
+                        series: [{
+                            name: '会员数量',
+                            type: 'line',
+                            data: res.data.data.memberCount
+                        }]
+                    });
+                })
+            },
+        }
+    });
+    // 基于准备好的dom，初始化echarts实例
+    let myChart1 = echarts.init(document.getElementById('chart1'));
+
+    // 使用刚指定的配置项和数据显示图表。
+    //myChart.setOption(option);
+
+    axios.get("/report/getMemberReport.do").then((res)=>{
+        myChart1.setOption({
+            title: {
+                text: '会员数量'
+            },
+            tooltip: {},
+            legend: {
+                data:['会员数量']
+            },
+            xAxis: {
+                data: res.data.data.months
+            },
+            yAxis: {
+                type:'value'
+            },
+            series: [{
+                name: '会员数量',
+                type: 'line',
+                data: res.data.data.memberCount
+            }]
         });
-    </script>
+        console.log(this.value1);
+    });
+</script>
 </html>

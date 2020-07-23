@@ -249,7 +249,7 @@
                                 //关闭窗口
                                 this.dialogFormVisible4Edit = false;
                                 //重置表单
-                                this.resetForm("dataEditForm");
+                                //this.resetForm("dataEditForm");
                                 this.findPage();//分页查询
                             })
                         } else {
@@ -324,6 +324,7 @@
                 },
                 // 弹出添加窗口
                 handleCreate() {
+                    this.formData = {};
                     //弹出新增检查项窗口
                     this.dialogFormVisible = true;
                 },
@@ -383,12 +384,12 @@
                 },
                 //取消按钮
                 handleCancel(formName){
-                    //重置表单
-                    this.resetForm(formName);
                     //关闭窗口
                     if (formName == 'dataEditForm') {
                         this.dialogFormVisible4Edit = false;
                     } else {
+                        //重置表单
+                        this.resetForm(formName);
                         this.dialogFormVisible = false;
                     }
                 }

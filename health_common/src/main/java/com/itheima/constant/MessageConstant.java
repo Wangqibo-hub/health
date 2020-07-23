@@ -4,10 +4,27 @@ package com.itheima.constant;
  * 消息常量
  */
 public class MessageConstant {
+    public static final String ADD_USER_SUCCESS = "新增用户成功";
+    public static final String ADD_USER_FAIL = "新增用户失败";
+    public static final String QUERY_USER_SUCCESS = "查询用户成功";
+    public static final String QUERY_USER_FAIL = "查询用户失败";
+    public static final String EDIT_USER_SUCCESS = "编辑用户成功";
+    public static final String EDIT_USER_FAIL = "编辑用户失败";
+    public static final String DELETE_USER_SUCCESS = "删除用户成功";
+    public static final String ADD_USER_FAIL2 = "用户已存在,请重新添加用户";
+    //
     public static final String ADD_MENU_SUCCESS = "新增菜单成功";
+    public static final String DELETE_PERMISSION_FAIL2 = "删除权限失败";
     public static final String ADD_MENU_FAIL = "新增菜单失败";
     public static final String ADD_MENU_FAIL3 = "菜单名称或者详情页面地址已存在,请重新输入";
     public static final String ADD_MENU_FAIL2 = "菜单名称不能为空,请重新输入";
+    public static final String DELETE_PERMISSION_SUCCESS = "删除权限成功";
+    public static final String ADD_PERMISSION_SUCCESS = "新增权限成功";
+    public static final String ADD_PERMISSION_FAIL = "新增权限失败";
+    public static final String EDIT_PERMISSION_SUCCESS = "编辑权限成功";
+    public static final String EDIT_PERMISSION_FAIL = "编辑权限失败";
+    public static final String QUERY_PERMISSION_SUCCESS = "查询权限成功";
+    public static final String QUERY_PERMISSION_FAIL = "查询权限失败";
     public static final String EDIT_MENU_SUCCESS = "编辑菜单成功";
     public static final String EDIT_MENU_FAIL = "编辑菜单失败";
     public static final String QUERY_MENU_SUCCESS = "查询所有菜单成功";
@@ -34,7 +51,8 @@ public class MessageConstant {
     public static final String ADD_CHECKGROUP_SUCCESS = "新增检查组成功";
     public static final String DELETE_CHECKGROUP_FAIL = "删除检查组失败";
     public static final String ADD_ROLE_SUCCESS = "新增角色成功";
-    public static final String ADD_ROLE_FAIL = "删除角色失败";
+    public static final String ADD_ROLE_FAIL = "添加角色失败";
+    public static final String ADD_ROLE_FAIL1 = "该角色已存在,添加失败";
     public static final String DELETE_ROLE_SUCCESS = "删除角色成功";
     public static final String DELETE_CHECKGROUP_SUCCESS = "删除检查组成功";
     public static final String QUERY_CHECKGROUP_SUCCESS = "查询检查组成功";
