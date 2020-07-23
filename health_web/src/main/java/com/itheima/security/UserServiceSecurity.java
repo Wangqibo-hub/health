@@ -31,8 +31,8 @@ public class UserServiceSecurity implements UserDetailsService {
         //1.根据用户查询用户对象
         com.itheima.pojo.User user = userService.findUserByUsername(username);
         //2.用户对象是否存在，不存在返回null
-        if(user == null){
-            return  null;//说明账号不存在
+        if(user == null || "0".equals(user.getStation())){
+            return  null;//说明账号不存在或账号被禁用
         }
         //3.用户存在 获取密码
         String password = user.getPassword();
