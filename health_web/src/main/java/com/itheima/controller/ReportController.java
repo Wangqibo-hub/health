@@ -4,10 +4,12 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.itheima.constant.MessageConstant;
 import com.itheima.entity.Result;
 import com.itheima.service.MemberService;
+import com.itheima.service.MembershipStatisticsService;
 import com.itheima.service.ReportService;
 import com.itheima.service.SetmealService;
 import net.sf.jxls.transformer.XLSTransformer;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,12 +34,12 @@ public class ReportController {
 
     @Reference
     private MemberService memberService;
-
     @Reference
     private SetmealService setmealService;
-
     @Reference
     private ReportService reportService;
+    @Reference
+    private MembershipStatisticsService membershipStatisticsService;
 
     /**
      * 会员数量折线图
@@ -72,6 +74,7 @@ public class ReportController {
      * 运营数据统计报表
      */
     @RequestMapping(value = "/getBusinessReportData", method = RequestMethod.GET)
+    @PreAuthorize("hasAnyAuthority('REPORT_VIEW')")//查看统计报表的权限控制
     public Result getBusinessReportData() {
         try {
             Map<String,Object> map = reportService.getBusinessReportData();
@@ -165,6 +168,7 @@ public class ReportController {
 
 
     @RequestMapping(value = "/exportBusinessReport",method = RequestMethod.GET)
+    @PreAuthorize("hasAnyAuthority('REPORT_VIEW')")//查看统计报表的权限控制
     public Result exportBusinessReport(HttpServletRequest request, HttpServletResponse response){
         try {
             //1.获取模板需要的数据
@@ -204,6 +208,39 @@ public class ReportController {
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(false, MessageConstant.GET_MEMBER_NUMBER_REPORT_FAIL);
+        }
+    }
+
+    /**
+     * 会员性别 数量饼形图
+     * @return
+     */
+    @RequestMapping("sexRatio")
+    public Result sexRatio(){
+        try {
+            Map<String,Object> map=membershipStatisticsService.sexRatio();
+
+            return new Result(true, MessageConstant.GET_SEX_REPORT_SUCCESS,map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(false, MessageConstant.GET_SEX_REPORT_FAIL);
+
+        }
+    }
+
+    /**
+     * 会员年龄段  数量饼形图
+     * @return
+     */
+    @RequestMapping("ageGroup")
+    public Result ageGroup(){
+
+        try {
+            Map<String,Object> map=membershipStatisticsService.ageGroup();
+            return new Result(true, MessageConstant.GET_SEX_REPORT_SUCCESS,map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(false, MessageConstant.GET_SEX_REPORT_FAIL);
         }
     }
 }

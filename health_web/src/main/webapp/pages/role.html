@@ -300,6 +300,12 @@
                                 this.resetForm("dataEditForm");
                                 //分页查询
                                 this.findPage();
+                            }).catch(error=>{
+                                this.showMessage(error);
+                                //关闭窗口
+                                this.dialogFormVisible4Edit = false;
+                                //重置表单
+                                this.resetForm("dataEditForm");
                             })
                         }else {
                             //输入不合法，弹窗提示
@@ -324,6 +330,12 @@
                                 this.resetForm('dataAddForm');
                                 //分页查询
                                 this.findPage();
+                            }).catch(error=>{
+                                this.showMessage(error);
+                                //关闭窗口
+                                this.dialogFormVisible = false;
+                                //重置表单
+                                this.resetForm('dataAddForm');
                             })
                         } else {
                             //输入不合法，弹窗提示
@@ -360,7 +372,6 @@
                     //弹出新增窗口
                     this.dialogFormVisible = true;
                     axios.post("/menu/findAll.do").then(res=>{
-                        //res.data;//Result对象
                         if(res.data.flag){
                             this.tableData = res.data.data;
                             this.$message({
@@ -445,6 +456,8 @@
                                 type: res.data.flag ? 'success':'error'
                             });
                             this.findPage();//分页查询
+                        }).catch(error=>{
+                            this.showMessage(error);
                         })
                     }).catch(() => {
                         this.$message({
@@ -462,6 +475,21 @@
                         this.dialogFormVisible4Edit = false;
                     } else {
                         this.dialogFormVisible = false;
+                    }
+                },
+                //权限不足信息展示
+                showMessage(error){
+                    if(error == 'Error: Request failed with status code 403'){
+                        this.$message({
+                            message: "权限不足，请联系管理员",
+                            type: 'error'
+                        });
+                    }else
+                    {
+                        this.$message({
+                            message: "系统异常，请联系管理员",
+                            type: 'error'
+                        });
                     }
                 }
             }

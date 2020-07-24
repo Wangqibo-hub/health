@@ -195,16 +195,22 @@
                         if (valid) {
                             //合法，发送异步请求编辑角色
                             axios.post("/permission/edit.do",this.formData).then(res=>{
-                                //   this.resetForm();
+                                this.resetForm();
+                                //弹出窗口
+                                this.dialogFormVisible4Edit = false;
                                 this.$message({
                                     message: res.data.message,
                                     type: res.data.flag ? 'success':'error'
                                 });
-                                //关闭窗口
+                                //隐藏窗口，重置表单
                                 this.dialogFormVisible4Edit = false;
-                                //重置表单
                                 this.resetForm("dataEditForm");
                                 this.findPage();//分页查询
+                            }).catch(error=>{
+                                this.showMessage(error);
+                                //隐藏窗口，重置表单
+                                this.dialogFormVisible4Edit = false;
+                                this.resetForm("dataEditForm");
                             })
                         }else {
                             //输入不合法，弹窗提示
@@ -229,6 +235,11 @@
                                 //重置表单
                                 this.resetForm('dataAddForm');
                                 this.findPage();//分页查询
+                            }).catch(error=>{
+                                this.showMessage(error);
+                                //隐藏窗口重置表单
+                                this.dialogFormVisible = false;
+                                this.resetForm('dataAddForm');
                             })
                         } else {
                             //输入不合法，弹窗提示
@@ -249,6 +260,7 @@
                         //后台返回的是PageResult total rows
                         this.pagination.total = res.data.total;
                         this.dataList = res.data.rows;
+                        this.pagination.currentPage = res.data.currentPage;
                     })
                 },
 
@@ -300,6 +312,8 @@
                                 type: res.data.flag ? 'success':'error'
                             });
                             this.findPage();//分页查询
+                        }).catch(error=>{
+                            this.showMessage(error);
                         })
                     }).catch(() => {
                         this.$message({
@@ -317,6 +331,21 @@
                         this.dialogFormVisible4Edit = false;
                     } else {
                         this.dialogFormVisible = false;
+                    }
+                },
+                //权限不足信息展示
+                showMessage(error){
+                    if(error == 'Error: Request failed with status code 403'){
+                        this.$message({
+                            message: "权限不足，请联系管理员",
+                            type: 'error'
+                        });
+                    }else
+                    {
+                        this.$message({
+                            message: "系统异常，请联系管理员",
+                            type: 'error'
+                        });
                     }
                 }
             }

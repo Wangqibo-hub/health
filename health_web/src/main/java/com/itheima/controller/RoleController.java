@@ -10,6 +10,7 @@ import com.itheima.pojo.User;
 import com.itheima.service.MenuService;
 import com.itheima.service.RoleService;
 import com.itheima.service.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -41,6 +42,7 @@ public class RoleController {
      * 新增角色
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('ROLE_ADD')")
     public Result add(@RequestBody Role role, Integer[] menuIds,Integer[] permissionIds) {
         try {
             roleService.add(role,menuIds,permissionIds);
@@ -55,6 +57,7 @@ public class RoleController {
      * 检查分页查询
      */
     @RequestMapping(value = "/findPage", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('ROLE_QUERY')")
     public PageResult findPage(@RequestBody QueryPageBean queryPageBean) {
         PageResult pageResult = roleService.findPage(queryPageBean.getCurrentPage(), queryPageBean.getPageSize(), queryPageBean.getQueryString());
         return pageResult;
@@ -82,6 +85,7 @@ public class RoleController {
     public List<Integer> findMenuIdsByRoleId(Integer roleId) {
         return roleService.findMenuIdsByRoleId(roleId);
     }
+
     /**
      * 根据角色id 查询权限项ids
      */
@@ -94,6 +98,7 @@ public class RoleController {
      * 编辑角色
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('ROLE_EDIT')")
     public Result edit(@RequestBody Role role,Integer[] menuIds,Integer[] permissionIds) {
         try {
             roleService.edit(role,menuIds,permissionIds);
@@ -116,6 +121,7 @@ public class RoleController {
      * 根据角色id删除角色
      */
     @RequestMapping(value = "/deleteById", method = RequestMethod.GET)
+    @PreAuthorize("hasAnyAuthority('ROLE_DELETE')")
     public Result deleteById(Integer id) {
         try {
             //根据角色查询用户列表

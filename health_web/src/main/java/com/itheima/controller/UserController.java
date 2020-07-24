@@ -8,6 +8,7 @@ import com.itheima.entity.Result;
 import com.itheima.service.MenuService;
 import com.itheima.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -33,8 +34,6 @@ public class UserController {
     private MenuService menuService;
     @Autowired
     private JedisPool jedisPool;
-
-
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -62,6 +61,7 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('USER_ADD')")
     public Result add(@RequestBody com.itheima.pojo.User user, Integer[] roleIds) {
         try {
             String username = user.getUsername();
@@ -85,6 +85,7 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "/findPage", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('USER_QUERY')")
     public PageResult findPage(@RequestBody QueryPageBean queryPageBean) {
         PageResult pageResult = userService.findPage(queryPageBean.getCurrentPage(), queryPageBean.getPageSize(), queryPageBean.getQueryString());
         return pageResult;
@@ -116,6 +117,7 @@ public class UserController {
      * 编辑用户
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('USER_EDIT')")
     public Result edit(@RequestBody com.itheima.pojo.User user, Integer[] roleIds) {
         try {
             userService.edit(user, roleIds);
@@ -135,6 +137,7 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "/deleteById", method = RequestMethod.GET)
+    @PreAuthorize("hasAnyAuthority('USER_DELETE')")
     public Result deleteById(Integer id) {
         try {
             //查询用户名

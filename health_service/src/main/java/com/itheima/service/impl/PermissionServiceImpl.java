@@ -39,13 +39,22 @@ public class PermissionServiceImpl implements PermissionService{
         //查询条件
         String queryString = queryPageBean.getQueryString();
 
+        if (queryString != null && queryString.length()>0){
+            //根据条件查询权限数据的数量
+            int count = permissionDao.findByCondition(queryString);
+            if ((count/pageSize+1) < currentPage){
+                currentPage = count/pageSize+1;
+            }
+        }
+
         //第一步：设置分页参数
         PageHelper.startPage(currentPage,pageSize);
         //第二步：查询数据库（代码一定要紧跟设置分页代码 ）
         Page<Permission> permissionPage =permissionDao.findPage(queryString);
 
-        return new PageResult(permissionPage.getTotal(),permissionPage.getResult());
+        return new PageResult(permissionPage.getTotal(),permissionPage.getResult(),permissionPage.getPageNum());
     }
+
 
     /**
      * 新增权限
