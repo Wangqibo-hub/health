@@ -170,6 +170,13 @@ public class UserController {
     public Result findAll() {
         try {
             List<com.itheima.pojo.User> userList = userService.findAll();
+            for (com.itheima.pojo.User user : userList) {
+                if (user.getStation().equals("1")){
+                    user.setStation("是");
+                }else {
+                    user.setStation("否");
+                }
+            }
             return new Result(true, MessageConstant.QUERY_USER_SUCCESS, userList);
         } catch (Exception e) {
             e.printStackTrace();

@@ -43,9 +43,9 @@ public class RoleController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('ROLE_ADD')")
-    public Result add(@RequestBody Role role, Integer[] menuIds,Integer[] permissionIds) {
+    public Result add(@RequestBody Role role, Integer[] menuIds, Integer[] permissionIds, Integer[] userIds) {
         try {
-            roleService.add(role,menuIds,permissionIds);
+            roleService.add(role, menuIds, permissionIds, userIds);
             return new Result(true, MessageConstant.ADD_ROLE_SUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
@@ -71,7 +71,7 @@ public class RoleController {
     public Result findById(Integer roleId) {
         try {
             Role role = roleService.findById(roleId);
-            return new Result(true, MessageConstant.QUERY_ROLE_SUCCESS,role);
+            return new Result(true, MessageConstant.QUERY_ROLE_SUCCESS, role);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(false, MessageConstant.QUERY_ROLE_FAIL);
@@ -95,13 +95,21 @@ public class RoleController {
     }
 
     /**
+     * 根据角色id 查询权限项ids
+     */
+    @RequestMapping(value = "/findUserIdsByRoleId", method = RequestMethod.GET)
+    public List<Integer> findUserIdsByRoleId(Integer roleId) {
+        return roleService.findUserIdsByRoleId(roleId);
+    }
+
+    /**
      * 编辑角色
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('ROLE_EDIT')")
-    public Result edit(@RequestBody Role role,Integer[] menuIds,Integer[] permissionIds) {
+    public Result edit(@RequestBody Role role, Integer[] menuIds, Integer[] permissionIds, Integer[] userIds) {
         try {
-            roleService.edit(role,menuIds,permissionIds);
+            roleService.edit(role, menuIds, permissionIds, userIds);
             //根据角色查询用户列表
             List<User> userList = userService.findUserByRoleId(role.getId());
             //更新redis中用户色菜单信息
@@ -138,7 +146,7 @@ public class RoleController {
         } catch (RuntimeException e) {
             e.printStackTrace();
             return new Result(false, e.getMessage());
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return new Result(false, MessageConstant.DELETE_ROLE_FAIL);
         }
@@ -152,10 +160,55 @@ public class RoleController {
     public Result findAll() {
         try {
             List<Role> roleList = roleService.findAll();
-            return new Result(true, MessageConstant.QUERY_ROLE_SUCCESS,roleList);
-        }catch (Exception e) {
+            return new Result(true, MessageConstant.QUERY_ROLE_SUCCESS, roleList);
+        } catch (Exception e) {
             e.printStackTrace();
             return new Result(false, MessageConstant.QUERY_ROLE_FAIL);
         }
+    }
+
+    /**
+     * 判断角色名是否存在
+     */
+    @RequestMapping(value = "/findRoleExist", method = RequestMethod.POST)
+    public Result findRoleExist(@RequestBody Role role) {
+        int count = roleService.findRoleExist(role.getName());
+        if (count>0){
+            return new Result(false, MessageConstant.QUERY_ROLENAME_FAIL);
+        }
+        return new Result(true, MessageConstant.QUERY_ROLENAME_SUCCESS);
+    }
+    /**
+     * 判断角色关键词是否存在
+     */
+    @RequestMapping(value = "/findRoleKeywordExist", method = RequestMethod.POST)
+    public Result findRoleKeywordExist(@RequestBody Role role) {
+        int count = roleService.findRoleExist(role.getKeyword());
+        if (count>0){
+            return new Result(false, MessageConstant.QUERY_ROLEKEYWORD_FAIL);
+        }
+        return new Result(true, MessageConstant.QUERY_ROLENAME_SUCCESS);
+    }
+    /**
+     * 判断编辑后角色名称是否存在
+     */
+    @RequestMapping(value = "/findEditRoleExist", method = RequestMethod.POST)
+    public Result findEditRoleExist(@RequestBody Role role) {
+        int count = roleService.findRoleExist(role.getName());
+        if (count>0){
+            return new Result(false, MessageConstant.QUERY_ROLENAME_FAIL);
+        }
+        return new Result(true, MessageConstant.QUERY_ROLENAME_SUCCESS);
+    }
+    /**
+     * 判断编辑后角色关键词是否存在
+     */
+    @RequestMapping(value = "/findEditRoleKeywordExist", method = RequestMethod.POST)
+    public Result findEditRoleKeywordExist(@RequestBody Role role) {
+        int count = roleService.findRoleExist(role.getKeyword());
+        if (count>0){
+            return new Result(false, MessageConstant.QUERY_ROLEKEYWORD_FAIL);
+        }
+        return new Result(true, MessageConstant.QUERY_ROLENAME_SUCCESS);
     }
 }

@@ -2,6 +2,7 @@ package com.itheima.dao;
 
 import com.github.pagehelper.Page;
 import com.itheima.pojo.Role;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -57,5 +58,13 @@ public interface RoleDao {
 
     List<Integer> findPermissionIdsByRoleId(Integer roleId);
 
-    int findRoleExist(Role role);
+
+
+    void setRoleAndUser(Map<String, Object> map);
+
+    List<Integer> findUserIdsByRoleId(Integer roleId);
+
+    void deleteUserRelByRoleById(Integer id);
+
+    int findRoleExist(@Param("roleName") String roleName);
 }
