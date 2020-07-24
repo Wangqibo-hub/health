@@ -104,6 +104,7 @@ public class UserServiceImpl implements UserService {
     public void edit(User user, Integer[] roleIds) {
         //1.先根据用户id从用户角色中间表 删除关系数据
         userDao.deleteRelByUserId(user.getId());
+
         //2.根据页面传入的角色ids 和 用户重新建立关系
         setUserAndRole(user.getId(), roleIds);
         //3根据用户id 更新用户数据
