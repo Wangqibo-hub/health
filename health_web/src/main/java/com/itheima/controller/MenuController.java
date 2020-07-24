@@ -11,6 +11,7 @@ import com.itheima.pojo.User;
 import com.itheima.service.MenuService;
 import com.itheima.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,8 +41,8 @@ public class MenuController {
      * 新增菜单
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('MENU_ADD')")
     public Result add(@RequestBody Menu menu) {
-       // if(menu.getName()!=null){
         try {
             menuService.add(menu);
             return new Result(true, MessageConstant.ADD_MENU_SUCCESS);
@@ -49,27 +50,23 @@ public class MenuController {
             e.printStackTrace();
             return new Result(false, MessageConstant.ADD_MENU_FAIL3);
         }
-        //  }
-       // return new Result(false, MessageConstant.ADD_MENU_FAIL2);
     }
 
     /**
      * 菜单分页查询
      */
     @RequestMapping(value = "/findPage", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('MENU_QUERY')")
     public PageResult findPage(@RequestBody QueryPageBean queryPageBean) {
         PageResult pageResult = menuService.findPage(queryPageBean.getCurrentPage(), queryPageBean.getPageSize(), queryPageBean.getQueryString());
         return pageResult;
     }
 
-
-
-
-
     /**
      * 根据菜单id删除菜单
      */
     @RequestMapping(value = "/deleteById", method = RequestMethod.GET)
+    @PreAuthorize("hasAnyAuthority('MENU_DELETE')")
     public Result deleteById(Integer id) {
         try {
             menuService.deleteById(id);
@@ -111,6 +108,7 @@ public class MenuController {
      * 编辑菜单
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('MENU_EDIT')")
     public Result edit(@RequestBody Menu menu,Integer roleId) {
         try {
             menuService.edit(menu,roleId);
@@ -120,6 +118,7 @@ public class MenuController {
             return new Result(false, MessageConstant.EDIT_MENU_FAIL);
         }
     }
+
     /**
      * 根据id查询菜单
      */
@@ -133,6 +132,7 @@ public class MenuController {
             return new Result(false, MessageConstant.QUERY_MENU_FAIL);
         }
     }
+
     /**
      * 根据菜单id 查询角色id
      */

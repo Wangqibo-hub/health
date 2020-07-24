@@ -401,7 +401,6 @@
                         if (valid) {
                             //2.提交表单数据
                             axios.post("/setmeal/add.do?checkgroupIds=" + this.checkgroupIds, this.formData).then(res => {
-                                this.resetForm();
                                 this.$message({
                                     message: res.data.message,
                                     type: res.data.flag ? 'success' : 'error'
@@ -411,6 +410,12 @@
                                 //重置表单
                                 this.resetForm("dataEditForm");
                                 this.findPage();//分页查询
+                            }).catch(error=>{
+                                this.showMessage(error);
+                                //关闭窗口
+                                this.dialogFormVisible4Edit = false;
+                                //重置表单
+                                this.resetForm("dataEditForm");
                             })
                         } else {
                             //输入不合法，弹窗提示
@@ -425,8 +430,7 @@
                         currentPage:this.pagination.currentPage,
                         pageSize:this.pagination.pageSize,
                         queryString:this.pagination.queryString
-                    }
-
+                    };
                     axios.post("/setmeal/findPage.do",parms).then(res=>{
                         //后台返回的是PageResult total rows
                         this.pagination.total = res.data.total;
@@ -448,6 +452,12 @@
                                 //重置表单
                                 this.resetForm("dataEditForm");
                                 this.findPage();//分页查询
+                            }).catch(error=>{
+                                this.showMessage(error);
+                                //关闭窗口
+                                this.dialogFormVisible4Edit = false;
+                                //重置表单
+                                this.resetForm("dataEditForm");
                             })
                         } else {
                             //输入不合法，弹窗提示
@@ -497,6 +507,8 @@
                                 type: res.data.flag ? 'success':'error'
                             });
                             this.findPage();//分页查询
+                        }).catch(error=>{
+                            this.showMessage(error);
                         })
                     }).catch(() => {
                         this.$message({

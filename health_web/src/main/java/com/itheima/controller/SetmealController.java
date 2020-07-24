@@ -11,6 +11,7 @@ import com.itheima.pojo.Setmeal;
 import com.itheima.service.SetmealService;
 import com.itheima.utils.QiniuUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,13 +31,12 @@ public class SetmealController {
 
     @Reference
     private SetmealService setmealService;
-
     //注入jedisPool连接池对象
     @Autowired
     private JedisPool jedisPool;
 
     /**
-     * 查询所有检查组
+     * 上传图片
      */
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     public Result upload(MultipartFile imgFile) {
@@ -62,6 +62,7 @@ public class SetmealController {
      * 新增套餐
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('SETMEAL_ADD')")
     public Result add(@RequestBody Setmeal setmeal, Integer[] checkgroupIds) {
         try {
             setmealService.add(setmeal,checkgroupIds);
@@ -78,6 +79,7 @@ public class SetmealController {
      * 套餐分页查询
      */
     @RequestMapping(value = "/findPage", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('SETMEAL_QUERY')")
     public PageResult findPage(@RequestBody QueryPageBean queryPageBean) {
         PageResult pageResult = setmealService.findPage(queryPageBean.getCurrentPage(), queryPageBean.getPageSize(), queryPageBean.getQueryString());
         return pageResult;
@@ -112,6 +114,7 @@ public class SetmealController {
      * 编辑套餐
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('SETMEAL_EDIT')")
     public Result edit(@RequestBody Setmeal setmeal,Integer[] checkgroupIds) {
         try {
             setmealService.edit(setmeal,checkgroupIds);
@@ -126,6 +129,7 @@ public class SetmealController {
      * 删除套餐
      */
     @RequestMapping(value = "/deleteById", method = RequestMethod.GET)
+    @PreAuthorize("hasAnyAuthority('SETMEAL_DELETE')")
     public Result deleteById(Integer id) {
         try {
             setmealService.deleteById(id);

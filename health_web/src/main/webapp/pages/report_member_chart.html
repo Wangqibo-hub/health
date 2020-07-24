@@ -41,7 +41,7 @@
 
         // 使用刚指定的配置项和数据显示图表。
         //根据性别展示图
-        axios.get("/member/sexRatio.do").then((req)=>{
+        axios.get("/report/sexRatio.do").then((req)=>{
             myChart2.setOption({
                 title: {
                     text: '会员性别占比饼图',
@@ -82,7 +82,7 @@
         });
         //根据会员年龄段展示图
        // myChart.setOption(option);
-        axios.get("/member/ageGroup.do").then((req)=>{
+        axios.get("/report/ageGroup.do").then((req)=>{
             myChart1.setOption({
                 title: {
                     text: '会员年龄占比饼图',

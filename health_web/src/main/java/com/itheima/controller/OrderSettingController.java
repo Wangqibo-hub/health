@@ -13,6 +13,7 @@ import com.itheima.service.SetmealService;
 import com.itheima.utils.POIUtils;
 import com.itheima.utils.QiniuUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,6 +41,7 @@ public class OrderSettingController {
      * 批量预约设置（解析excel中的数据 往t_ordersetting数据库插入数据）
      */
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('ORDERSETTING')")//预约设置权限控制
     public Result upload(MultipartFile excelFile) {
         try {
             //1.POIUtils读取Excel对象
@@ -83,6 +85,7 @@ public class OrderSettingController {
      * 单个预约设置（根据预约日期修改可预约人数）
      */
     @RequestMapping(value = "/editNumberByDate", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('ORDERSETTING')")//预约设置权限控制
     public Result editNumberByDate(@RequestBody OrderSetting orderSetting) {
         try {
             orderSettingService.editNumberByDate(orderSetting);
