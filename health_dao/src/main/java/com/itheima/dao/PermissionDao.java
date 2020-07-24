@@ -87,4 +87,11 @@ public interface PermissionDao {
     void deletePermissionRelRoleByPermissionId(Integer id);
 
     Permission findByPermissionName(String permissionName);
+
+    /**
+     * 根据条件查询权限数据的数量
+     * @param queryString
+     * @return
+     */
+    int findByCondition(String queryString);
 }

@@ -303,6 +303,7 @@
                         //后台返回的是PageResult total rows
                         this.pagination.total = res.data.total;
                         this.dataList = res.data.rows;
+                        this.pagination.currentPage = res.data.currentPage;
                     })
                 },
 
