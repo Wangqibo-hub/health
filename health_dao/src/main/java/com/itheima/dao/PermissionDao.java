@@ -30,7 +30,7 @@ public interface PermissionDao {
      * 新增权限
      * @param permission
      */
-    void add(Permission permission);
+    Integer add(Permission permission);
 
     /**
      * 编辑权限
@@ -76,4 +76,15 @@ public interface PermissionDao {
      * @return
      */
     int findByName(String permissionName);
+
+    /**
+    * @Description: 根据权限id删除角色和权限的关联关系
+    * @Param: [id]
+    * @Return: void
+    * @Author: Wangqibo
+    * @Date: 2020/7/24/0024
+    */
+    void deletePermissionRelRoleByPermissionId(Integer id);
+
+    Permission findByPermissionName(String permissionName);
 }

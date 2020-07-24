@@ -14,7 +14,7 @@ public interface MenuDao {
      * 保存菜单表
      *
      */
-    void add(Menu menu);
+    Integer add(Menu menu);
 
     /**
      * 分页
@@ -87,4 +87,6 @@ public interface MenuDao {
      * 查询菜单linkUrl是否重复
      */
     int findByLinkUrl(String linkUrl);
+
+    Menu findByMenuName(String menuName);
 }

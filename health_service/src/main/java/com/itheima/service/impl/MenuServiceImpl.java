@@ -89,8 +89,7 @@ public class MenuServiceImpl implements MenuService {
      * 新增菜单
      */
     @Override
-    public void add(Menu menu ) {
-
+    public void add(Menu menu, Integer[] roleIds) {
         String menuName = menu.getName();
         String linkUrl = menu.getLinkUrl();
         int count1 =menuDao.findByLinkUrl(linkUrl);
@@ -103,7 +102,12 @@ public class MenuServiceImpl implements MenuService {
         }
 
         menuDao.add(menu);
-
+        Menu menu1 = menuDao.findByMenuName(menuName);
+        if (roleIds != null && roleIds.length > 0) {
+            for (Integer roleId : roleIds) {
+                setMenuAndRole(menu1.getId(),roleId);
+            }
+        }
     }
 
     /**
@@ -138,13 +142,16 @@ public class MenuServiceImpl implements MenuService {
      * 编辑菜单
      */
     @Override
-    public void edit(Menu menu,Integer roleId) {
-
+    public void edit(Menu menu,Integer[] roleIds) {
     //1.先根据菜单id从菜单角色中间表 删除关系数据
         menuDao.deleteRoleMenuIdByMenuId(menu.getId());
     //2.根据页面传入的角色id 和 菜单重新建立关系
-         setMenuAndRole(menu.getId(),roleId);
-    //3根据菜单id 更新菜单表数据
+        if (roleIds != null && roleIds.length > 0) {
+            for (Integer roleId : roleIds) {
+                setMenuAndRole(menu.getId(), roleId);
+            }
+        }
+    //3 更新菜单表数据
         menuDao.edit(menu);
 }
 
@@ -171,18 +178,15 @@ public class MenuServiceImpl implements MenuService {
     }
 
 
-
-
-
     /**
      * 设置菜单和角色中间表
 
      */
-    private void setMenuAndRole(Integer groupId, Integer roleId) {
+    private void setMenuAndRole(Integer menuId, Integer roleId) {
         if(roleId != null ){
                 Map<String,Object> map = new HashMap<>();
                 map.put("roleId",roleId);
-                map.put("groupId",groupId);
+                map.put("menuId",menuId);
                 menuDao.setMenuAndRole(map);
             }
         }

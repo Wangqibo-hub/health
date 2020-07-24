@@ -4,6 +4,7 @@ import com.itheima.entity.PageResult;
 import com.itheima.entity.QueryPageBean;
 import com.itheima.entity.Result;
 import com.itheima.pojo.Permission;
+import com.itheima.pojo.Role;
 
 import java.util.List;
 
@@ -22,13 +23,13 @@ public interface PermissionService {
      * 新增权限
      * @param permission
      */
-    void add(Permission permission);
+    void add(Permission permission,Integer[] roleIds);
 
     /**
      * 编辑权限
      * @param permission
      */
-    void edit(Permission permission);
+    void edit(Permission permission,Integer[] roleIds);
 
     /**
      * 编辑-回显权限
@@ -45,4 +46,6 @@ public interface PermissionService {
     Result deleteById(Integer id);
 
     List<Permission> findAll();
+
+    List<Role> findRoleByPermissionId(Integer permissionId);
 }
