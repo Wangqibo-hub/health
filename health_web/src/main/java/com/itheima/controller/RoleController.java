@@ -144,6 +144,17 @@ public class RoleController {
         }
     }
 
+    @RequestMapping(value = "/deleteRoleAndRel", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('ROLE_DELETE')")
+    public Result deleteRoleAndRel(Integer id) {
+        try {
+            roleService.deleteRoleAndRel(id);
+            return new Result(true,MessageConstant.DELETE_ROLE_SUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(false,MessageConstant.DELETE_ROLE_FAIL);
+        }
+    }
 
     /**
      * 查询所有角色

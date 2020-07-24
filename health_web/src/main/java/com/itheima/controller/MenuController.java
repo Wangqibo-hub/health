@@ -89,6 +89,24 @@ public class MenuController {
         }
     }
 
+    /**
+    * @Description: 删除菜单及其与角色的关联关系
+    * @Param: [id]
+    * @Return: com.itheima.entity.Result
+    * @Author: Wangqibo
+    * @Date: 2020/7/24/0024
+    */
+    @RequestMapping(value = "/deleteMenuAndRelWithRole", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('MENU_DELETE')")
+    public Result deleteMenuAndRelWithRole(Integer id) {
+        try {
+            menuService.deleteMenuAndRelWithRole(id);
+            return new Result(true,MessageConstant.DELETE_MENU_SUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(false,MessageConstant.DELETE_MENU_FAIL);
+        }
+    }
 
     /**
      * 查询所有菜单

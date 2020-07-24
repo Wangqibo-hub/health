@@ -48,4 +48,13 @@ public interface PermissionService {
     List<Permission> findAll();
 
     List<Role> findRoleByPermissionId(Integer permissionId);
+
+    /**
+    * @Description: 删除权限及其与角色的关联关系
+    * @Param: [id]
+    * @Return: void
+    * @Author: Wangqibo
+    * @Date: 2020/7/24/0024
+    */
+    void deletePermissionAndRelWithRole(Integer id);
 }

@@ -52,4 +52,13 @@ public interface MenuService {
     * @Date: 2020/7/24/0024
     */
     void add(Menu menu, Integer[] roleIds);
+
+    /**
+    * @Description: 删除菜单及其关联的角色关系
+    * @Param: [id]
+    * @Return: void
+    * @Author: Wangqibo
+    * @Date: 2020/7/24/0024
+    */
+    void deleteMenuAndRelWithRole(Integer id);
 }

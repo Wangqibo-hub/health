@@ -44,6 +44,10 @@
     <delete id="deletePermissionRelByRoleById">
         delete from t_role_permission where role_id = #{id}
     </delete>
+    <!--删除用户与角色的关联关系-->
+    <delete id="deleteUserRelByRoleById" parameterType="int">
+        delete from t_user_role where role_id = #{id}
+    </delete>
 
     <!--根据用户id关联查询角色集合-->
     <select id="findRolesByUserId" parameterType="int" resultMap="roleMap" >
