@@ -83,16 +83,12 @@ public class RoleServiceImpl implements RoleService {
     public List<Role> findAll() {
         return roleDao.findAll();
     }
+
     /**
      * 新增角色
      */
     @Override
-    public void add(Role role, Integer[] menuIds, Integer[] permissionIds) {
-        //判断数据库是否已经存在该角色
-        int count = roleDao.findRoleExist(role);
-        if (count>0) {
-            throw new RuntimeException(MessageConstant.ADD_ROLE_FAIL1);
-        }
+    public void add(Role role, Integer[] menuIds, Integer[] permissionIds,Integer[] userIds) {
         //第一步：保存角色表
         roleDao.add(role);
         //第二步：获取角色id
@@ -101,7 +97,20 @@ public class RoleServiceImpl implements RoleService {
         setRoleAndMenu(roleId,menuIds);
         //第四步：往角色组权限中间表 遍历插入关系数据
         setRoleAndPermission(roleId,permissionIds);
+        //第四步：往角色组用户中间表 遍历插入关系数据
+        setRoleAndUser(roleId,userIds);
     }
+
+    @Override
+    public List<Integer> findUserIdsByRoleId(Integer roleId) {
+        return roleDao.findUserIdsByRoleId(roleId);
+    }
+
+    @Override
+    public int findRoleExist(String roleName) {
+        return roleDao.findRoleExist(roleName);
+    }
+
     private void setRoleAndMenu(Integer roleId, Integer[] menuIds) {
         if(menuIds != null && menuIds.length>0){
             for (Integer menuId : menuIds) {
@@ -122,20 +131,34 @@ public class RoleServiceImpl implements RoleService {
             }
         }
     }
+    private void setRoleAndUser(Integer roleId, Integer[] userIds) {
+        if(userIds != null && userIds.length>0){
+            for (Integer userId : userIds) {
+                Map<String,Object> map = new HashMap<>();
+                map.put("userId",userId);
+                map.put("roleId",roleId);
+                roleDao.setRoleAndUser(map);
+            }
+        }
+    }
     /**
      * 编辑角色
      */
     @Override
-    public void edit(Role role, Integer[] menuIds, Integer[] permissionIds) {
+    public void edit(Role role, Integer[] menuIds, Integer[] permissionIds,Integer[] userIds) {
         //1.先根据角色id从角色/菜单中间表 删除关系数据
         roleDao.deleteRelByRoleById(role.getId());
         //2.先根据角色id从角色/权限中间表 删除关系数据
         roleDao.deletePermissionRelByRoleById(role.getId());
-        //3.根据页面传入的菜单ids 和 角色重新建立关系
-        setRoleAndMenu(role.getId(),menuIds);
+        //3.先根据角色id从角色/用户中间表 删除关系数据
+        roleDao.deleteUserRelByRoleById(role.getId());
         //4.根据页面传入的菜单ids 和 角色重新建立关系
+        setRoleAndMenu(role.getId(),menuIds);
+        //5.根据页面传入的菜单ids 和 角色重新建立关系
         setRoleAndPermission(role.getId(),permissionIds);
-        //5.根据角色id 更新角色数据
+        //6.根据页面传入的菜单ids 和 角色重新建立关系
+        setRoleAndUser(role.getId(),permissionIds);
+        //7.根据角色id 更新角色数据
         roleDao.edit(role);
     }
     /**
