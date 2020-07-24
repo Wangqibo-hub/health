@@ -85,6 +85,7 @@ public class PermissionController {
             return new Result(false,MessageConstant.QUERY_PERMISSION_FAIL);
         }
     }
+
     /**
      * 这里修改了
      * 删除权限
@@ -96,6 +97,7 @@ public class PermissionController {
         Result result = permissionService.deleteById(id);
         return result;
     }
+
     /**
      * 查询所有权限
      */

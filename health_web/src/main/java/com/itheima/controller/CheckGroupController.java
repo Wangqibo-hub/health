@@ -8,6 +8,7 @@ import com.itheima.entity.Result;
 import com.itheima.pojo.CheckGroup;
 import com.itheima.pojo.CheckItem;
 import com.itheima.service.CheckGroupService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,6 +32,7 @@ public class CheckGroupController {
      * 新增检查组
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('CHECKGROUP_ADD')")
     public Result add(@RequestBody CheckGroup checkGroup,Integer[] checkItemIds) {
         try {
             System.out.println("hello");
@@ -46,6 +48,7 @@ public class CheckGroupController {
      * 检查分页查询
      */
     @RequestMapping(value = "/findPage", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('CHECKGROUP_QUERY')")
     public PageResult findPage(@RequestBody QueryPageBean queryPageBean) {
         PageResult pageResult = checkGroupService.findPage(queryPageBean.getCurrentPage(), queryPageBean.getPageSize(), queryPageBean.getQueryString());
         return pageResult;
@@ -79,6 +82,7 @@ public class CheckGroupController {
      * 编辑检查组
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('CHECKGROUP_EDIT')")
     public Result edit(@RequestBody CheckGroup checkGroup,Integer[] checkItemIds) {
         try {
             checkGroupService.edit(checkGroup,checkItemIds);
@@ -93,6 +97,7 @@ public class CheckGroupController {
      * 根据检查组id删除检查组
      */
     @RequestMapping(value = "/deleteById", method = RequestMethod.GET)
+    @PreAuthorize("hasAnyAuthority('CHECKGROUP_DELETE')")
     public Result deleteById(Integer id) {
         try {
             checkGroupService.deleteById(id);
@@ -120,7 +125,4 @@ public class CheckGroupController {
             return new Result(false, MessageConstant.QUERY_CHECKGROUP_FAIL);
         }
     }
-
-
-
 }

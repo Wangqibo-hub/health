@@ -5,7 +5,6 @@
        xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:security="http://www.springframework.org/schema/security"
-       xmlns:beans="http://www.springframework.org/schema/c"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                   http://www.springframework.org/schema/beans/spring-beans.xsd
                   http://www.springframework.org/schema/mvc
@@ -43,12 +42,9 @@
                              login-page="/login.html"
                              default-target-url="/pages/main.html"
                              always-use-default-target="true"
-                             authentication-failure-url="/login.html?error=true"/>
-
-
+                             authentication-failure-url="/login.html"/>
         <!--禁用csrf-->
         <security:csrf disabled="true"/>
-
 
         <!--登出
         logout-url="/logout.do"：登出请求
@@ -56,7 +52,6 @@
         logout-success-url="/login.html":登出成功页面
         -->
         <security:logout logout-url="/logout.do" invalidate-session="true" logout-success-url="/login.html"/>
-
     </security:http>
 
     <!--配置认证管理器 : 验证账号 密码-->

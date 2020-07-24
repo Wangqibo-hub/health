@@ -5,8 +5,10 @@ import com.itheima.constant.MessageConstant;
 import com.itheima.entity.PageResult;
 import com.itheima.entity.QueryPageBean;
 import com.itheima.entity.Result;
+import com.itheima.service.MenuService;
 import com.itheima.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import redis.clients.jedis.JedisPool;
 
 import java.util.List;
 
@@ -27,8 +30,10 @@ public class UserController {
     //引用服务
     @Reference
     private UserService userService;
-
-
+    @Reference
+    private MenuService menuService;
+    @Autowired
+    private JedisPool jedisPool;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -56,6 +61,7 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('USER_ADD')")
     public Result add(@RequestBody com.itheima.pojo.User user, Integer[] roleIds) {
         try {
             String username = user.getUsername();
@@ -79,6 +85,7 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "/findPage", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('USER_QUERY')")
     public PageResult findPage(@RequestBody QueryPageBean queryPageBean) {
         PageResult pageResult = userService.findPage(queryPageBean.getCurrentPage(), queryPageBean.getPageSize(), queryPageBean.getQueryString());
         return pageResult;
@@ -110,9 +117,12 @@ public class UserController {
      * 编辑用户
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('USER_EDIT')")
     public Result edit(@RequestBody com.itheima.pojo.User user, Integer[] roleIds) {
         try {
             userService.edit(user, roleIds);
+            //更新redis中该用户的菜单信息
+            menuService.generateMenuListInRedis(user.getUsername());
             return new Result(true, MessageConstant.EDIT_USER_SUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,9 +137,14 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "/deleteById", method = RequestMethod.GET)
+    @PreAuthorize("hasAnyAuthority('USER_DELETE')")
     public Result deleteById(Integer id) {
         try {
+            //查询用户名
+            com.itheima.pojo.User user = userService.findById(id);
             userService.deleteById(id);
+            //删除用户成功后，删除redis中该用户的菜单信息
+            jedisPool.getResource().del(user.getUsername());
             return new Result(true, MessageConstant.DELETE_USER_SUCCESS);
         } catch (Exception e) {
             e.printStackTrace();

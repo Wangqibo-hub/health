@@ -241,7 +241,6 @@
                         if (valid) {
                             //2.验证通过发送请求 带上检查项对象
                             axios.post("/checkitem/edit.do", this.formData).then(res => {
-                                this.dialogFormVisible4Edit = false;
                                 this.$message({
                                     message: res.data.message,
                                     type: res.data.flag ? 'success' : 'error'
@@ -249,8 +248,14 @@
                                 //关闭窗口
                                 this.dialogFormVisible4Edit = false;
                                 //重置表单
-                                //this.resetForm("dataEditForm");
+                                this.resetForm("dataEditForm");
                                 this.findPage();//分页查询
+                            }).catch(error=>{
+                                this.showMessage(error);
+                                //关闭窗口
+                                this.dialogFormVisible4Edit = false;
+                                //重置表单
+                                this.resetForm("dataEditForm");
                             })
                         } else {
                             //输入不合法，弹窗提示
@@ -266,8 +271,6 @@
                         if (valid) {
                             //发送请求将表单数据提交后台
                             axios.post('/checkitem/add.do',this.formData).then(res=>{
-                                //无论执行成功还是失败都关闭窗口
-                                this.dialogFormVisible = false;
                                 this.$message({
                                     message: res.data.message,
                                     type: res.data.flag ? 'success':'error'
@@ -277,6 +280,12 @@
                                 //重置表单
                                 this.resetForm('dataAddForm');
                                 this.findPage();//分页查询
+                            }).catch(error=>{
+                                this.showMessage(error);
+                                //关闭窗口
+                                this.dialogFormVisible = false;
+                                //重置表单
+                                this.resetForm('dataAddForm');
                             })
                         } else {
                             //输入不合法，弹窗提示
@@ -284,7 +293,6 @@
                             return false;
                         }
                     });
-
                 },
                 //分页查询
                 findPage() {
@@ -299,22 +307,6 @@
                         this.pagination.total = res.data.total;
                         this.dataList = res.data.rows;
                     })
-                    //this.dataList = res.data.data; //没有分页
-                    //发送请求获取检查项列表数据
-                    /*axios.post("/checkitem/findAll.do").then(res=>{
-                        //res.data;//Result对象
-                        if(res.data.flag){
-                            this.dataList = res.data.data;
-                            this.$message({
-                                message: res.data.message,
-                                type: 'success'
-                            });
-                        }
-                        else {
-                            this.$message.error(res.data.message);
-
-                        }
-                    })*/
                 },
                 // 重置表单
                 resetForm(formName) {
@@ -324,7 +316,6 @@
                 },
                 // 弹出添加窗口
                 handleCreate() {
-                    this.formData = {};
                     //弹出新增检查项窗口
                     this.dialogFormVisible = true;
                 },
@@ -359,7 +350,6 @@
                 },
                 // 删除
                 handleDelete(row) {
-                    //alert(row.id);
                     this.$confirm('此操作将永久删除检查项记录, 是否继续?', '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
@@ -384,12 +374,12 @@
                 },
                 //取消按钮
                 handleCancel(formName){
+                    //重置表单
+                    this.resetForm(formName);
                     //关闭窗口
                     if (formName == 'dataEditForm') {
                         this.dialogFormVisible4Edit = false;
                     } else {
-                        //重置表单
-                        this.resetForm(formName);
                         this.dialogFormVisible = false;
                     }
                 }

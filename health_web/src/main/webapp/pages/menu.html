@@ -91,10 +91,10 @@
                             <template>
                                 <el-tabs v-model="activeName" type="card">
                                     <el-tab-pane label="基本信息" name="first">
-                                        <el-form label-position="right" label-width="100px">
+                                        <el-form :rules="rules" ref="dataAddForm" :model="formData" label-position="right" label-width="100px">
                                             <el-row>
                                                 <el-col :span="12">
-                                                    <el-form-item label="菜单名称">
+                                                    <el-form-item label="菜单名称" prop="name">
                                                         <el-input v-model="formData.name"/>
                                                     </el-form-item>
                                                 </el-col>
@@ -106,19 +106,19 @@
                                             </el-row>
                                             <el-row>
                                                 <el-col :span="12">
-                                                    <el-form-item label="path">
+                                                    <el-form-item label="path" prop = "path">
                                                         <el-input v-model="formData.path"/>
                                                     </el-form-item>
                                                 </el-col>
                                                 <el-col :span="12">
-                                                    <el-form-item label="priority">
+                                                    <el-form-item label="priority" prop="priority">
                                                         <el-input v-model="formData.priority"/>
                                                     </el-form-item>
                                                 </el-col>
                                             </el-row>
                                             <el-row>
                                                 <el-col :span="24">
-                                                    <el-form-item label="说明">
+                                                    <el-form-item label="说明" prop="description">
                                                         <el-input v-model="formData.description" type="textarea"></el-input>
                                                     </el-form-item>
                                                 </el-col>
@@ -130,7 +130,7 @@
                                                     </el-form-item>
                                                 </el-col>
                                                 <el-col :span="12">
-                                                    <el-form-item label="等级">
+                                                    <el-form-item label="等级" prop="level">
                                                         <el-input v-model="formData.level"/>
                                                     </el-form-item>
                                                 </el-col>
@@ -140,7 +140,7 @@
                                 </el-tabs>
                             </template>
                             <div slot="footer" class="dialog-footer">
-                                <el-button @click="dialogFormVisible = false">取消</el-button>
+                                <el-button @click="handleCancel('dataAddForm')">取消</el-button>
                                 <el-button type="primary" @click="handleAdd()">确定</el-button>
                             </div>
                         </el-dialog>
@@ -152,10 +152,10 @@
                             <template>
                                 <el-tabs v-model="activeName" type="card">
                                     <el-tab-pane label="基本信息" name="first">
-                                        <el-form label-position="right" label-width="100px">
+                                        <el-form :rules="rules" ref="dataEditForm" :model="formData" label-position="right" label-width="100px">
                                             <el-row>
                                                 <el-col :span="12">
-                                                    <el-form-item label="菜单名称">
+                                                    <el-form-item label="菜单名称" prop="name">
                                                         <el-input v-model="formData.name"/>
                                                     </el-form-item>
                                                 </el-col>
@@ -167,19 +167,19 @@
                                             </el-row>
                                             <el-row>
                                                 <el-col :span="12">
-                                                    <el-form-item label="path">
+                                                    <el-form-item label="path" prop="path">
                                                         <el-input v-model="formData.path"/>
                                                     </el-form-item>
                                                 </el-col>
                                                 <el-col :span="12">
-                                                    <el-form-item label="priority">
+                                                    <el-form-item label="priority" prop="priority">
                                                         <el-input v-model="formData.priority"/>
                                                     </el-form-item>
                                                 </el-col>
                                             </el-row>
                                             <el-row>
                                                 <el-col :span="24">
-                                                    <el-form-item label="说明">
+                                                    <el-form-item label="说明" prop="description">
                                                         <el-input v-model="formData.description" type="textarea"></el-input>
                                                     </el-form-item>
                                                 </el-col>
@@ -191,7 +191,7 @@
                                                     </el-form-item>
                                                 </el-col>
                                                 <el-col :span="12">
-                                                    <el-form-item label="等级">
+                                                    <el-form-item label="等级" prop="level">
                                                         <el-input v-model="formData.level"/>
                                                     </el-form-item>
                                                 </el-col>
@@ -201,7 +201,7 @@
                                 </el-tabs>
                             </template>
                             <div slot="footer" class="dialog-footer">
-                                <el-button @click="dialogFormVisible4Edit = false">取消</el-button>
+                                <el-button @click="handleCancel('dataEditForm')">取消</el-button>
                                 <el-button type="primary" @click="handleEdit()">确定</el-button>
                             </div>
                         </el-dialog>
@@ -224,11 +224,14 @@
                 },
                 dataList: [],//列表数据
                 formData: {},//表单数据
-                tableData:[],//新增和编辑表单中对应的检查项列表数据
                 dialogFormVisible: false,//控制添加窗口显示/隐藏
                 dialogFormVisible4Edit:false,//控制编辑窗口显示/隐藏
                 rules: {//校验规则
                     name: [{required: true, message: '名称为必填项', trigger: 'blur'}],
+                    path: [{required: true, message: '路径为必填项', trigger: 'blur'}],
+                    priority: [{required: true, message: '优先级为必填项', trigger: 'blur'}],
+                    description: [{required: true, message: '说明为必填项', trigger: 'blur'}],
+                    level: [{required: true, message: '等级为必填项', trigger: 'blur'}],
                 }
             },
 
@@ -238,32 +241,59 @@
             methods: {
                 //编辑
                 handleEdit() {
-                    axios.post("/menu/edit.do?id="+this.id,this.formData).then(res=>{
-                        this.resetForm();
-                        //弹出窗口
-                        this.dialogFormVisible4Edit = false;
-                        this.$message({
-                            message: res.data.message,
-                            type: res.data.flag ? 'success':'error'
-                        });
-                        this.findPage();//分页查询
+                    //校验表单输入项是否合法
+                    this.$refs['dataEditForm'].validate((valid) => {
+                        if (valid) {
+                            axios.post("/menu/edit.do?id=" + this.id, this.formData).then(res => {
+                                this.$message({
+                                    message: res.data.message,
+                                    type: res.data.flag ? 'success' : 'error'
+                                });
+                                //关闭窗口
+                                this.dialogFormVisible4Edit = false;
+                                this.resetForm();
+                                this.findPage();//分页查询
+                            }).catch(error=>{
+                                this.showMessage(error);
+                                //关闭窗口
+                                this.dialogFormVisible4Edit = false;
+                                this.resetForm();
+                            })
+                        } else {
+                            //输入不合法，弹窗提示
+                            this.$message.error("请进行正确填写");
+                            return false;
+                        }
                     })
                 },
 
                 //添加
                 handleAdd () {
-                    //验证表单（省略了。。。）
-                    //提交表单数据 //校验表单输入项是否合法
-                        axios.post("/menu/add.do",this.formData).then(res=>{
-                            this.resetForm();
-                            //弹出窗口
-                            this.dialogFormVisible = false;
-                            this.$message({
-                                message: res.data.message,
-                                type: res.data.flag ? 'success':'error'
-                            });
-                            this.findPage();//分页查询
-                        })
+                    //检验表单项输入是否合法
+                    this.$refs['dataAddForm'].validate((valid) => {
+                        if (valid) {
+                            //提交表单数据 //校验表单输入项是否合法
+                            axios.post("/menu/add.do",this.formData).then(res=>{
+                                this.$message({
+                                    message: res.data.message,
+                                    type: res.data.flag ? 'success':'error'
+                                });
+                                //关闭窗口
+                                this.dialogFormVisible = false;
+                                this.resetForm();
+                                this.findPage();//分页查询
+                            }).catch(error=>{
+                                this.showMessage(error);
+                                //关闭窗口
+                                this.dialogFormVisible = false;
+                                this.resetForm();
+                            })
+                        }else {
+                            //输入不合法，弹窗提示
+                            this.$message.error("请进行正确填写");
+                            return false;
+                        }
+                    })
                 },
                 //分页查询
                 findPage() {
@@ -271,8 +301,7 @@
                         currentPage:this.pagination.currentPage,
                         pageSize:this.pagination.pageSize,
                         queryString:this.pagination.queryString
-                    }
-
+                    };
                     axios.post("/menu/findPage.do",parms).then(res=>{
                         //后台返回的是PageResult total rows
                         this.pagination.total = res.data.total;
@@ -280,10 +309,10 @@
                     })
                 },
                 // 重置表单
-                resetForm() {
+                resetForm(formName) {
                     this.formData = {};
-
-                    this.activeName ='first';
+                    //对整个表单进行重置，将所有字段值重置为初始值并移除校验结果
+                    this.$refs[formName].resetFields();
                 },
                 // 弹出编辑窗口
                 handleUpdate(row) {
@@ -291,34 +320,29 @@
                     this.dialogFormVisible4Edit = true;
                         axios.post("/menu/findById.do?id="+row.id).then(res=>{
                             this.formData = res.data.data;
-                            /*this.$message({
+                            this.$message({
                                 message: res.data.message,
                                type: 'success'
-                            });*/
+                            });
                         })
                 },
                 // 弹出添加窗口
                 handleCreate() {
-                    //清空表单数据 以及 默认选中第一个选项卡
-                    this.resetForm();
                     this.dialogFormVisible = true;
                     axios.post("/menu/findAll.do").then(res=>{
                         //res.data;//Result对象
                         if(res.data.flag){
                             this.tableData = res.data.data;
-                           /* this.$message({
+                            this.$message({
                                 message: res.data.message,
                                 type: 'success'
-                            });*/
+                            });
                         }
                         else {
                             this.$message.error(res.data.message);
-
                         }
                     })
                 },
-
-
                 //切换页码
                 handleCurrentChange(currentPage) {
                     this.pagination.currentPage = currentPage;
@@ -338,6 +362,8 @@
                                 type: res.data.flag ? 'success':'error'
                             });
                             this.findPage();//分页查询
+                        }).catch(error=>{
+                            this.showMessage(error);
                         })
                     }).catch(() => {
                         this.$message({
@@ -345,6 +371,32 @@
                             message: '已取消删除'
                         });
                     });
+                },
+                //取消按钮
+                handleCancel(formName){
+                    //重置表单
+                    this.resetForm(formName);
+                    //关闭窗口
+                    if (formName == 'dataEditForm') {
+                        this.dialogFormVisible4Edit = false;
+                    } else {
+                        this.dialogFormVisible = false;
+                    }
+                },
+                //权限不足信息展示
+                showMessage(error){
+                    if(error == 'Error: Request failed with status code 403'){
+                        this.$message({
+                            message: "权限不足，请联系管理员",
+                            type: 'error'
+                        });
+                    }else
+                    {
+                        this.$message({
+                            message: "系统异常，请联系管理员",
+                            type: 'error'
+                        });
+                    }
                 }
             }
         })

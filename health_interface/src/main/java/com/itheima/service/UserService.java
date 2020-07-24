@@ -68,4 +68,12 @@ public interface UserService {
      */
     void deleteById(Integer id);
 
+    /**
+    * @Description: 根据菜单id查询关联的用户信息
+    * @Param: [id]
+    * @Return: java.util.List<com.itheima.pojo.User>
+    * @Author: Wangqibo
+    * @Date: 2020/7/23/0023
+    */
+    List<User> findUserListByMenuId(Integer id);
 }
