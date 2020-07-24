@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,9 +46,9 @@ public class PermissionController {
      */
     @RequestMapping("/add")
     //@PreAuthorize("hasAuthority('CHECKITEM_ADD')")//权限校验
-    public Result add(@RequestBody Permission permission){
+    public Result add(@RequestBody Permission permission,Integer[] roleIds){
         try {
-            permissionService.add(permission);
+            permissionService.add(permission,roleIds);
             return new Result(true,MessageConstant.ADD_PERMISSION_SUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,9 +62,9 @@ public class PermissionController {
      * @return
      */
     @RequestMapping("/edit")
-    public Result edit(@RequestBody Permission permission){
+    public Result edit(@RequestBody Permission permission,Integer[] roleIds){
         try {
-            permissionService.edit(permission);
+            permissionService.edit(permission,roleIds);
             return new Result(true,MessageConstant.EDIT_PERMISSION_SUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
@@ -111,16 +113,16 @@ public class PermissionController {
             return new Result(false, MessageConstant.QUERY_PERMISSION_FAIL);
         }
     }
-/*
-    @RequestMapping("/deleteById")
-    public Result deleteById(Integer id){
-        try {
-            permissionService.deleteById(id);
-            return new Result(true,MessageConstant.DELETE_PERMISSION_SUCCESS);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Result(false,MessageConstant.DELETE_PERMISSION_FAIL);
+
+    @RequestMapping(value = "findRoleIdsByPermissionId", method = RequestMethod.GET)
+    public List<Integer> findRoleIdsByPermissionId(Integer permissionId) {
+        List<Role> roleList = permissionService.findRoleByPermissionId(permissionId);
+        List<Integer> roleIds = new ArrayList<>();
+        if (roleList != null && roleList.size() > 0) {
+            for (Role role : roleList) {
+                roleIds.add(role.getId());
+            }
         }
+        return roleIds;
     }
- */
 }

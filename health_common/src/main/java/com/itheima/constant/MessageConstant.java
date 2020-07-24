@@ -21,6 +21,9 @@ public class MessageConstant {
     public static final String DELETE_PERMISSION_SUCCESS = "删除权限成功";
     public static final String ADD_PERMISSION_SUCCESS = "新增权限成功";
     public static final String ADD_PERMISSION_FAIL = "新增权限失败";
+    public static final String ADD_PERMISSION_FAIL2 = "此权限名已存在，新增权限失败";
+    public static final String ADD_PERMISSION_FAIL3 = "此权限码已存在，新增权限失败";
+
     public static final String EDIT_PERMISSION_SUCCESS = "编辑权限成功";
     public static final String EDIT_PERMISSION_FAIL = "编辑权限失败";
     public static final String QUERY_PERMISSION_SUCCESS = "查询权限成功";

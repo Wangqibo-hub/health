@@ -42,9 +42,9 @@ public class MenuController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('MENU_ADD')")
-    public Result add(@RequestBody Menu menu) {
+    public Result add(@RequestBody Menu menu,Integer[] roleIds) {
         try {
-            menuService.add(menu);
+            menuService.add(menu,roleIds);
             return new Result(true, MessageConstant.ADD_MENU_SUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,9 +109,9 @@ public class MenuController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @PreAuthorize("hasAnyAuthority('MENU_EDIT')")
-    public Result edit(@RequestBody Menu menu,Integer roleId) {
+    public Result edit(@RequestBody Menu menu,Integer[] roleIds) {
         try {
-            menuService.edit(menu,roleId);
+            menuService.edit(menu,roleIds);
             return new Result(true, MessageConstant.EDIT_MENU_SUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
@@ -137,7 +137,7 @@ public class MenuController {
      * 根据菜单id 查询角色id
      */
     @RequestMapping(value = "/findRoleIdsByMenuId", method = RequestMethod.GET)
-    public List<Integer> findCheckItemIdsByGroupId(Integer menuId) {
+    public List<Integer> findRoleIdsByMenuId(Integer menuId) {
         return menuService.findRoleIdsByMenuId(menuId);
     }
 

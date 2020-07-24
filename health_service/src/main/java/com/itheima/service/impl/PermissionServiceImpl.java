@@ -5,6 +5,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.itheima.constant.MessageConstant;
 import com.itheima.dao.PermissionDao;
+import com.itheima.dao.RoleDao;
 import com.itheima.entity.PageResult;
 import com.itheima.entity.QueryPageBean;
 import com.itheima.entity.Result;
@@ -14,7 +15,9 @@ import com.itheima.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 权限管理业务实现类
@@ -25,6 +28,8 @@ public class PermissionServiceImpl implements PermissionService{
 
     @Autowired
     private PermissionDao permissionDao;
+    @Autowired
+    private RoleDao roleDao;
     /**
      * 权限表分页查询
      * @param queryPageBean
@@ -39,13 +44,22 @@ public class PermissionServiceImpl implements PermissionService{
         //查询条件
         String queryString = queryPageBean.getQueryString();
 
+        if (queryString != null && queryString.length()>0){
+            //根据条件查询权限数据的数量
+            int count = permissionDao.findByCondition(queryString);
+            if ((count/pageSize+1) < currentPage){
+                currentPage = count/pageSize+1;
+            }
+        }
+
         //第一步：设置分页参数
         PageHelper.startPage(currentPage,pageSize);
         //第二步：查询数据库（代码一定要紧跟设置分页代码 ）
         Page<Permission> permissionPage =permissionDao.findPage(queryString);
 
-        return new PageResult(permissionPage.getTotal(),permissionPage.getResult());
+        return new PageResult(permissionPage.getTotal(),permissionPage.getResult(),permissionPage.getPageNum());
     }
+
 
     /**
      * 新增权限
@@ -53,22 +67,31 @@ public class PermissionServiceImpl implements PermissionService{
      * @param permission
      */
     @Override
-    public void add(Permission permission) {
+    public void add(Permission permission,Integer[] roleIds) {
 
         String permissionName = permission.getName();
         String keyword = permission.getKeyword();
         //新增权限前先查询次权限是否已存在
         int count1 =permissionDao.findByKeyword(keyword);
         if (count1 > 0){
-            throw new RuntimeException(MessageConstant.ADD_PERMISSION_FAIL);
+            throw new RuntimeException(MessageConstant.ADD_PERMISSION_FAIL3);
         }
         //新增权限前先查询此权限是否已存在
         int count = permissionDao.findByName(permissionName);
         if (count > 0){
-            throw new RuntimeException(MessageConstant.ADD_PERMISSION_FAIL);
+            throw new RuntimeException(MessageConstant.ADD_PERMISSION_FAIL2);
         }
         //新增权限
         permissionDao.add(permission);
+        Permission permission1 = permissionDao.findByPermissionName(permissionName);
+        if (roleIds != null && roleIds.length > 0) {
+            for (Integer roleId : roleIds) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("roleId", roleId);
+                map.put("permissionId", permission1.getId());
+                roleDao.setRoleAndPermission(map);
+            }
+        }
     }
 
     /**
@@ -76,7 +99,19 @@ public class PermissionServiceImpl implements PermissionService{
      * @param permission
      */
     @Override
-    public void edit(Permission permission) {
+    public void edit(Permission permission,Integer[] roleIds) {
+        //先删除该权限关联的角色ids
+        permissionDao.deletePermissionRelRoleByPermissionId(permission.getId());
+        //重新建立关系
+        if (roleIds != null && roleIds.length > 0) {
+            for (Integer roleId : roleIds) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("roleId", roleId);
+                map.put("permissionId", permission.getId());
+                roleDao.setRoleAndPermission(map);
+            }
+        }
+        //更新权限信息
         permissionDao.edit(permission);
     }
 
@@ -101,13 +136,13 @@ public class PermissionServiceImpl implements PermissionService{
         try {
             List<Role> roleList = permissionDao.findRoleByPermissionId(id);
             if (roleList != null && roleList.size()>0){
-                return new Result(false, MessageConstant.DELETE_PERMISSION_FAIL2);
+                return new Result(false, MessageConstant.DELETE_PERMISSION_FAIL);
             }
             permissionDao.deleteById(id);
             return new Result(true,MessageConstant.DELETE_PERMISSION_SUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Result(false,MessageConstant.DELETE_PERMISSION_FAIL);
+            return new Result(false,MessageConstant.DELETE_PERMISSION_FAIL2);
         }
     }
     /**
@@ -119,15 +154,16 @@ public class PermissionServiceImpl implements PermissionService{
         return permissionDao.findAll();
     }
 
-
     /**
-     * 删除权限
-     * @param id
-     */
-    /*
-    @Override
-    public void deleteById(Integer id) {
-        permissionDao.deleteById(id);
-    }
+    * @Description: 根据权限id查询角色
+    * @Param: [permissionId]
+    * @Return: java.util.List<com.itheima.pojo.Role>
+    * @Author: Wangqibo
+    * @Date: 2020/7/24/0024
     */
+    @Override
+    public List<Role> findRoleByPermissionId(Integer permissionId) {
+        return permissionDao.findRoleByPermissionId(permissionId);
+    }
+
 }
