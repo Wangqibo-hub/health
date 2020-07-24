@@ -40,11 +40,4 @@ public class TestDeletePic {
     public void test(){
         QiniuUtils.deleteFileFromQiniu("a1073e4e-d3ea-4035-ba7b-0a53d668cdc4.jpg");
     }
-
-
-    @Test
-   public void aaa(){
-        int a = 21/10;
-        System.out.println(a);
-   }
 }

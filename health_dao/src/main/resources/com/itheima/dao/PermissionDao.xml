@@ -34,7 +34,7 @@
     <select id="findPage" resultType="com.itheima.pojo.Permission" parameterType="string">
         select * from t_permission
         <if test="queryString != null and queryString.length > 0">
-            where name like concat("%",#{queryString},"%") or keyword like concat("%",#{queryString},"%")
+            where name = #{queryString} or keyword = #{queryString}
         </if>
     </select>
     <!--根据id查询权限-->
@@ -55,10 +55,5 @@
     <!--根据权限名查询权限-->
     <select id="findByName" resultType="java.lang.Integer" parameterType="string">
         select count(*) from t_permission where name = #{permissionName}
-    </select>
-    <!--根据条件查询权限数据的数量-->
-    <select id="findByCondition" resultType="java.lang.Integer" parameterType="string">
-        select count(*) from t_permission
-        where name like concat("%",#{queryString},"%") or keyword like concat("%",#{queryString},"%")
     </select>
 </mapper>

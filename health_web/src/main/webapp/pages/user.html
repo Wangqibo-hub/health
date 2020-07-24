@@ -191,7 +191,7 @@
                     <template>
                         <el-tabs v-model="activeName" type="card">
                             <el-tab-pane label="基本信息" name="first">
-                                <el-form :rules="rules" ref="dataEditForm" :model="formData" label-position="right" label-width="100px">
+                                <el-form :rules="rules" ref="dataEditForm" :model="formData" label-position="right" label-width="100px" :rules="rules">
                                     <el-row>
                                         <el-col :span="12">
                                             <el-form-item label="用户名" prop="username">
