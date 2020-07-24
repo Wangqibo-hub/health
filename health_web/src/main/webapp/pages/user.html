@@ -125,7 +125,7 @@
                                         <el-col :span="12">
                                             <el-form-item label="生日" prop="birthday">
                                             <div class="block">
-                                                <span class="demonstration">生日</span>
+                                                <span class="demonstration"></span>
                                                 <el-date-picker
                                                         v-model="formData.birthday"
                                                         type="date"
@@ -226,7 +226,7 @@
                                         <el-col :span="12">
                                             <el-form-item label="生日" prop="birthday">
                                             <div class="block">
-                                                <span class="demonstration">生日</span>
+                                                <span class="demonstration"></span>
                                                 <el-date-picker
                                                         v-model="formData.birthday"
                                                         type="date"
@@ -343,13 +343,13 @@
                             });
                             //隐藏窗口
                             this.dialogFormVisible4Edit = false;
-                            this.resetForm();
+                            this.resetForm("dataEditForm");
                             this.findPage();//分页查询
                         }).catch(error=>{
                             this.showMessage(error);
                             //隐藏窗口
                             this.dialogFormVisible4Edit = false;
-                            this.resetForm();
+                            this.resetForm("dataEditForm");
                         })
                     }else {
                         //输入不合法，弹窗提示
@@ -371,13 +371,13 @@
                             });
                             //隐藏窗口
                             this.dialogFormVisible = false;
-                            this.resetForm();
+                            this.resetForm("dataAddForm");
                             this.findPage();//分页查询
                         }).catch(error=>{
                             this.showMessage(error);
                             //隐藏窗口
                             this.dialogFormVisible = false;
-                            this.resetForm();
+                            this.resetForm("dataAddForm");
                         })
                     }else {
                         //输入不合法，弹窗提示
@@ -419,7 +419,6 @@
                         });
                     } else {
                         this.$message.error(res.data.message);
-
                     }
                 })
             },
