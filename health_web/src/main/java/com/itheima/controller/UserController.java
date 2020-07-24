@@ -127,10 +127,13 @@ public class UserController {
             if (!user1.getPassword().equals(password)) {
                 user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
             }
-            com.itheima.pojo.User user2 = userService.findUserByUsername(username);
-            if(user2 != null){
-                return new Result(false,MessageConstant.EDIT_USER_FAIL2);
+            List<com.itheima.pojo.User> userList = userService.findAll();
+            for (com.itheima.pojo.User user2 : userList) {
+                if (user2 != null && !username.equals(user1.getUsername())) {
+                    return new Result(false, MessageConstant.EDIT_USER_FAIL2);
+                }
             }
+
             userService.edit(user, roleIds);
             //更新redis中该用户的菜单信息
             menuService.generateMenuListInRedis(user.getUsername());
