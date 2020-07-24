@@ -39,7 +39,6 @@ public class UserController {
 
     /**
      * 获取用户名 从SecurityContextHolder获取用户数据
-     *
      * @return
      */
     @RequestMapping(value = "/getUserName", method = RequestMethod.GET)
@@ -55,7 +54,6 @@ public class UserController {
 
     /**
      * 新增用户
-     *
      * @param user
      * @param roleIds
      * @return
@@ -120,6 +118,11 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('USER_EDIT')")
     public Result edit(@RequestBody com.itheima.pojo.User user, Integer[] roleIds) {
         try {
+            String password = user.getPassword();
+            com.itheima.pojo.User user1 = userService.findById(user.getId());
+            if(!user1.getPassword().equals(password)){
+                user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+            }
             userService.edit(user, roleIds);
             //更新redis中该用户的菜单信息
             menuService.generateMenuListInRedis(user.getUsername());

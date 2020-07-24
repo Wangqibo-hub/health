@@ -73,7 +73,7 @@
                 <el-table-column prop="remark" label="备注" align="center"></el-table-column>
                 <el-table-column prop="station" label="是否禁用" align="center">
                     <template slot-scope="scope">
-                        <span>{{scope.row.station == '1' ? '是' : '否'}}</span>
+                        <span>{{scope.row.station == '1' ? '否' : '是'}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column prop="telephone" label="电话" align="center"></el-table-column>
@@ -100,7 +100,7 @@
                     <template>
                         <el-tabs v-model="activeName" type="card">
                             <el-tab-pane label="基本信息" name="first">
-                                <el-form :rules="rules" ref="dataAddForm" :model="formData" label-position="right" label-width="100px" :rules="rules" ref="dataAddForm" :model="formData">
+                                <el-form :rules="rules" ref="dataAddForm" :model="formData" label-position="right" label-width="100px" ref="dataAddForm" :model="formData">
                                     <el-row>
                                         <el-col :span="12">
                                             <el-form-item label="用户名" prop="username">
@@ -123,7 +123,7 @@
                                             </el-form-item>
                                         </el-col>
                                         <el-col :span="12">
-                                            <el-form-item label="生日" prop="birthday">
+                                            <el-form-item prop="birthday">
                                             <div class="block">
                                                 <span class="demonstration">生日</span>
                                                 <el-date-picker
@@ -132,16 +132,6 @@
                                                         placeholder="选择日期">
                                                 </el-date-picker>
                                             </div>
-                                            </el-form-item>
-                                        </el-col>
-                                    </el-row>
-                                    <el-row>
-                                        <el-col :span="24">
-                                            <el-form-item label="是否禁用" prop="station">
-                                                <el-select v-model="formData.station">
-                                                    <el-option label="是" value="1"></el-option>
-                                                    <el-option label="否" value="0"></el-option>
-                                                </el-select>
                                             </el-form-item>
                                         </el-col>
                                     </el-row>
@@ -201,7 +191,7 @@
                     <template>
                         <el-tabs v-model="activeName" type="card">
                             <el-tab-pane label="基本信息" name="first">
-                                <el-form :rules="rules" ref="dataEditForm" :model="formData" label-position="right" label-width="100px" :rules="rules">
+                                <el-form :rules="rules" ref="dataEditForm" :model="formData" label-position="right" label-width="100px">
                                     <el-row>
                                         <el-col :span="12">
                                             <el-form-item label="用户名" prop="username">
@@ -224,7 +214,7 @@
                                             </el-form-item>
                                         </el-col>
                                         <el-col :span="12">
-                                            <el-form-item label="生日" prop="birthday">
+                                            <el-form-item prop="birthday">
                                             <div class="block">
                                                 <span class="demonstration">生日</span>
                                                 <el-date-picker
@@ -240,8 +230,8 @@
                                         <el-col :span="24">
                                             <el-form-item label="是否禁用" prop="station">
                                                 <el-select v-model="formData.station">
-                                                    <el-option label="是" value="1"></el-option>
-                                                    <el-option label="否" value="0"></el-option>
+                                                    <el-option label="否" value="1"></el-option>
+                                                    <el-option label="是" value="0"></el-option>
                                                 </el-select>
                                             </el-form-item>
                                         </el-col>
@@ -331,6 +321,15 @@
             this.findPage();
         },
         methods: {
+            telephoneCheck(){
+                //获取用户输入的手机号
+                var telephone = this.formData.telephone;
+                //校验手机号输入是否正确
+                if (!checkTelephone(telephone)) {
+                    this.$message.error('请输入正确的手机号');
+                    return false;
+                }
+            },
             //编辑
             handleEdit() {
                 //校验表单输入项是否合法
@@ -343,13 +342,13 @@
                             });
                             //隐藏窗口
                             this.dialogFormVisible4Edit = false;
-                            this.resetForm();
+                            this.resetForm("dataEditForm");
                             this.findPage();//分页查询
                         }).catch(error=>{
                             this.showMessage(error);
                             //隐藏窗口
                             this.dialogFormVisible4Edit = false;
-                            this.resetForm();
+                            this.resetForm("dataEditForm");
                         })
                     }else {
                         //输入不合法，弹窗提示
@@ -362,6 +361,7 @@
             handleAdd() {
                 //1.验证新建表单数据
                 this.$refs["dataAddForm"].validate((valid) => {
+                    this.resetForm("dataEditForm");
                     if (valid) {
                         //提交表单数据  提交用户(user)以及勾选角色ids Integer[] roleIds
                         axios.post("/user/add.do?roleIds=" + this.roleIds, this.formData).then(res => {
@@ -371,13 +371,13 @@
                             });
                             //隐藏窗口
                             this.dialogFormVisible = false;
-                            this.resetForm();
+                            this.resetForm("dataAddForm");
                             this.findPage();//分页查询
                         }).catch(error=>{
                             this.showMessage(error);
                             //隐藏窗口
                             this.dialogFormVisible = false;
-                            this.resetForm();
+                            this.resetForm("dataAddForm");
                         })
                     }else {
                         //输入不合法，弹窗提示
@@ -419,7 +419,6 @@
                         });
                     } else {
                         this.$message.error(res.data.message);
-
                     }
                 })
             },
@@ -482,7 +481,7 @@
             handleCancel(formName){
                 //重置表单
                 this.resetForm(formName);
-                //关闭窗口
+                //关闭窗口dataEditForm
                 if (formName == 'dataEditForm') {
                     this.dialogFormVisible4Edit = false;
                 } else {
@@ -496,8 +495,7 @@
                         message: "权限不足，请联系管理员",
                         type: 'error'
                     });
-                }else
-                {
+                }else {
                     this.$message({
                         message: "系统异常，请联系管理员",
                         type: 'error'
