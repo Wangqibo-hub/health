@@ -294,9 +294,6 @@
                     this.$refs['dataEditForm'].validate((valid) => {
                         if (valid) {
                             axios.post("/checkgroup/edit.do?checkItemIds=" + this.checkitemIds, this.formData).then(res => {
-                                this.resetForm();
-                                //弹出窗口
-                                this.dialogFormVisible4Edit = false;
                                 this.$message({
                                     message: res.data.message,
                                     type: res.data.flag ? 'success' : 'error'
@@ -321,9 +318,6 @@
                         if (valid) {
                             //提交表单数据  提交检查组(checkgroup)以及勾选检查项ids Integer[] checkItemIds
                             axios.post("/checkgroup/add.do?checkItemIds=" + this.checkitemIds, this.formData).then(res => {
-                                this.resetForm();
-                                //弹出窗口
-                                this.dialogFormVisible = false;
                                 this.$message({
                                     message: res.data.message,
                                     type: res.data.flag ? 'success' : 'error'
