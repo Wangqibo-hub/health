@@ -37,7 +37,7 @@ public class UserServiceSecurity implements UserDetailsService {
         //3.用户存在 获取密码
         String password = user.getPassword();
         //4.根据用户查询出角色 和权限 放到authorities列表中   -------授权
-        List<SimpleGrantedAuthority> grantedAuthorities = new ArrayList<>();//权限列表
+        List<SimpleGrantedAuthority> grantedAuthorities = new ArrayList<>();//权限列表d
         //5.获取用户对象中所有角色
         Set<Role> roles = user.getRoles();
         for (Role role : roles) {

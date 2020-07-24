@@ -2,6 +2,7 @@ package com.itheima.dao;
 
 import com.github.pagehelper.Page;
 import com.itheima.pojo.Role;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -60,11 +61,18 @@ public interface RoleDao {
     int findRoleExist(Role role);
 
     /**
-    * @Description: g根据角色id删除用户与角色的关联关系
+    * @Description: 根据角色id删除用户与角色的关联关系
     * @Param: [id]
     * @Return: void
     * @Author: Wangqibo
     * @Date: 2020/7/24/0024
     */
     void deleteUserRelByRoleById(Integer id);
+
+
+    void setRoleAndUser(Map<String, Object> map);
+
+    List<Integer> findUserIdsByRoleId(Integer roleId);
+
+    int findRoleExist(@Param("roleName") String roleName);
 }
