@@ -72,4 +72,5 @@
     <select id="findByPermissionName" resultType="com.itheima.pojo.Permission">
         select * from t_permission where name = #{permissionName}
     </select>
+
 </mapper>

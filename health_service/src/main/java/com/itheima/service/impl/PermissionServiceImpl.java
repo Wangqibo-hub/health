@@ -166,4 +166,31 @@ public class PermissionServiceImpl implements PermissionService{
         return permissionDao.findRoleByPermissionId(permissionId);
     }
 
+    /**
+     * 新增、编辑权限时异步校验权限名和权限码
+     * @param permission
+     * @return
+     */
+    @Override
+    public Result verifyByPermission(Permission permission) {
+        String ResName = permission.getName();
+        String ResKeyword = permission.getKeyword();
+
+        List<Permission> DatabasePermissionList = permissionDao.findAll();
+
+        for (Permission DatabasePermission : DatabasePermissionList) {
+            if (ResName != null && ResName.length() > 0){
+                if (DatabasePermission.getName().equals(ResName)){
+                    return new Result(false,MessageConstant.ADD_PERMISSION_FAIL2);
+                }
+            }
+
+            if (DatabasePermission.getKeyword().equals(ResKeyword)){
+                return new Result(false,MessageConstant.ADD_PERMISSION_FAIL3);
+            }
+
+        }
+        return null;
+    }
+
 }

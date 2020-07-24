@@ -94,4 +94,5 @@ public interface PermissionDao {
      * @return
      */
     int findByCondition(String queryString);
+
 }
