@@ -6,10 +6,6 @@ import com.itheima.pojo.Menu;
 import java.util.List;
 
 public interface MenuService {
-    /**
-     * 新增菜单
-     */
-    void add(Menu menu);
 
     /**
      * 分页
@@ -19,7 +15,7 @@ public interface MenuService {
     /**
      * 编辑菜单
      */
-    void edit(Menu menu,Integer roleId);
+    void edit(Menu menu,Integer[] roleIds);
     /**
      * 根据菜单id删除菜单
      */
@@ -48,8 +44,12 @@ public interface MenuService {
     */
     String generateMenuListInRedis(String username);
 
-
-
-
-
+    /**
+    * @Description: 新增菜单
+    * @Param: [menu, roleIds]
+    * @Return: void
+    * @Author: Wangqibo
+    * @Date: 2020/7/24/0024
+    */
+    void add(Menu menu, Integer[] roleIds);
 }

@@ -110,6 +110,30 @@
                                             </el-row>
                                         </el-form>
                                     </el-tab-pane>
+                                    <el-tab-pane label="角色信息" name="second">
+                                        <div class="checkScrol">
+                                            <table class="datatable">
+                                                <thead>
+                                                <tr>
+                                                    <th>选择</th>
+                                                    <th>角色名称</th>
+                                                    <th>角色关键字</th>
+                                                    <th>角色描述</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr v-for="c in tableData">
+                                                    <td>
+                                                        <input :id="c.id" v-model="roleIds" type="checkbox" :value="c.id">
+                                                    </td>
+                                                    <td><label :for="c.id">{{c.name}}</label></td>
+                                                    <td><label :for="c.id">{{c.keyword}}</label></td>
+                                                    <td><label :for="c.id">{{c.description}}</label></td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </el-tab-pane>
                                 </el-tabs>
                             </template>
                             <div slot="footer" class="dialog-footer">
@@ -149,6 +173,30 @@
                                             </el-row>
                                         </el-form>
                                     </el-tab-pane>
+                                    <el-tab-pane label="角色信息" name="second">
+                                        <div class="checkScrol">
+                                            <table class="datatable">
+                                                <thead>
+                                                <tr>
+                                                    <th>选择</th>
+                                                    <th>角色名称</th>
+                                                    <th>角色关键字</th>
+                                                    <th>角色描述</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr v-for="c in tableData">
+                                                    <td>
+                                                        <input :id="c.id" v-model="roleIds" type="checkbox" :value="c.id">
+                                                    </td>
+                                                    <td><label :for="c.id">{{c.name}}</label></td>
+                                                    <td><label :for="c.id">{{c.keyword}}</label></td>
+                                                    <td><label :for="c.id">{{c.description}}</label></td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </el-tab-pane>
                                 </el-tabs>
                             </template>
                             <div slot="footer" class="dialog-footer">
@@ -176,6 +224,7 @@
                 dataList: [],//列表数据
                 formData: {},//表单数据
                 tableData:[],//新增和编辑表单中对应的检查项列表数据
+                roleIds: [],//新增和编辑表单中角色对应的复选框，基于双向绑定可以进行回显和数据提交
                 dialogFormVisible: false,//控制添加窗口显示/隐藏
                 dialogFormVisible4Edit:false,//控制编辑窗口显示/隐藏
                 rules: {//校验规则
@@ -194,7 +243,7 @@
                     this.$refs['dataEditForm'].validate((valid) => {
                         if (valid) {
                             //合法，发送异步请求编辑角色
-                            axios.post("/permission/edit.do",this.formData).then(res=>{
+                            axios.post("/permission/edit.do?roleIds="+this.roleIds,this.formData).then(res=>{
                                 this.$message({
                                     message: res.data.message,
                                     type: res.data.flag ? 'success':'error'
@@ -221,7 +270,7 @@
                     //检验表单项输入是否合法
                     this.$refs['dataAddForm'].validate((valid) => {
                         if (valid) {
-                            axios.post("/permission/add.do",this.formData).then(res=>{
+                            axios.post("/permission/add.do?roleIds="+this.roleIds,this.formData).then(res=>{
                                 this.$message({
                                     message: res.data.message,
                                     type: res.data.flag ? 'success':'error'
@@ -250,17 +299,18 @@
                         pageSize:this.pagination.pageSize,
                         queryString:this.pagination.queryString
                     };
-
                     axios.post("/permission/findPage.do",parms).then(res=>{
                         //后台返回的是PageResult total rows
                         this.pagination.total = res.data.total;
                         this.dataList = res.data.rows;
+                        this.pagination.currentPage = res.data.currentPage;
                     })
                 },
 
                 // 重置表单
                 resetForm(formName) {
                     this.formData = {};
+                    this.roleIds = [];
                     this.activeName ='first';
                     //对整个表单进行重置，将所有字段值重置为初始值并移除校验结果
                     this.$refs[formName].resetFields();
@@ -269,6 +319,17 @@
                 // 弹出添加窗口
                 handleCreate() {
                     this.dialogFormVisible = true;
+                    axios.get("/role/findAll.do").then(res => {
+                        if (res.data.flag) {
+                            this.tableData = res.data.data;
+                            this.$message({
+                                message: res.data.message,
+                                type: 'success'
+                            });
+                        } else {
+                            this.$message.error(res.data.message);
+                        }
+                    })
                 },
 
                 // 弹出编辑窗口
@@ -282,6 +343,19 @@
                             message: res.data.message,
                             type: 'success'
                         });
+                        //查询所有角色
+                        axios.get("/role/findAll.do").then(res => {
+                            this.tableData = res.data.data;//回显所有角色数据
+                            this.$message({
+                                message: res.data.message,
+                                type: 'success'
+                            });
+                            // 关联的角色   根据权限id 查询角色ids
+                            axios.get("/permission/findRoleIdsByPermissionId.do?permissionId=" + row.id).then(res => {
+                                //后台返回的List<Integer> [28,29,30]
+                                this.roleIds = res.data;//回显的角色勾选
+                            })
+                        })
                     })
                 },
 

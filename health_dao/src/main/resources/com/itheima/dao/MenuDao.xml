@@ -24,9 +24,13 @@
 
     <!--新增菜单-->
     <insert id="add" parameterType="com.itheima.pojo.Menu">
-    insert into t_menu(name,linkUrl,path,priority,icon,description,parentMenuId)
+        /*获取用户id*/
+        <selectKey resultType="int" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into t_menu(name,linkUrl,path,priority,icon,description,parentMenuId)
         values(#{name},#{linkUrl},#{path},#{priority},#{icon},#{description},#{parentMenuId})
-</insert>
+    </insert>
 
     <!--根据菜单id从菜单角色中间表删除联系-->
     <delete id="deleteRoleMenuIdByMenuId" parameterType="int">
@@ -109,5 +113,9 @@
     <select id="findByName" parameterType="String" resultType="int">
     select count(*) from t_menu where name =#{name}
 </select>
+
+    <select id="findByMenuName" resultType="com.itheima.pojo.Menu">
+        select * from t_menu where name = #{menuName}
+    </select>
 
 </mapper>
