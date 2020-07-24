@@ -60,12 +60,12 @@ public class PermissionServiceImpl implements PermissionService{
         //新增权限前先查询次权限是否已存在
         int count1 =permissionDao.findByKeyword(keyword);
         if (count1 > 0){
-            throw new RuntimeException(MessageConstant.ADD_PERMISSION_FAIL);
+            throw new RuntimeException(MessageConstant.ADD_PERMISSION_FAIL3);
         }
         //新增权限前先查询此权限是否已存在
         int count = permissionDao.findByName(permissionName);
         if (count > 0){
-            throw new RuntimeException(MessageConstant.ADD_PERMISSION_FAIL);
+            throw new RuntimeException(MessageConstant.ADD_PERMISSION_FAIL2);
         }
         //新增权限
         permissionDao.add(permission);
@@ -101,13 +101,13 @@ public class PermissionServiceImpl implements PermissionService{
         try {
             List<Role> roleList = permissionDao.findRoleByPermissionId(id);
             if (roleList != null && roleList.size()>0){
-                return new Result(false, MessageConstant.DELETE_PERMISSION_FAIL2);
+                return new Result(false, MessageConstant.DELETE_PERMISSION_FAIL);
             }
             permissionDao.deleteById(id);
             return new Result(true,MessageConstant.DELETE_PERMISSION_SUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Result(false,MessageConstant.DELETE_PERMISSION_FAIL);
+            return new Result(false,MessageConstant.DELETE_PERMISSION_FAIL2);
         }
     }
     /**

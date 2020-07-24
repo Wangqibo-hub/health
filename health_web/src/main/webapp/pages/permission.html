@@ -195,13 +195,13 @@
                         if (valid) {
                             //合法，发送异步请求编辑角色
                             axios.post("/permission/edit.do",this.formData).then(res=>{
-                                this.resetForm();
-                                //弹出窗口
-                                this.dialogFormVisible4Edit = false;
+                                //   this.resetForm();
                                 this.$message({
                                     message: res.data.message,
                                     type: res.data.flag ? 'success':'error'
                                 });
+                                //关闭窗口
+                                this.dialogFormVisible4Edit = false;
                                 //重置表单
                                 this.resetForm("dataEditForm");
                                 this.findPage();//分页查询
@@ -219,7 +219,7 @@
                     this.$refs['dataAddForm'].validate((valid) => {
                         if (valid) {
                             axios.post("/permission/add.do",this.formData).then(res=>{
-                                this.resetForm();
+                               // this.resetForm();
                                 //弹出窗口
                                 this.dialogFormVisible = false;
                                 this.$message({
