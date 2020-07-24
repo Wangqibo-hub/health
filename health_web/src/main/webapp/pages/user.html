@@ -63,7 +63,7 @@
             <el-table size="small" current-row-key="id" :data="dataList" stripe highlight-current-row>
                 <el-table-column type="index" align="center" label="序号"></el-table-column>
                 <el-table-column prop="username" label="用户名" align="center"></el-table-column>
-                <el-table-column prop="password" label="密码" align="center"></el-table-column>
+<!--                <el-table-column prop="password" label="密码" align="center"></el-table-column>-->
                 <el-table-column label="性别" align="center">
                     <template slot-scope="scope">
                         <span>{{scope.row.gender == '2' ? '女' : '男'}}</span>
@@ -444,38 +444,5 @@
             }
         }
     })
-</script>
-<script>
-    export default {
-        data() {
-            return {
-                pickerOptions: {
-                    shortcuts: [{
-                        text: '今天',
-                        onClick(picker) {
-                            picker.$emit('pick', new Date());
-                        }
-                    }, {
-                        text: '昨天',
-                        onClick(picker) {
-                            const date = new Date();
-                            date.setTime(date.getTime() - 3600 * 1000 * 24);
-                            picker.$emit('pick', date);
-                        }
-                    }, {
-                        text: '一周前',
-                        onClick(picker) {
-                            const date = new Date();
-                            date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
-                            picker.$emit('pick', date);
-                        }
-                    }]
-                },
-                value1: '',
-                value2: '',
-                value3: ''
-            };
-        }
-    };
 </script>
 </html>
