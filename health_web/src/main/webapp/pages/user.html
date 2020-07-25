@@ -64,7 +64,6 @@
             <el-table size="small" current-row-key="id" :data="dataList" stripe highlight-current-row>
                 <el-table-column type="index" align="center" label="序号"></el-table-column>
                 <el-table-column prop="username" label="用户名" align="center"></el-table-column>
-<!--                <el-table-column prop="password" label="密码" align="center"></el-table-column>-->
                 <el-table-column label="性别" align="center">
                     <template slot-scope="scope">
                         <span>{{scope.row.gender == '2' ? '女' : '男'}}</span>
@@ -148,7 +147,7 @@
                                             </el-form-item>
                                         </el-col>
                                         <el-col :span="12">
-                                            <el-form-item label="验证码" prop="code">
+                                            <el-form-item label="验证码">
                                                 <div class="input-row">
                                                     <div class="loginInput">
                                                         <input v-model="formData.validateCode" style="width:80%" id='password' type="password" placeholder="请输入验证码">
@@ -329,7 +328,6 @@
                 birthday: [{required: true, message: '生日为必填项', trigger: 'blur'}],
                 station: [{required: true, message: '状态为必填项', trigger: 'change'}],
                 telephone: [{required: true, message: '电话为必填项', trigger: 'blur'}],
-                code: [{required: true, message: '验证码为必填项', trigger: 'blur'}],
                 remark: [{required: true, message: '备注为必填项', trigger: 'blur'}]
             }
         },
