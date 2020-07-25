@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import redis.clients.jedis.JedisPool;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +66,7 @@ public class UserController {
         try {
             String username = user.getUsername();
             com.itheima.pojo.User user1 = userService.findUserByUsername(username);
-            if (user1 != null) {
+            if(user1 != null){
                 return new Result(false, MessageConstant.ADD_USER_FAIL2);
             }
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
@@ -174,10 +173,10 @@ public class UserController {
         try {
             List<com.itheima.pojo.User> userList = userService.findAll();
             for (com.itheima.pojo.User user : userList) {
-                if (user.getStation().equals("1")) {
-                    user.setStation("是");
-                } else {
+                if (user.getStation().equals("1")){
                     user.setStation("否");
+                }else {
+                    user.setStation("是");
                 }
             }
             return new Result(true, MessageConstant.QUERY_USER_SUCCESS, userList);

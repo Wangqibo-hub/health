@@ -61,7 +61,7 @@
     <select id="selectByCondition" resultType="com.itheima.pojo.Role">
         select * from t_role
         <if test="value != null and value.length > 0">
-            where name like CONCAT("%",#{name},"%") or description like CONCAT("%",#{description},"%")
+            where name like CONCAT("%",#{name},"%") or keyword like CONCAT("%",#{name},"%")
         </if>
     </select>
     <select id="findById" resultType="com.itheima.pojo.Role" parameterType="int">
@@ -92,7 +92,8 @@
         select permission_id from t_role_permission where role_id=#{roleId}
     </select>
     <select id="findRoleExist" resultType="java.lang.Integer">
-        select count(*) from t_role where name=#{roleName} or keyword=#{roleName}
+        select count(*) from t_role where name=#{roleName} or keyword
+        =#{roleName}
     </select>
     <select id="findUserIdsByRoleId" resultType="java.lang.Integer">
         select user_id from t_user_role where role_id=#{roleId}
