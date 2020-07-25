@@ -156,7 +156,7 @@ public class UserController {
             return new Result(true, MessageConstant.DELETE_USER_SUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Result(false, MessageConstant.DELETE_USER_FAIL);
+            return new Result(false, "系统异常,删除失败");
         }
     }
 
