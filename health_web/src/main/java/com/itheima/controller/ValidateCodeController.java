@@ -33,7 +33,7 @@ public class ValidateCodeController {
             if(false){
                 SMSUtils.sendShortMessage(SMSUtils.VALIDATE_CODE,telephone,code.toString());
             }
-            System.out.println("telephone:::"+telephone+"::::"+code.toString());
+            System.out.println("telephone:"+telephone+":"+code.toString());
             //3.将验证码存入redis (提交体检预约验证使用)
             //key:业务类型区别+唯一标识
             jedisPool.getResource().setex(RedisMessageConstant.SENDTYPE_ORDER+"_"+telephone,5*60,code.toString());

@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="../css/style.css">
     <!-- 引入组件库 -->
-    <script src="../plugins/healthmobile.js"></script>
+    <script src="../plugins/health.js"></script>
     <script type="text/javascript" src="../js/jquery.min.js"></script>
     <script src="../js/vue.js"></script>
     <script src="../plugins/elementui/index.js"></script>
@@ -141,14 +141,14 @@
                                             <el-form-item label="电话" prop="telephone">
                                                 <div class="input-row">
                                                     <div class="loginInput">
-                                                        <input v-model="formData.telephone" id='account' type="text" placeholder="请输入电话号码">
+                                                        <input v-model="formData.telephone" type="text" placeholder="请输入电话号码">
                                                         <input id="validateCodeButton" @click="sendValidateCode()" type="button" style="font-size: 12px" value="获取验证码">
                                                     </div>
                                                 </div>
                                             </el-form-item>
                                         </el-col>
                                         <el-col :span="12">
-                                            <el-form-item label="验证码" prop="password">
+                                            <el-form-item label="验证码" prop="code">
                                                 <div class="input-row">
                                                     <div class="loginInput">
                                                         <input v-model="formData.validateCode" style="width:80%" id='password' type="password" placeholder="请输入验证码">
@@ -329,6 +329,7 @@
                 birthday: [{required: true, message: '生日为必填项', trigger: 'blur'}],
                 station: [{required: true, message: '状态为必填项', trigger: 'change'}],
                 telephone: [{required: true, message: '电话为必填项', trigger: 'blur'}],
+                code: [{required: true, message: '验证码为必填项', trigger: 'blur'}],
                 remark: [{required: true, message: '备注为必填项', trigger: 'blur'}]
             }
         },

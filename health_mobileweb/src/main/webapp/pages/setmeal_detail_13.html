@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="../css/page-health-orderDetail.css" />
     <script src="../plugins/vue/vue.js"></script>
     <script src="../plugins/vue/axios-0.18.0.js"></script>
-    <script src="../plugins/healthmobile.js"></script>
+    <script src="../plugins/health.js"></script>
 </head>
 <body data-spy="scroll" data-target="#myNavbar" data-offset="150">
 <div id="app" class="app">
