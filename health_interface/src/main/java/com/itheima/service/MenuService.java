@@ -4,6 +4,7 @@ import com.itheima.entity.PageResult;
 import com.itheima.pojo.Menu;
 
 import java.util.List;
+import java.util.Map;
 
 public interface MenuService {
 
@@ -54,4 +55,13 @@ public interface MenuService {
     void add(Menu menu, Integer[] roleIds);
 
     void deleteMenuAndRelWithRole(Integer id);
+
+    /**
+    * @Description: 获取所有父菜单
+    * @Param: []
+    * @Return: java.util.List<java.util.Map<java.lang.String,java.lang.Object>>
+    * @Author: Wangqibo
+    * @Date: 2020/7/25/0025
+    */
+    List<Map<String, Object>> getParentMenu();
 }

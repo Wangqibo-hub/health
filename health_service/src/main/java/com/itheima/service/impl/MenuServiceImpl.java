@@ -171,6 +171,49 @@ public class MenuServiceImpl implements MenuService {
     }
 
     /**
+    * @Description: 获取所有父菜单
+    * @Param: []
+    * @Return: java.util.List<java.util.Map<java.lang.String,java.lang.Object>>
+    * @Author: Wangqibo
+    * @Date: 2020/7/25/0025
+    */
+    @Override
+    public List<Map<String, Object>> getParentMenu() {
+        List<Map<String,Object>> resultList = new ArrayList<>();
+        //封装所有一级菜单
+        Map<String, Object> map1 = new HashMap<>();
+        map1.put("label", "一级菜单");
+        List<Menu> menuList4One = menuDao.findMenuByLevel(1);
+        if (menuList4One != null && menuList4One.size() > 0) {
+            List<Map<String, Object>> mapList = new ArrayList<>();
+            for (Menu menu : menuList4One) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("menuId", menu.getId());
+                map.put("menuName", menu.getName());
+                mapList.add(map);
+            }
+            map1.put("options", mapList);
+        }
+        //封装所有二级菜单
+        List<Menu> menuList4Two = menuDao.findMenuByLevel(2);
+        Map<String, Object> map2 = new HashMap<>();
+        map2.put("label", "二级菜单");
+        if (menuList4Two != null && menuList4Two.size() > 0) {
+            List<Map<String, Object>> mapList = new ArrayList<>();
+            for (Menu menu : menuList4Two) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("menuId", menu.getId());
+                map.put("menuName", menu.getName());
+                mapList.add(map);
+            }
+            map2.put("options", mapList);
+        }
+        resultList.add(map1);
+        resultList.add(map2);
+        return resultList;
+    }
+
+    /**
      * 分页
      */
     @Override
@@ -213,7 +256,6 @@ public class MenuServiceImpl implements MenuService {
                 setMenuAndRole(menu.getId(), roleId);
             }
         }
-
         //3 更新菜单表数据
         //获取数据库中该菜单的信息
         Menu menuInDb = menuDao.findById(menu.getId());
@@ -221,7 +263,6 @@ public class MenuServiceImpl implements MenuService {
         Integer parentMenuId = menuInDb.getParentMenuId();
         //获取目标父菜单
         Menu targetParentMenu = menuDao.findById(menu.getParentMenuId());
-
         if (parentMenuId != null) {
             //编辑的是子菜单
             //查询要编辑的菜单是否有子菜单
@@ -241,6 +282,20 @@ public class MenuServiceImpl implements MenuService {
         }else {
             //编辑的是一级菜单
             changeChildMenu(targetParentMenu, menu);
+            //查询要编辑的菜单是否有子菜单
+            List<Menu> childrenByParentId = menuDao.findChildrenByParentId(menu.getId());
+            if (childrenByParentId != null && childrenByParentId.size() > 0) {
+                //要编辑的菜单有子菜单
+                //a 先处理自身
+                changeChildMenu(targetParentMenu, menu);
+                //b 再处理子菜单
+                for (Menu child : childrenByParentId) {
+                    changeChildMenu(menu, child);
+                }
+            } else {
+                //要编辑的菜单没有子菜单
+                changeChildMenu(targetParentMenu, menu);
+            }
         }
     }
 
@@ -270,7 +325,7 @@ public class MenuServiceImpl implements MenuService {
                     //优先级改变了，更新优先级
                     for (Menu menuChild : menuChildren) {
                         Integer childPriority = menuChild.getPriority();
-                        if (childPriority > child.getPriority()) {
+                        if (childPriority >= child.getPriority()) {
                             //更新优先级
                             menuChild.setPriority(childPriority + 1);
                             //更新path
@@ -284,7 +339,7 @@ public class MenuServiceImpl implements MenuService {
                 //父菜单的子菜单中不包含被编辑的菜单
                 for (Menu menuChild : menuChildren) {
                     Integer childPriority = menuChild.getPriority();
-                    if (childPriority > child.getPriority()) {
+                    if (childPriority >= child.getPriority()) {
                         //更新优先级
                         menuChild.setPriority(childPriority + 1);
                         //更新path
