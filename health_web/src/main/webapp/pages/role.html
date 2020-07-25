@@ -59,7 +59,6 @@
                           @keyup.enter.native="handleFilter"></el-input>
                 <el-button @click="findPage()" class="dalfBut">查询</el-button>
                 <el-button type="primary" class="butT" @click="handleCreate()">新建</el-button>
-            </div>
             <el-table size="small" current-row-key="id" :data="dataList" stripe highlight-current-row>
                 <el-table-column type="index" align="center" label="序号"></el-table-column>
                 <el-table-column prop="name" label="名称" align="center"></el-table-column>
@@ -599,6 +598,20 @@
                             axios.get("/role/findPermissionIdsByRoleId.do?roleId=" + row.id).then(res => {
                                 //后台返回的List<Integer> [28,29,30]
                                 this.permissionIds = res.data;//回显的菜单项勾选
+                            })
+                        }),
+                        //查询所有用户
+                        //查询所有用户
+                        axios.get("/user/findAll.do").then(res => {
+                            this.tableData2 = res.data.data;//回显所有用户数据
+                            this.$message({
+                                message: res.data.message,
+                                type: 'success'
+                            });
+                            // 关联的菜单项   根据角色id 查询菜单项ids
+                            axios.get("/role/findUserIdsByRoleId.do?roleId=" + row.id).then(res => {
+                                //后台返回的List<Integer> [28,29,30]
+                                this.userIds = res.data;//回显的菜单项勾选
                             })
                         })
                     })
