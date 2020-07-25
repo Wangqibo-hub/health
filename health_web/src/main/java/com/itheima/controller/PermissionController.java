@@ -125,4 +125,26 @@ public class PermissionController {
         }
         return roleIds;
     }
+
+    /**
+     * 新增、编辑权限时异步校验权限名
+     * @param permission
+     * @return
+     */
+    @RequestMapping("/verifyPermissionName")
+    public Result verifyPermissionName(@RequestBody Permission permission){
+        Result result = permissionService.verifyPermissionName(permission);
+        return result;
+    }
+
+    /**
+     * 新增、编辑权限时异步校验权限码
+     * @param permission
+     * @return
+     */
+    @RequestMapping("/verifyPermissionKeyword")
+    public Result verifyPermissionKeyword(@RequestBody Permission permission){
+        Result result = permissionService.verifyPermissionKeyword(permission);
+        return result;
+    }
 }

@@ -90,14 +90,14 @@
                                             <el-row>
                                                 <el-col :span="12">
                                                     <el-form-item label="名称" prop="name">
-                                                        <el-input v-model="formData.name"/>
+                                                        <el-input @change="verifyPermissionName()" v-model="formData.name"/>
                                                     </el-form-item>
                                                 </el-col>
                                             </el-row>
                                             <el-row>
                                                 <el-col :span="12">
                                                     <el-form-item label="权限码" prop="keyword">
-                                                        <el-input v-model="formData.keyword"/>
+                                                        <el-input @change="verifyPermissionKeyword()" v-model="formData.keyword"/>
                                                     </el-form-item>
                                                 </el-col>
                                             </el-row>
@@ -153,14 +153,14 @@
                                             <el-row>
                                                 <el-col :span="12">
                                                     <el-form-item label="名称">
-                                                        <el-input v-model="formData.name"/>
+                                                        <el-input @change="verifyPermissionName()" v-model="formData.name"/>
                                                     </el-form-item>
                                                 </el-col>
                                             </el-row>
                                             <el-row>
                                                 <el-col :span="12">
                                                     <el-form-item label="权限码">
-                                                        <el-input v-model="formData.keyword"/>
+                                                        <el-input @change="verifyPermissionKeyword()" v-model="formData.keyword"/>
                                                     </el-form-item>
                                                 </el-col>
                                             </el-row>
@@ -237,6 +237,34 @@
                 this.findPage();
             },
             methods: {
+                //新增、编辑权限表单时,异步请求,校验权限名存在
+                verifyPermissionName() {
+                    //发送异步请求,进行校验
+                    axios.post("/permission/verifyPermissionName.do?", this.formData).then(res => {
+                        this.$message({
+                            message: res.data.message,
+                            type: res.data.flag ? 'success' : 'error'
+                        });
+                        if (!res.data.flag) {
+                            this.formData.name = null;
+                            //this.formData.keyword = null;
+                        }
+                    })
+                },
+                //新增、编辑权限表单时,异步请求,校验权限码存在
+                verifyPermissionKeyword() {
+                    //发送异步请求,进行校验
+                    axios.post("/permission/verifyPermissionKeyword.do?", this.formData).then(res => {
+                        this.$message({
+                            message: res.data.message,
+                            type: res.data.flag ? 'success' : 'error'
+                        });
+                        if (!res.data.flag) {
+                            //this.formData.name = null;
+                            this.formData.keyword = null;
+                        }
+                    })
+                },
                 //编辑
                 handleEdit() {
                     //校验表单输入项是否合法
