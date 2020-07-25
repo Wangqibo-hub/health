@@ -57,6 +57,8 @@ public class MenuController {
                 }
             }
             return new Result(true, MessageConstant.ADD_MENU_SUCCESS);
+        } catch (RuntimeException e){
+            return new Result(false, e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(false, MessageConstant.ADD_MENU_FAIL3);

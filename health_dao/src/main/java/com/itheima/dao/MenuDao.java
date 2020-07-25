@@ -90,6 +90,8 @@ public interface MenuDao {
 
     Menu findByMenuName(String menuName);
 
+    List<Menu> findfirstMenu();
+
     /**
     * @Description: 按等级查询菜单
     * @Param: [level]
