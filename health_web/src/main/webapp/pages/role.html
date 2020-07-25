@@ -55,7 +55,7 @@
     <div class="app-container">
         <div class="box">
             <div class="filter-container">
-                <el-input placeholder="名称/描述" v-model="pagination.queryString" style="width: 200px;" class="filter-item"
+                <el-input placeholder="名称/关键词" v-model="pagination.queryString" style="width: 200px;" class="filter-item"
                           @keyup.enter.native="handleFilter"></el-input>
                 <el-button @click="findPage()" class="dalfBut">查询</el-button>
                 <el-button type="primary" class="butT" @click="handleCreate()">新建</el-button>
@@ -118,7 +118,7 @@
                                         <tr>
                                             <th>选择</th>
                                             <th>菜单名称</th>
-                                            <th>一级菜单/二级菜单</th>
+                                            <th>菜单等级</th>
                                             <th>优先级</th>
                                         </tr>
                                         </thead>
@@ -128,7 +128,7 @@
                                                 <input :id="c.id" v-model="menuIds" type="checkbox" :value="c.id">
                                             </td>
                                             <td><label :for="c.id">{{c.name}}</label></td>
-                                            <td><label :for="c.id">{{c.path}}</label></td>
+                                            <td><label :for="c.id">{{c.level}}</label></td>
                                             <td><label :for="c.id">{{c.priority}}</label></td>
                                         </tr>
                                         </tbody>
@@ -166,7 +166,7 @@
                                         <tr>
                                             <th>选择</th>
                                             <th>姓名</th>
-                                            <th>状态</th>
+                                            <th>是否禁用</th>
                                             <th>手机号</th>
                                         </tr>
                                         </thead>
@@ -228,7 +228,7 @@
                                         <tr>
                                             <th>选择</th>
                                             <th>菜单名称</th>
-                                            <th>一级菜单/二级菜单</th>
+                                            <th>菜单等级</th>
                                             <th>优先级</th>
                                         </tr>
                                         </thead>
@@ -238,7 +238,7 @@
                                                 <input :id="c.id" v-model="menuIds" type="checkbox" :value="c.id">
                                             </td>
                                             <td><label :for="c.id">{{c.name}}</label></td>
-                                            <td><label :for="c.id">{{c.path}}</label></td>
+                                            <td><label :for="c.id">{{c.level}}</label></td>
                                             <td><label :for="c.id">{{c.priority}}</label></td>
                                         </tr>
                                         </tbody>
@@ -276,7 +276,7 @@
                                         <tr>
                                             <th>选择</th>
                                             <th>姓名</th>
-                                            <th>状态</th>
+                                            <th>是否禁用</th>
                                             <th>手机号</th>
                                         </tr>
                                         </thead>

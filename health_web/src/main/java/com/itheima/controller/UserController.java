@@ -161,9 +161,9 @@ public class UserController {
             List<com.itheima.pojo.User> userList = userService.findAll();
             for (com.itheima.pojo.User user : userList) {
                 if (user.getStation().equals("1")){
-                    user.setStation("是");
-                }else {
                     user.setStation("否");
+                }else {
+                    user.setStation("是");
                 }
             }
             return new Result(true, MessageConstant.QUERY_USER_SUCCESS, userList);
