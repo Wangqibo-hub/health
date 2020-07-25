@@ -69,4 +69,6 @@ public interface RoleDao {
     int findRoleExist(@Param("roleName") String roleName);
 
     Role findRoleByName(@Param("name")String name);
+
+    void deleteRoleAndRel(Integer id);
 }

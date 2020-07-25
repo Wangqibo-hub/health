@@ -159,7 +159,29 @@ public class RoleController {
             return new Result(false, MessageConstant.DELETE_ROLE_FAIL);
         }
     }
-
+    /**
+     * 根据角色id继续删除角色
+     */
+    @RequestMapping(value = "/deleteRoleAndRel", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('ROLE_DELETE')")
+    public Result deleteRoleAndRel(Integer id) {
+        try {
+            //根据角色查询用户列表（一定要在第一行）
+            List<User> userList = userService.findUserByRoleId(id);
+            //调用service删除角色
+            roleService.deleteRoleAndRel(id);
+            //更新redis中用户色菜单信息
+            if (userList != null && userList.size() > 0) {
+                for (User user : userList) {
+                    menuService.generateMenuListInRedis(user.getUsername());
+                }
+            }
+            return new Result(true, MessageConstant.DELETE_ROLE_SUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(false, MessageConstant.DELETE_ROLE_FAIL);
+        }
+    }
 
     /**
      * 查询所有角色
