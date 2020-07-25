@@ -126,6 +126,49 @@ public class MenuServiceImpl implements MenuService {
     }
 
     /**
+    * @Description: 获取所有父菜单
+    * @Param: []
+    * @Return: java.util.List<java.util.Map<java.lang.String,java.lang.Object>>
+    * @Author: Wangqibo
+    * @Date: 2020/7/25/0025
+    */
+    @Override
+    public List<Map<String, Object>> getParentMenu() {
+        List<Map<String,Object>> resultList = new ArrayList<>();
+        //封装所有一级菜单
+        Map<String, Object> map1 = new HashMap<>();
+        map1.put("label", "一级菜单");
+        List<Menu> menuList4One = menuDao.findMenuByLevel(1);
+        if (menuList4One != null && menuList4One.size() > 0) {
+            List<Map<String, Object>> mapList = new ArrayList<>();
+            for (Menu menu : menuList4One) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("menuId", menu.getId());
+                map.put("menuName", menu.getName());
+                mapList.add(map);
+            }
+            map1.put("options", mapList);
+        }
+        //封装所有二级菜单
+        List<Menu> menuList4Two = menuDao.findMenuByLevel(2);
+        Map<String, Object> map2 = new HashMap<>();
+        map2.put("label", "二级菜单");
+        if (menuList4Two != null && menuList4Two.size() > 0) {
+            List<Map<String, Object>> mapList = new ArrayList<>();
+            for (Menu menu : menuList4Two) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("menuId", menu.getId());
+                map.put("menuName", menu.getName());
+                mapList.add(map);
+            }
+            map2.put("options", mapList);
+        }
+        resultList.add(map1);
+        resultList.add(map2);
+        return resultList;
+    }
+
+    /**
      * 分页
      */
     @Override

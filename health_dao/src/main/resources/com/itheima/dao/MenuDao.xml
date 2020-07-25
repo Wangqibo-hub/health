@@ -117,5 +117,9 @@
     <select id="findByMenuName" resultType="com.itheima.pojo.Menu">
         select * from t_menu where name = #{menuName}
     </select>
+    <!--按等级查询菜单-->
+    <select id="findMenuByLevel" resultType="com.itheima.pojo.Menu" parameterType="int">
+       select * from t_menu where level = #{level}
+    </select>
 
 </mapper>

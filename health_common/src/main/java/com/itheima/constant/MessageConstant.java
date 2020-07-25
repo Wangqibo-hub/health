@@ -13,8 +13,6 @@ public class MessageConstant {
     public static final String DELETE_USER_SUCCESS = "删除用户成功";
     public static final String ADD_USER_FAIL2 = "用户已存在,请重新添加用户";
     public static final String EDIT_USER_FAIL2 = "用户名已存在,请重新编辑用户名";
-
-    //
     public static final String ADD_MENU_SUCCESS = "新增菜单成功";
     public static final String DELETE_PERMISSION_FAIL2 = "删除权限失败";
     public static final String ADD_MENU_FAIL = "新增菜单失败";
@@ -25,7 +23,6 @@ public class MessageConstant {
     public static final String ADD_PERMISSION_FAIL = "新增权限失败";
     public static final String ADD_PERMISSION_FAIL2 = "此权限名已存在，新增权限失败";
     public static final String ADD_PERMISSION_FAIL3 = "此权限码已存在，新增权限失败";
-
     public static final String EDIT_PERMISSION_SUCCESS = "编辑权限成功";
     public static final String EDIT_PERMISSION_FAIL = "编辑权限失败";
     public static final String QUERY_PERMISSION_SUCCESS = "查询权限成功";
@@ -121,4 +118,6 @@ public class MessageConstant {
     public static final String GET_SEX_REPORT_FAIL = "获取会员性别数据失败";
     public static final String GET_SETMEAL_LIST_SUCCESS = "查询套餐列表数据成功";
     public static final String GET_SETMEAL_LIST_FAIL = "查询套餐列表数据失败";
+    public static final String GET_PARENTMENU_LIST_SUCCESS = "查询父菜单数据成功";
+    public static final String GET_PARENTMENU_LIST_FAIL = "查询父菜单数据失败";
 }
