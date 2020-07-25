@@ -97,6 +97,10 @@
     <select id="findUserIdsByRoleId" resultType="java.lang.Integer">
         select user_id from t_user_role where role_id=#{roleId}
     </select>
+    <select id="findRoleByName" resultType="com.itheima.pojo.Role">
+        select * from t_role where name=#{name} or keyword
+        =#{name}
+    </select>
 
     <!--添加角色-->
     <insert id="add" parameterType="com.itheima.pojo.Role">
