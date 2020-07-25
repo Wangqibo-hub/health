@@ -89,4 +89,6 @@ public interface MenuDao {
     int findByLinkUrl(String linkUrl);
 
     Menu findByMenuName(String menuName);
+
+    List<Menu> findfirstMenu();
 }
