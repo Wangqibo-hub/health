@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import redis.clients.jedis.JedisPool;
-import java.util.ArrayList;
+
 import java.util.List;
 
 /**
@@ -39,7 +39,6 @@ public class UserController {
 
     /**
      * 获取用户名 从SecurityContextHolder获取用户数据
-     *
      * @return
      */
     @RequestMapping(value = "/getUserName", method = RequestMethod.GET)
@@ -55,7 +54,6 @@ public class UserController {
 
     /**
      * 新增用户
-     *
      * @param user
      * @param roleIds
      * @return
@@ -80,7 +78,6 @@ public class UserController {
 
     /**
      * 用户分页查询
-     *
      * @param queryPageBean
      * @return
      */
@@ -144,7 +141,6 @@ public class UserController {
 
     /**
      * 根据用户id删除用户
-     *
      * @param id
      * @return
      */
