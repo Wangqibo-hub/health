@@ -420,39 +420,10 @@
                     }).then(() => {
                         //发送删除请求
                         axios.get("/menu/deleteById.do?id="+row.id).then(res=>{
-                            if (res.data.flag){
-                                this.$message({
-                                    type: 'success',
-                                    message: res.data.message
-                                });
-                            }else {
-                                if (res.data.message=='删除菜单失败'){
-                                    this.$message({
-                                        type: 'error',
-                                        message: res.data.message
-                                    });
-                                }else {
-                                    this.$confirm('该菜单项已关联相应角色, 是否继续?', '提示', {
-                                        confirmButtonText: '确定',
-                                        cancelButtonText: '取消',
-                                        type: 'warning'
-                                    }).then(() => {
-                                        //发送异步请求删除该项菜单及其与角色的关联信息
-                                        axios.post("/menu/deleteMenuAndRelWithRole.do?id="+row.id).then(res=>{
-                                            this.$message({
-                                                message: res.data.message,
-                                                type: res.data.flag ? 'success':'error'
-                                            });
-                                            this.findPage();//分页查询
-                                        })
-                                    }).catch(()=>{
-                                        this.$message({
-                                            type: 'info',
-                                            message: '已取消删除'
-                                        });
-                                    })
-                                }
-                            }
+                            this.$message({
+                                message: res.data.message,
+                                type: res.data.flag ? 'success':'error'
+                            });
                             this.findPage();//分页查询
                         }).catch(error=>{
                             this.showMessage(error);

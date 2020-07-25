@@ -127,8 +127,11 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void deleteById(Integer id) {
-        //1.删除用户角色中间表
-        userDao.deleteRelByUserId(id);
+        //1.根据用户id查询用户角色中间表（count(*)）
+        int count = userDao.findCountRoleByUserId(id);
+        if (count > 0) {
+            throw new RuntimeException(MessageConstant.DELETE_CHECKITEM_FAIL2);
+        }
         //2.根据用户id删除用户记录
         userDao.deleteById(id);
     }
