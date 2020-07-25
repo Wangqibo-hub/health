@@ -64,4 +64,13 @@ public interface MenuService {
     * @Date: 2020/7/25/0025
     */
     List<Map<String, Object>> getParentMenu();
+
+    /**
+    * @Description: 删除菜单及其子菜单
+    * @Param: [id]
+    * @Return: void
+    * @Author: Wangqibo
+    * @Date: 2020/7/25/0025
+    */
+    void deleteMenuAndChildren(Integer id);
 }

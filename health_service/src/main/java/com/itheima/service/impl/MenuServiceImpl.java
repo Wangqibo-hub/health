@@ -164,6 +164,11 @@ public class MenuServiceImpl implements MenuService {
      */
     @Override
     public void deleteMenuAndRelWithRole(Integer id) {
+        //查询是否有子菜单
+        List<Menu> children = menuDao.findChildrenByParentId(id);
+        if (children != null && children.size() > 0) {
+            throw new RuntimeException(MessageConstant.DELETE_MENU_FAIL_CHILDREN);
+        }
         //删除中间表关系
         menuDao.deleteRoleMenuIdByMenuId(id);
         //删除菜单信息
@@ -398,6 +403,25 @@ public class MenuServiceImpl implements MenuService {
             map.put("menuId", menuId);
             menuDao.setMenuAndRole(map);
         }
+    }
+
+    /**
+    * @Description: 删除菜单及其子菜单
+    * @Param: [id]
+    * @Return: void
+    * @Author: Wangqibo
+    * @Date: 2020/7/25/0025
+    */
+    @Override
+    public void deleteMenuAndChildren(Integer id) {
+        //获取该菜单的所有子菜单
+        List<Menu> children = menuDao.findChildrenByParentId(id);
+        //删除子菜单及其与角色的关联关系
+        for (Menu child : children) {
+            deleteMenuAndRelWithRole(child.getId());
+        }
+        //删除该菜单及其与角色的关联关系
+        deleteMenuAndRelWithRole(id);
     }
 }
 

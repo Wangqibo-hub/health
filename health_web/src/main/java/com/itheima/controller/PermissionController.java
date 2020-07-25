@@ -45,7 +45,6 @@ public class PermissionController {
      * @return
      */
     @RequestMapping("/add")
-    //@PreAuthorize("hasAuthority('CHECKITEM_ADD')")//权限校验
     public Result add(@RequestBody Permission permission,Integer[] roleIds){
         try {
             permissionService.add(permission,roleIds);
@@ -95,9 +94,28 @@ public class PermissionController {
      * @return
      */
     @RequestMapping("/deleteById")
+    @PreAuthorize("hasAnyAuthority('')")
     public Result deleteById(Integer id){
         Result result = permissionService.deleteById(id);
         return result;
+    }
+
+    /**
+    * @Description: 直接删除权限及其关联的角色关系
+    * @Param: [id]
+    * @Return: com.itheima.entity.Result
+    * @Author: Wangqibo
+    * @Date: 2020/7/25/0025
+    */
+    @RequestMapping(value = "/deletePermissionAndRel",method = RequestMethod.POST)
+    public Result deletePermissionAndRel(Integer id){
+        try {
+            permissionService.deletePermissionAndRel(id);
+            return new Result(true, MessageConstant.DELETE_PERMISSION_SUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(false, MessageConstant.DELETE_PERMISSION_FAIL2);
+        }
     }
 
     /**

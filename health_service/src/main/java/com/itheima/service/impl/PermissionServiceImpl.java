@@ -203,4 +203,15 @@ public class PermissionServiceImpl implements PermissionService{
         return new Result(true,MessageConstant.ADD_PERMISSION_SUCCESS3);
     }
 
+    /**
+    * @Description: 删除权限及其关联的角色关系
+    * @Param: [id]
+    * @Return: void
+    * @Author: Wangqibo
+    * @Date: 2020/7/25/0025
+    */
+    @Override
+    public void deletePermissionAndRel(Integer id) {
+        permissionDao.deletePermissionRelRoleByPermissionId(id);
+    }
 }
