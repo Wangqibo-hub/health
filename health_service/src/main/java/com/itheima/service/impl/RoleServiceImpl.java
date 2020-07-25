@@ -168,23 +168,4 @@ public class RoleServiceImpl implements RoleService {
     public List<Integer> findPermissionIdsByRoleId(Integer roleId) {
         return roleDao.findPermissionIdsByRoleId(roleId);
     }
-
-    /**
-    * @Description: 删除角色及其关联关系
-    * @Param: [id]
-    * @Return: void
-    * @Author: Wangqibo
-    * @Date: 2020/7/24/0024
-    */
-    @Override
-    public void deleteRoleAndRel(Integer id) {
-        //删除菜单中间表关系
-        roleDao.deleteRelByRoleById(id);
-        //删除权限中间表关系
-        roleDao.deletePermissionRelByRoleById(id);
-        //删除用户中间表关系
-        roleDao.deleteUserRelByRoleById(id);
-        //删除角色信息
-        roleDao.deleteById(id);
-    }
 }

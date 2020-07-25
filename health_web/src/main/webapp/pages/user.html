@@ -64,6 +64,7 @@
             <el-table size="small" current-row-key="id" :data="dataList" stripe highlight-current-row>
                 <el-table-column type="index" align="center" label="序号"></el-table-column>
                 <el-table-column prop="username" label="用户名" align="center"></el-table-column>
+<!--                <el-table-column prop="password" label="密码" align="center"></el-table-column>-->
                 <el-table-column label="性别" align="center">
                     <template slot-scope="scope">
                         <span>{{scope.row.gender == '2' ? '女' : '男'}}</span>
@@ -138,21 +139,7 @@
                                     <el-row>
                                         <el-col :span="24">
                                             <el-form-item label="电话" prop="telephone">
-                                                <div class="input-row">
-                                                    <div class="loginInput">
-                                                        <input v-model="formData.telephone" type="text" placeholder="请输入电话号码">
-                                                        <input id="validateCodeButton" @click="sendValidateCode()" type="button" style="font-size: 12px" value="获取验证码">
-                                                    </div>
-                                                </div>
-                                            </el-form-item>
-                                        </el-col>
-                                        <el-col :span="12">
-                                            <el-form-item label="验证码">
-                                                <div class="input-row">
-                                                    <div class="loginInput">
-                                                        <input v-model="formData.validateCode" style="width:80%" id='password' type="password" placeholder="请输入验证码">
-                                                    </div>
-                                                </div>
+                                                <el-input v-model="formData.telephone" placeholder="请输入电话号码"></el-input>
                                             </el-form-item>
                                         </el-col>
                                     </el-row>
@@ -335,22 +322,6 @@
             this.findPage();
         },
         methods: {
-            //发送验证码
-            sendValidateCode(){
-                var telephone = this.formData.telephone;
-                if (!checkTelephone(telephone)) {
-                    this.$message.error('请输入正确的电话号码');
-                    return false;
-                }
-                validateCodeButton = $("#validateCodeButton")[0];
-                clock = window.setInterval(doLoop, 1000); //一秒执行一次
-                axios.post("/validateCode/send4Login.do?telephone=" + telephone).then((response) => {
-                    if(!response.data.flag){
-                        //验证码发送失败
-                        this.$message.error('验证码发送失败，请检查电话号码输入是否正确');
-                    }
-                });
-            },
             //编辑
             handleEdit() {
                 //校验表单输入项是否合法

@@ -23,15 +23,6 @@ public interface RoleService {
 
     List<Integer> findPermissionIdsByRoleId(Integer roleId);
 
-    /**
-    * @Description: 删除角色及其关联关系
-    * @Param: [id]
-    * @Return: void
-    * @Author: Wangqibo
-    * @Date: 2020/7/24/0024
-    */
-    void deleteRoleAndRel(Integer id);
-
     void add(Role role, Integer[] menuIds, Integer[] permissionIds, Integer[] userIds);
 
     List<Integer> findUserIdsByRoleId(Integer roleId);
