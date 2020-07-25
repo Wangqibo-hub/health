@@ -600,6 +600,20 @@
                                 //后台返回的List<Integer> [28,29,30]
                                 this.permissionIds = res.data;//回显的菜单项勾选
                             })
+                        }),
+                        //查询所有用户
+                        //查询所有用户
+                        axios.get("/user/findAll.do").then(res => {
+                            this.tableData2 = res.data.data;//回显所有用户数据
+                            this.$message({
+                                message: res.data.message,
+                                type: 'success'
+                            });
+                            // 关联的菜单项   根据角色id 查询菜单项ids
+                            axios.get("/role/findUserIdsByRoleId.do?roleId=" + row.id).then(res => {
+                                //后台返回的List<Integer> [28,29,30]
+                                this.userIds = res.data;//回显的菜单项勾选
+                            })
                         })
                     })
                 },

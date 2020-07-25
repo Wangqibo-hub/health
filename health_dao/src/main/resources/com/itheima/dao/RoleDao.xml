@@ -48,8 +48,7 @@
     <delete id="deletePermissionRelByRoleById">
         delete from t_role_permission where role_id = #{id}
     </delete>
-    <!--删除用户与角色的关联关系-->
-    <delete id="deleteUserRelByRoleById" parameterType="int">
+    <delete id="deleteUserRelByRoleById">
         delete from t_user_role where role_id = #{id}
     </delete>
 
@@ -97,6 +96,10 @@
     </select>
     <select id="findUserIdsByRoleId" resultType="java.lang.Integer">
         select user_id from t_user_role where role_id=#{roleId}
+    </select>
+    <select id="findRoleByName" resultType="com.itheima.pojo.Role">
+        select * from t_role where name=#{name} or keyword
+        =#{name}
     </select>
 
     <!--添加角色-->

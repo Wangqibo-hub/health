@@ -105,7 +105,7 @@ public class MenuServiceImpl implements MenuService {
         Menu menu1 = menuDao.findByMenuName(menuName);
         if (roleIds != null && roleIds.length > 0) {
             for (Integer roleId : roleIds) {
-                setMenuAndRole(menu1.getId(), roleId);
+                setMenuAndRole(menu1.getId(),roleId);
             }
         }
     }

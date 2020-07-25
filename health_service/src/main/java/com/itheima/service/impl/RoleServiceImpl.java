@@ -111,6 +111,11 @@ public class RoleServiceImpl implements RoleService {
         return roleDao.findRoleExist(roleName);
     }
 
+    @Override
+    public Role findRoleByName(String name) {
+        return roleDao.findRoleByName(name);
+    }
+
     private void setRoleAndMenu(Integer roleId, Integer[] menuIds) {
         if(menuIds != null && menuIds.length>0){
             for (Integer menuId : menuIds) {
@@ -157,7 +162,7 @@ public class RoleServiceImpl implements RoleService {
         //5.根据页面传入的菜单ids 和 角色重新建立关系
         setRoleAndPermission(role.getId(),permissionIds);
         //6.根据页面传入的菜单ids 和 角色重新建立关系
-        setRoleAndUser(role.getId(),permissionIds);
+        setRoleAndUser(role.getId(),userIds);
         //7.根据角色id 更新角色数据
         roleDao.edit(role);
     }
@@ -167,24 +172,5 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public List<Integer> findPermissionIdsByRoleId(Integer roleId) {
         return roleDao.findPermissionIdsByRoleId(roleId);
-    }
-
-    /**
-    * @Description: 删除角色及其关联关系
-    * @Param: [id]
-    * @Return: void
-    * @Author: Wangqibo
-    * @Date: 2020/7/24/0024
-    */
-    @Override
-    public void deleteRoleAndRel(Integer id) {
-        //删除菜单中间表关系
-        roleDao.deleteRelByRoleById(id);
-        //删除权限中间表关系
-        roleDao.deletePermissionRelByRoleById(id);
-        //删除用户中间表关系
-        roleDao.deleteUserRelByRoleById(id);
-        //删除角色信息
-        roleDao.deleteById(id);
     }
 }
