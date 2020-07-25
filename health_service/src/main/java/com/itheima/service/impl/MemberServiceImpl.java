@@ -125,7 +125,7 @@ public class MemberServiceImpl implements MemberService {
         int monthsDiff = Math.abs(yearInterval * 12 + monthInterval);
         //遍历获取每一个月年月 ，并将年月放入List<String>集合中
         List<String>  months = new ArrayList<>();
-        for (int i = 1;i<=monthsDiff;i++){
+        for (int i =0;i<=monthsDiff;i++){
             months.add(new SimpleDateFormat("yyyy-MM").format(c1.getTime()));
             c1.add(Calendar.MONTH,1);
         }
