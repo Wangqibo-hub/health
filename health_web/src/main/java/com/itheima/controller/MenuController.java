@@ -45,6 +45,19 @@ public class MenuController {
     public Result add(@RequestBody Menu menu,Integer[] roleIds) {
         try {
             menuService.add(menu,roleIds);
+            //更新redis中用户的菜单信息
+            if (roleIds != null && roleIds.length > 0) {
+                for (Integer roleId : roleIds) {
+                    //获取域该角色关联的所有用户
+                    List<User> userList = userService.findUserByRoleId(roleId);
+                    //更新redis中用户的菜单信息
+                    if (userList != null && userList.size() > 0) {
+                        for (User user : userList) {
+                            menuService.generateMenuListInRedis(user.getUsername());
+                        }
+                    }
+                }
+            }
             return new Result(true, MessageConstant.ADD_MENU_SUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,10 +82,10 @@ public class MenuController {
     @PreAuthorize("hasAnyAuthority('MENU_DELETE')")
     public Result deleteById(Integer id) {
         try {
+            List<User> userList = userService.findUserListByMenuId(id);
             menuService.deleteById(id);
             //菜单删除成功后，更新redis中用户的菜单信息
             //获取该菜单关联的所有用户
-            List<User> userList = userService.findUserListByMenuId(id);
             if (userList != null && userList.size() > 0) {
                 //更新redis中这些用户的菜单信息
                 for (User user : userList) {
@@ -129,7 +142,16 @@ public class MenuController {
     @PreAuthorize("hasAnyAuthority('MENU_EDIT')")
     public Result edit(@RequestBody Menu menu,Integer[] roleIds) {
         try {
+            List<User> userList = userService.findUserListByMenuId(menu.getId());
             menuService.edit(menu,roleIds);
+            //菜单修改成功后，更新redis中用户的菜单信息
+            //获取该菜单关联的所有用户
+            if (userList != null && userList.size() > 0) {
+                //更新redis中这些用户的菜单信息
+                for (User user : userList) {
+                    menuService.generateMenuListInRedis(user.getUsername());
+                }
+            }
             return new Result(true, MessageConstant.EDIT_MENU_SUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
