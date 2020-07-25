@@ -129,7 +129,6 @@ public class UserController {
                     return new Result(false, MessageConstant.EDIT_USER_FAIL2);
                 }
             }
-
             userService.edit(user, roleIds);
             //更新redis中该用户的菜单信息
             menuService.generateMenuListInRedis(user.getUsername());

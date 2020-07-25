@@ -45,7 +45,20 @@ public class MenuController {
     public Result add(@RequestBody Menu menu,Integer[] roleIds) {
         try {
             menuService.add(menu,roleIds);
+            //更新redis中的数据（勿删！！！！！！！）
+            if (roleIds != null && roleIds.length > 0) {
+                for (Integer roleId : roleIds) {
+                    List<User> userList = userService.findUserByRoleId(roleId);
+                    if (userList != null && userList.size() > 0) {
+                        for (User user : userList) {
+                            menuService.generateMenuListInRedis(user.getUsername());
+                        }
+                    }
+                }
+            }
             return new Result(true, MessageConstant.ADD_MENU_SUCCESS);
+        } catch (RuntimeException e){
+            return new Result(false, e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(false, MessageConstant.ADD_MENU_FAIL3);
@@ -69,10 +82,10 @@ public class MenuController {
     @PreAuthorize("hasAnyAuthority('MENU_DELETE')")
     public Result deleteById(Integer id) {
         try {
+            //获取该菜单关联的所有用户（这一行一定要在第一行）
+            List<User> userList = userService.findUserListByMenuId(id);
             menuService.deleteById(id);
             //菜单删除成功后，更新redis中用户的菜单信息
-            //获取该菜单关联的所有用户
-            List<User> userList = userService.findUserListByMenuId(id);
             if (userList != null && userList.size() > 0) {
                 //更新redis中这些用户的菜单信息
                 for (User user : userList) {
@@ -112,6 +125,17 @@ public class MenuController {
     public Result edit(@RequestBody Menu menu,Integer[] roleIds) {
         try {
             menuService.edit(menu,roleIds);
+            //更新redis中的数据（勿删！！！！！！！）
+            if (roleIds != null && roleIds.length > 0) {
+                for (Integer roleId : roleIds) {
+                    List<User> userList = userService.findUserByRoleId(roleId);
+                    if (userList != null && userList.size() > 0) {
+                        for (User user : userList) {
+                            menuService.generateMenuListInRedis(user.getUsername());
+                        }
+                    }
+                }
+            }
             return new Result(true, MessageConstant.EDIT_MENU_SUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
@@ -165,6 +189,26 @@ public class MenuController {
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(false, MessageConstant.GET_MENU_FAIL);
+        }
+    }
+
+
+    /**
+    * @Description: 获取所有父菜单信息
+    * @Param: []
+    * @Return: com.itheima.entity.Result
+    * @Author: Wangqibo
+    * @Date: 2020/7/25/0025
+    */
+    @RequestMapping(value = "getParentMenu", method = RequestMethod.GET)
+    public Result getParentMenu() {
+        try {
+            List<Map<String, Object>> parentMenuList =  menuService.getParentMenu();
+            return new Result(true, MessageConstant.GET_PARENTMENU_LIST_SUCCESS, parentMenuList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(false, MessageConstant.GET_PARENTMENU_LIST_FAIL);
+
         }
     }
 }

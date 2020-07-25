@@ -28,8 +28,8 @@
         <selectKey resultType="int" order="AFTER" keyProperty="id">
             SELECT LAST_INSERT_ID()
         </selectKey>
-        insert into t_menu(name,linkUrl,path,priority,icon,description,parentMenuId)
-        values(#{name},#{linkUrl},#{path},#{priority},#{icon},#{description},#{parentMenuId})
+        insert into t_menu(name,path,priority,icon,description,parentMenuId,level)
+        values(#{name},#{path},#{priority},#{icon},#{description},#{parentMenuId},#{level})
     </insert>
 
     <!--根据菜单id从菜单角色中间表删除联系-->
@@ -116,6 +116,15 @@
 
     <select id="findByMenuName" resultType="com.itheima.pojo.Menu">
         select * from t_menu where name = #{menuName}
+    </select>
+    <!--按等级查询菜单-->
+    <select id="findMenuByLevel" resultType="com.itheima.pojo.Menu" parameterType="int">
+       select * from t_menu where level = #{level}
+    </select>
+
+<!--   查询所有1级菜单 -->
+    <select id="findfirstMenu" resultType="com.itheima.pojo.Menu">
+        select * from t_menu where level = 1;
     </select>
 
 </mapper>

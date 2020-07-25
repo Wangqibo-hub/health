@@ -91,22 +91,67 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public void add(Menu menu, Integer[] roleIds) {
         String menuName = menu.getName();
-        String linkUrl = menu.getLinkUrl();
-        int count1 = menuDao.findByLinkUrl(linkUrl);
-        if (count1 > 0) {
-            throw new RuntimeException(MessageConstant.ADD_MENU_FAIL3);
+        Menu byMenuName = menuDao.findByMenuName(menuName);
+        if (byMenuName!=null) {
+            throw new RuntimeException("该菜单名称已经存在");
         }
-        int count = menuDao.findByName(menuName);
-        if (count > 0) {
-            throw new RuntimeException(MessageConstant.ADD_MENU_FAIL3);
-        }
-
-        menuDao.add(menu);
-        Menu menu1 = menuDao.findByMenuName(menuName);
-        if (roleIds != null && roleIds.length > 0) {
-            for (Integer roleId : roleIds) {
-                setMenuAndRole(menu1.getId(),roleId);
+        Integer parentMenuId = menu.getParentMenuId();
+        Integer priority = menu.getPriority();
+        if (parentMenuId==null) {
+            //添加1级菜单 判断1级菜单的优先级
+            List<Menu> menuList =menuDao.findfirstMenu();
+            //查询已存在1级菜单的优先级
+            for (Menu fuMenu : menuList) {
+                Integer priorityExist = fuMenu.getPriority();
+                if (priorityExist >= priority) {
+                    fuMenu.setPriority(priorityExist+1);
+                    //更新父menu的优先级
+                    menuDao.edit(fuMenu);
+                }
             }
+            //添加该菜单
+            menuDao.add(menu);
+        }else {
+            //添加子菜单
+            //根据父菜单id查询父菜单
+            Menu fuMenu = menuDao.findById(parentMenuId);
+            //获取父菜单的path和level
+            String fuPath = fuMenu.getPath();
+            Integer fuLevel = fuMenu.getLevel();
+            //设置新建菜单level
+            menu.setLevel(fuLevel+1);
+            //设置新建菜单的priority 和 level
+            //查询子菜单的集合
+            List<Menu> childrenByParentId = menuDao.findChildrenByParentId(parentMenuId);
+            for (Menu ziMenu : childrenByParentId) {
+                //获取子菜单的优先级
+                Integer priorityExist = ziMenu.getPriority();
+                if (priorityExist >= priority) {
+                    //更新zimenu的优先级
+                    ziMenu.setPriority(priorityExist+1);
+                    //更新子菜单的path
+                    String ziPath = "/" + fuPath + "-" + (ziMenu.getPriority());
+                    ziMenu.setPath(ziPath);
+                    //更新子菜单
+                    menuDao.edit(ziMenu);
+                    //子菜单的子菜单的path修改
+                    //先查询出所有子菜单的子菜单
+                    List<Menu> ziZiMenuList = menuDao.findChildrenByParentId(ziMenu.getId());
+                    if (ziZiMenuList!=null && ziZiMenuList.size()>0) {
+                        for (Menu ziZiMenu : ziZiMenuList) {
+                            //更新子子菜单的path
+                            String ziZiPath = "/" + ziPath + "-" + (ziZiMenu.getPriority());
+                            ziZiMenu.setPath(ziZiPath);
+                            menuDao.edit(ziZiMenu);
+                        }
+                    }
+                }
+                String path = "/" + fuPath + "-" + (menu.getPriority());
+                menu.setPath(path);
+
+                //添加该菜单
+                menuDao.add(menu);
+        }
         }
     }
 
@@ -123,6 +168,49 @@ public class MenuServiceImpl implements MenuService {
         menuDao.deleteRoleMenuIdByMenuId(id);
         //删除菜单信息
         menuDao.deleteById(id);
+    }
+
+    /**
+    * @Description: 获取所有父菜单
+    * @Param: []
+    * @Return: java.util.List<java.util.Map<java.lang.String,java.lang.Object>>
+    * @Author: Wangqibo
+    * @Date: 2020/7/25/0025
+    */
+    @Override
+    public List<Map<String, Object>> getParentMenu() {
+        List<Map<String,Object>> resultList = new ArrayList<>();
+        //封装所有一级菜单
+        Map<String, Object> map1 = new HashMap<>();
+        map1.put("label", "一级菜单");
+        List<Menu> menuList4One = menuDao.findMenuByLevel(1);
+        if (menuList4One != null && menuList4One.size() > 0) {
+            List<Map<String, Object>> mapList = new ArrayList<>();
+            for (Menu menu : menuList4One) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("menuId", menu.getId());
+                map.put("menuName", menu.getName());
+                mapList.add(map);
+            }
+            map1.put("options", mapList);
+        }
+        //封装所有二级菜单
+        List<Menu> menuList4Two = menuDao.findMenuByLevel(2);
+        Map<String, Object> map2 = new HashMap<>();
+        map2.put("label", "二级菜单");
+        if (menuList4Two != null && menuList4Two.size() > 0) {
+            List<Map<String, Object>> mapList = new ArrayList<>();
+            for (Menu menu : menuList4Two) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("menuId", menu.getId());
+                map.put("menuName", menu.getName());
+                mapList.add(map);
+            }
+            map2.put("options", mapList);
+        }
+        resultList.add(map1);
+        resultList.add(map2);
+        return resultList;
     }
 
     /**
@@ -168,7 +256,6 @@ public class MenuServiceImpl implements MenuService {
                 setMenuAndRole(menu.getId(), roleId);
             }
         }
-
         //3 更新菜单表数据
         //获取数据库中该菜单的信息
         Menu menuInDb = menuDao.findById(menu.getId());
@@ -176,7 +263,6 @@ public class MenuServiceImpl implements MenuService {
         Integer parentMenuId = menuInDb.getParentMenuId();
         //获取目标父菜单
         Menu targetParentMenu = menuDao.findById(menu.getParentMenuId());
-
         if (parentMenuId != null) {
             //编辑的是子菜单
             //查询要编辑的菜单是否有子菜单
@@ -196,6 +282,20 @@ public class MenuServiceImpl implements MenuService {
         }else {
             //编辑的是一级菜单
             changeChildMenu(targetParentMenu, menu);
+            //查询要编辑的菜单是否有子菜单
+            List<Menu> childrenByParentId = menuDao.findChildrenByParentId(menu.getId());
+            if (childrenByParentId != null && childrenByParentId.size() > 0) {
+                //要编辑的菜单有子菜单
+                //a 先处理自身
+                changeChildMenu(targetParentMenu, menu);
+                //b 再处理子菜单
+                for (Menu child : childrenByParentId) {
+                    changeChildMenu(menu, child);
+                }
+            } else {
+                //要编辑的菜单没有子菜单
+                changeChildMenu(targetParentMenu, menu);
+            }
         }
     }
 
@@ -225,7 +325,7 @@ public class MenuServiceImpl implements MenuService {
                     //优先级改变了，更新优先级
                     for (Menu menuChild : menuChildren) {
                         Integer childPriority = menuChild.getPriority();
-                        if (childPriority > child.getPriority()) {
+                        if (childPriority >= child.getPriority()) {
                             //更新优先级
                             menuChild.setPriority(childPriority + 1);
                             //更新path
@@ -239,7 +339,7 @@ public class MenuServiceImpl implements MenuService {
                 //父菜单的子菜单中不包含被编辑的菜单
                 for (Menu menuChild : menuChildren) {
                     Integer childPriority = menuChild.getPriority();
-                    if (childPriority > child.getPriority()) {
+                    if (childPriority >= child.getPriority()) {
                         //更新优先级
                         menuChild.setPriority(childPriority + 1);
                         //更新path

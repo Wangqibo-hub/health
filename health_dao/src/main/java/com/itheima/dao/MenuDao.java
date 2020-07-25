@@ -89,4 +89,16 @@ public interface MenuDao {
     int findByLinkUrl(String linkUrl);
 
     Menu findByMenuName(String menuName);
+
+    List<Menu> findfirstMenu();
+
+    /**
+    * @Description: 按等级查询菜单
+    * @Param: [level]
+    * @Return: java.util.List<com.itheima.pojo.Menu>
+    * @Author: Wangqibo
+    * @Date: 2020/7/25/0025
+    */
+    List<Menu> findMenuByLevel(Integer level);
+
 }

@@ -94,4 +94,11 @@ public interface PermissionDao {
      * @return
      */
     int findByCondition(String queryString);
+
+    /**
+     * 新增、编辑权限时异步校验权限名和权限码-查询所有权限（编辑时当前的权限除外）
+     * @param permission
+     * @return
+     */
+    List<Permission> findPermissionAll(Permission permission);
 }
