@@ -73,7 +73,7 @@
                 <el-table-column prop="remark" label="备注" align="center"></el-table-column>
                 <el-table-column prop="station" label="是否禁用" align="center">
                     <template slot-scope="scope">
-                        <span>{{scope.row.station == '1' ? '是' : '否'}}</span>
+                        <span>{{scope.row.station == '1' ? '否' : '是'}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column prop="telephone" label="电话" align="center"></el-table-column>
@@ -100,7 +100,7 @@
                     <template>
                         <el-tabs v-model="activeName" type="card">
                             <el-tab-pane label="基本信息" name="first">
-                                <el-form :rules="rules" ref="dataAddForm" :model="formData" label-position="right" label-width="100px" :rules="rules" ref="dataAddForm" :model="formData">
+                                <el-form :rules="rules" ref="dataAddForm" :model="formData" label-position="right" label-width="100px" ref="dataAddForm">
                                     <el-row>
                                         <el-col :span="12">
                                             <el-form-item label="用户名" prop="username">
@@ -244,8 +244,8 @@
                                         <el-col :span="24">
                                             <el-form-item label="是否禁用" prop="station">
                                                 <el-select v-model="formData.station">
-                                                    <el-option label="是" value="1"></el-option>
-                                                    <el-option label="否" value="0"></el-option>
+                                                    <el-option label="否" value="1"></el-option>
+                                                    <el-option label="是" value="0"></el-option>
                                                 </el-select>
                                             </el-form-item>
                                         </el-col>
