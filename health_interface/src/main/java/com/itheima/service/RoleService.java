@@ -29,4 +29,6 @@ public interface RoleService {
 
 
     int findRoleExist(String roleName);
+
+    Role findRoleByName(String name);
 }

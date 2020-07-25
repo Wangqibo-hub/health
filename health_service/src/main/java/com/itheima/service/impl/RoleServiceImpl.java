@@ -111,6 +111,11 @@ public class RoleServiceImpl implements RoleService {
         return roleDao.findRoleExist(roleName);
     }
 
+    @Override
+    public Role findRoleByName(String name) {
+        return roleDao.findRoleByName(name);
+    }
+
     private void setRoleAndMenu(Integer roleId, Integer[] menuIds) {
         if(menuIds != null && menuIds.length>0){
             for (Integer menuId : menuIds) {
@@ -157,7 +162,7 @@ public class RoleServiceImpl implements RoleService {
         //5.根据页面传入的菜单ids 和 角色重新建立关系
         setRoleAndPermission(role.getId(),permissionIds);
         //6.根据页面传入的菜单ids 和 角色重新建立关系
-        setRoleAndUser(role.getId(),permissionIds);
+        setRoleAndUser(role.getId(),userIds);
         //7.根据角色id 更新角色数据
         roleDao.edit(role);
     }

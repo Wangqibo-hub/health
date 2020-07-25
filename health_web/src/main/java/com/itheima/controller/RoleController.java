@@ -194,9 +194,12 @@ public class RoleController {
      */
     @RequestMapping(value = "/findEditRoleExist", method = RequestMethod.POST)
     public Result findEditRoleExist(@RequestBody Role role) {
-        int count = roleService.findRoleExist(role.getName());
-        if (count>0){
-            return new Result(false, MessageConstant.QUERY_ROLENAME_FAIL);
+        //int count = roleService.findRoleExist(role.getName());
+        Role role1 =roleService.findRoleByName(role.getName());
+        if (role1 !=null){
+            if (role1.getId()!=role.getId()) {
+                return new Result(false, MessageConstant.QUERY_ROLENAME_FAIL);
+            }
         }
         return new Result(true, MessageConstant.QUERY_ROLENAME_SUCCESS);
     }
@@ -205,9 +208,11 @@ public class RoleController {
      */
     @RequestMapping(value = "/findEditRoleKeywordExist", method = RequestMethod.POST)
     public Result findEditRoleKeywordExist(@RequestBody Role role) {
-        int count = roleService.findRoleExist(role.getKeyword());
-        if (count>0){
-            return new Result(false, MessageConstant.QUERY_ROLEKEYWORD_FAIL);
+        Role role1 =roleService.findRoleByName(role.getKeyword());
+        if (role1 !=null){
+            if (role1.getId()!=role.getId()) {
+                return new Result(false, MessageConstant.QUERY_ROLEKEYWORD_FAIL);
+            }
         }
         return new Result(true, MessageConstant.QUERY_ROLENAME_SUCCESS);
     }
