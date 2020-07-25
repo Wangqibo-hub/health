@@ -98,20 +98,10 @@
                                                         <el-input v-model="formData.name"/>
                                                     </el-form-item>
                                                 </el-col>
-<!--                                                <el-col :span="12">-->
-<!--                                                    <el-form-item label="详情页面">-->
-<!--                                                        <el-input v-model="formData.linkURL"/>-->
-<!--                                                    </el-form-item>-->
-<!--                                                </el-col>-->
                                             </el-row>
                                             <el-row>
                                                 <el-col :span="12">
-                                                    <el-form-item label="path" prop = "path">
-                                                        <el-input v-model="formData.path"/>
-                                                    </el-form-item>
-                                                </el-col>
-                                                <el-col :span="12">
-                                                    <el-form-item label="priority" prop="priority">
+                                                    <el-form-item label="优先级" prop="priority">
                                                         <el-input v-model="formData.priority"/>
                                                     </el-form-item>
                                                 </el-col>
@@ -125,13 +115,20 @@
                                             </el-row>
                                             <el-row>
                                                 <el-col :span="12">
-                                                    <el-form-item label="父菜单id">
-                                                        <el-input v-model="formData.parentMenuId"/>
-                                                    </el-form-item>
-                                                </el-col>
-                                                <el-col :span="12">
-                                                    <el-form-item label="等级" prop="level">
-                                                        <el-input v-model="formData.level"/>
+                                                    <el-form-item  label="父菜单">
+                                                        <el-select v-model="formData.parentMenuId" placeholder="请选择">
+                                                            <el-option-group
+                                                                    v-for="group in options"
+                                                                    :key="group.label"
+                                                                    :label="group.label">
+                                                                <el-option
+                                                                        v-for="item in group.options"
+                                                                        :key="item.menuId"
+                                                                        :label="item.menuName"
+                                                                        :value="item.menuId">
+                                                                </el-option>
+                                                            </el-option-group>
+                                                        </el-select>
                                                     </el-form-item>
                                                 </el-col>
                                             </el-row>
@@ -183,20 +180,10 @@
                                                         <el-input v-model="formData.name"/>
                                                     </el-form-item>
                                                 </el-col>
-<!--                                                <el-col :span="12">-->
-<!--                                                    <el-form-item label="详情页面">-->
-<!--                                                        <el-input v-model="formData.linkUrl"/>-->
-<!--                                                    </el-form-item>-->
-<!--                                                </el-col>-->
                                             </el-row>
                                             <el-row>
-<!--                                                <el-col :span="12">-->
-<!--                                                    <el-form-item label="path" prop="path">-->
-<!--                                                        <el-input v-model="formData.path"/>-->
-<!--                                                    </el-form-item>-->
-<!--                                                </el-col>-->
                                                 <el-col :span="12">
-                                                    <el-form-item label="priority" prop="priority">
+                                                    <el-form-item label="优先级" prop="priority">
                                                         <el-input v-model="formData.priority"/>
                                                     </el-form-item>
                                                 </el-col>
@@ -210,15 +197,22 @@
                                             </el-row>
                                             <el-row>
                                                 <el-col :span="12">
-                                                    <el-form-item label="父菜单id">
-                                                        <el-input v-model="formData.parentMenuId"/>
+                                                    <el-form-item  label="父菜单">
+                                                        <el-select v-model="formData.parentMenuId" placeholder="请选择">
+                                                            <el-option-group
+                                                                    v-for="group in options"
+                                                                    :key="group.label"
+                                                                    :label="group.label">
+                                                                <el-option
+                                                                        v-for="item in group.options"
+                                                                        :key="item.menuId"
+                                                                        :label="item.menuName"
+                                                                        :value="item.menuId">
+                                                                </el-option>
+                                                            </el-option-group>
+                                                        </el-select>
                                                     </el-form-item>
                                                 </el-col>
-<!--                                                <el-col :span="12">-->
-<!--                                                    <el-form-item label="等级" prop="level">-->
-<!--                                                        <el-input v-model="formData.level"/>-->
-<!--                                                    </el-form-item>-->
-<!--                                                </el-col>-->
                                             </el-row>
                                         </el-form>
                                     </el-tab-pane>
@@ -282,7 +276,36 @@
                     priority: [{required: true, message: '优先级为必填项', trigger: 'blur'}],
                     description: [{required: true, message: '说明为必填项', trigger: 'blur'}],
                     level: [{required: true, message: '等级为必填项', trigger: 'blur'}],
-                }
+                },
+                options:null
+                    /*[
+                    {
+                        label: '一级菜单',
+                        options: [{
+                            menuId: 'Shanghai',
+                            menuName: '上海'
+                        }, {
+                            menuId: 'Beijing',
+                            menuName: '北京'
+                        }]
+                    },
+                    {
+                        label: '二级菜单',
+                        options: [{
+                            menuId: 'Chengdu',
+                            menuName: '成都'
+                        }, {
+                            menuId: 'Shenzhen',
+                            menuName: '深圳'
+                        }, {
+                            menuId: 'Guangzhou',
+                            menuName: '广州'
+                        }, {
+                            menuId: 'Dalian',
+                            menuName: '大连'
+                        }]
+                    }
+                ]*/
             },
 
             created() {
@@ -390,6 +413,7 @@
                                 })
                             })
                         })
+                    this.getParentMenu();
                 },
                 // 弹出添加窗口
                 handleCreate() {
@@ -405,6 +429,7 @@
                             this.$message.error(res.data.message);
                         }
                     })
+                    this.getParentMenu();
                 },
                 //切换页码
                 handleCurrentChange(currentPage) {
@@ -460,6 +485,12 @@
                             type: 'error'
                         });
                     }
+                },
+                //获取父菜单信息
+                getParentMenu(){
+                    axios.get("/menu/getParentMenu.do").then(res=>{
+                        this.options = res.data.data;
+                    })
                 }
             }
         })

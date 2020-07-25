@@ -122,4 +122,6 @@ public class MessageConstant {
     public static final String GET_SEX_REPORT_FAIL = "获取会员性别数据失败";
     public static final String GET_SETMEAL_LIST_SUCCESS = "查询套餐列表数据成功";
     public static final String GET_SETMEAL_LIST_FAIL = "查询套餐列表数据失败";
+    public static final String GET_PARENTMENU_LIST_SUCCESS = "查询父菜单数据成功";
+    public static final String GET_PARENTMENU_LIST_FAIL = "查询父菜单数据失败";
 }

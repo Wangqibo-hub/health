@@ -46,6 +46,14 @@ public class RoleController {
     public Result add(@RequestBody Role role, Integer[] menuIds, Integer[] permissionIds, Integer[] userIds) {
         try {
             roleService.add(role, menuIds, permissionIds, userIds);
+            //根据角色查询用户列表
+            List<User> userList = userService.findUserByRoleId(role.getId());
+            //更新redis中用户色菜单信息
+            if (userList != null && userList.size() > 0) {
+                for (User user : userList) {
+                    menuService.generateMenuListInRedis(user.getUsername());
+                }
+            }
             return new Result(true, MessageConstant.ADD_ROLE_SUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
@@ -132,7 +140,7 @@ public class RoleController {
     @PreAuthorize("hasAnyAuthority('ROLE_DELETE')")
     public Result deleteById(Integer id) {
         try {
-            //根据角色查询用户列表
+            //根据角色查询用户列表（一定要在第一行）
             List<User> userList = userService.findUserByRoleId(id);
             //调用service删除角色
             roleService.deleteById(id);
