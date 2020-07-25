@@ -31,4 +31,6 @@ public interface RoleService {
     int findRoleExist(String roleName);
 
     Role findRoleByName(String name);
+
+    void deleteRoleAndRel(Integer id);
 }

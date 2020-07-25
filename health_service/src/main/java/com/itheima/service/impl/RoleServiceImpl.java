@@ -116,6 +116,18 @@ public class RoleServiceImpl implements RoleService {
         return roleDao.findRoleByName(name);
     }
 
+    @Override
+    public void deleteRoleAndRel(Integer id) {
+        //1.先根据角色id从角色/菜单中间表 删除关系数据
+        roleDao.deleteRelByRoleById(id);
+        //2.先根据角色id从角色/权限中间表 删除关系数据
+        roleDao.deletePermissionRelByRoleById(id);
+        //3.先根据角色id从角色/用户中间表 删除关系数据
+        roleDao.deleteUserRelByRoleById(id);
+        //最后执行删除角色
+        roleDao.deleteRoleAndRel(id);
+    }
+
     private void setRoleAndMenu(Integer roleId, Integer[] menuIds) {
         if(menuIds != null && menuIds.length>0){
             for (Integer menuId : menuIds) {

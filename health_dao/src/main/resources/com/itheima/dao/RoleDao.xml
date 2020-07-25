@@ -51,6 +51,9 @@
     <delete id="deleteUserRelByRoleById">
         delete from t_user_role where role_id = #{id}
     </delete>
+    <delete id="deleteRoleAndRel">
+        delete from t_role where id=#{id}
+    </delete>
 
     <!--根据用户id关联查询角色集合-->
     <select id="findRolesByUserId" parameterType="int" resultMap="roleMap" >

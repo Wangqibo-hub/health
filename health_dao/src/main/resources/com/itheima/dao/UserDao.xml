@@ -76,7 +76,7 @@
     <select id="selectPageByCondition" parameterType="string" resultType="com.itheima.pojo.User">
         select * from t_user
         <if test="value != null and value.length>0">
-            where username like concat('%',#{value},'%')
+            where username like concat('%',#{value},'%') or telephone like concat('%',#{value},'%')
         </if>
     </select>
     <!--根据用户id查询用户-->

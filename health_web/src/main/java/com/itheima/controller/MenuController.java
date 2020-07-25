@@ -110,7 +110,7 @@ public class MenuController {
     public Result findAll() {
         try {
             List<Menu> menuList = menuService.findAll();
-            return new Result(true,MessageConstant.QUERY_MENU_FAIL,menuList);
+            return new Result(true,MessageConstant.QUERY_MENU_SUCCESS,menuList);
         }catch (Exception e) {
             e.printStackTrace();
             return new Result(false, MessageConstant.QUERY_MENU_FAIL);
