@@ -48,7 +48,8 @@ public class PermissionServiceImpl implements PermissionService{
             //根据条件查询权限数据的数量
             int count = permissionDao.findByCondition(queryString);
             if ((count/pageSize+1) < currentPage){
-                currentPage = count/pageSize+1;
+                //currentPage = count/pageSize+1;
+                currentPage = 1;
             }
         }
 
@@ -185,10 +186,11 @@ public class PermissionServiceImpl implements PermissionService{
                 }
             }
 
-            if (DatabasePermission.getKeyword().equals(ResKeyword)){
-                return new Result(false,MessageConstant.ADD_PERMISSION_FAIL3);
+            if (ResKeyword != null && ResKeyword.length() >0){
+                if (DatabasePermission.getKeyword().equals(ResKeyword)){
+                    return new Result(false,MessageConstant.ADD_PERMISSION_FAIL3);
+                }
             }
-
         }
         return null;
     }
