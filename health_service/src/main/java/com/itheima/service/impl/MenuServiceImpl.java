@@ -168,7 +168,6 @@ public class MenuServiceImpl implements MenuService {
                 setMenuAndRole(menu.getId(), roleId);
             }
         }
-
         //3 更新菜单表数据
         //获取数据库中该菜单的信息
         Menu menuInDb = menuDao.findById(menu.getId());
@@ -176,7 +175,6 @@ public class MenuServiceImpl implements MenuService {
         Integer parentMenuId = menuInDb.getParentMenuId();
         //获取目标父菜单
         Menu targetParentMenu = menuDao.findById(menu.getParentMenuId());
-
         if (parentMenuId != null) {
             //编辑的是子菜单
             //查询要编辑的菜单是否有子菜单
@@ -196,6 +194,20 @@ public class MenuServiceImpl implements MenuService {
         }else {
             //编辑的是一级菜单
             changeChildMenu(targetParentMenu, menu);
+            //查询要编辑的菜单是否有子菜单
+            List<Menu> childrenByParentId = menuDao.findChildrenByParentId(menu.getId());
+            if (childrenByParentId != null && childrenByParentId.size() > 0) {
+                //要编辑的菜单有子菜单
+                //a 先处理自身
+                changeChildMenu(targetParentMenu, menu);
+                //b 再处理子菜单
+                for (Menu child : childrenByParentId) {
+                    changeChildMenu(menu, child);
+                }
+            } else {
+                //要编辑的菜单没有子菜单
+                changeChildMenu(targetParentMenu, menu);
+            }
         }
     }
 
@@ -225,7 +237,7 @@ public class MenuServiceImpl implements MenuService {
                     //优先级改变了，更新优先级
                     for (Menu menuChild : menuChildren) {
                         Integer childPriority = menuChild.getPriority();
-                        if (childPriority > child.getPriority()) {
+                        if (childPriority >= child.getPriority()) {
                             //更新优先级
                             menuChild.setPriority(childPriority + 1);
                             //更新path
@@ -239,7 +251,7 @@ public class MenuServiceImpl implements MenuService {
                 //父菜单的子菜单中不包含被编辑的菜单
                 for (Menu menuChild : menuChildren) {
                     Integer childPriority = menuChild.getPriority();
-                    if (childPriority > child.getPriority()) {
+                    if (childPriority >= child.getPriority()) {
                         //更新优先级
                         menuChild.setPriority(childPriority + 1);
                         //更新path
