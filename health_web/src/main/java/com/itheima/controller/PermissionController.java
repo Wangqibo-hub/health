@@ -100,6 +100,17 @@ public class PermissionController {
         return result;
     }
 
+    @RequestMapping(value = "/deletePermissionAndRelWithRole",method = RequestMethod.POST)
+    public Result deletePermissionAndRelWithRole(Integer id){
+        try {
+            permissionService.deletePermissionAndRelWithRole(id);
+            return new Result(true, MessageConstant.DELETE_PERMISSION_SUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(false, MessageConstant.DELETE_PERMISSION_FAIL2);
+        }
+    }
+
     /**
      * 查询所有权限
      */

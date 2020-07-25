@@ -111,6 +111,21 @@ public class MenuServiceImpl implements MenuService {
     }
 
     /**
+    * @Description: 删除菜单及其关联的角色关系
+    * @Param: [id]
+    * @Return: void
+    * @Author: Wangqibo
+    * @Date: 2020/7/24/0024
+    */
+    @Override
+    public void deleteMenuAndRelWithRole(Integer id) {
+        //删除中间表关系
+        menuDao.deleteRoleMenuIdByMenuId(id);
+        //删除菜单信息
+        menuDao.deleteById(id);
+    }
+
+    /**
      * 分页
      */
     @Override
@@ -190,6 +205,8 @@ public class MenuServiceImpl implements MenuService {
                 menuDao.setMenuAndRole(map);
             }
         }
+
+
     }
 
 
