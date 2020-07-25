@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 菜单控制层 contrl+alt+o 去除多余的包
+ * 菜单控制层
  */
 @RestController
 @RequestMapping("/menu")
