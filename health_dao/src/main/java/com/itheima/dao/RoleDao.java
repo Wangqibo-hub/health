@@ -58,13 +58,21 @@ public interface RoleDao {
 
     List<Integer> findPermissionIdsByRoleId(Integer roleId);
 
+    int findRoleExist(Role role);
+
+    /**
+    * @Description: 根据角色id删除用户与角色的关联关系
+    * @Param: [id]
+    * @Return: void
+    * @Author: Wangqibo
+    * @Date: 2020/7/24/0024
+    */
+    void deleteUserRelByRoleById(Integer id);
 
 
     void setRoleAndUser(Map<String, Object> map);
 
     List<Integer> findUserIdsByRoleId(Integer roleId);
-
-    void deleteUserRelByRoleById(Integer id);
 
     int findRoleExist(@Param("roleName") String roleName);
 }

@@ -12,6 +12,8 @@ public class MessageConstant {
     public static final String EDIT_USER_FAIL = "编辑用户失败";
     public static final String DELETE_USER_SUCCESS = "删除用户成功";
     public static final String ADD_USER_FAIL2 = "用户已存在,请重新添加用户";
+    public static final String EDIT_USER_FAIL2 = "用户名已存在,请重新编辑用户名";
+
     //
     public static final String ADD_MENU_SUCCESS = "新增菜单成功";
     public static final String DELETE_PERMISSION_FAIL2 = "删除权限失败";
@@ -40,7 +42,7 @@ public class MessageConstant {
     public static final String DELETE_SETMEAL_FAIL = "套餐已经关联检查组无法删除";
     public static final String DELETE_PERMISSION_FAIL = "权限已经关联角色无法删除";
     public static final String DELETE_USER_FAIL = "用户已经关联角色无法删除";
-    public static final String DELETE_ROLE_FAIL = "套餐已经关联检查组无法删除";
+    public static final String DELETE_ROLE_FAIL = "角色删除失败";
     public static final String DELETE_CHECKITEM_SUCCESS = "删除检查项成功";
     public static final String ADD_CHECKITEM_SUCCESS = "新增检查项成功";
     public static final String ADD_CHECKITEM_FAIL = "新增检查项失败";

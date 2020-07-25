@@ -61,7 +61,7 @@
 
                         <el-table-column type="index" align="center" label="序号"></el-table-column>
                         <el-table-column prop="name" label="菜单名称" align="center"></el-table-column>
-                        <el-table-column prop="linkUrl" label="详情页面" align="center"></el-table-column>
+<!--                        <el-table-column prop="linkUrl" label="详情页面" align="center"></el-table-column>-->
                         <el-table-column prop="path" label="path" align="center"></el-table-column>
                         <el-table-column prop="priority" label="priority" align="center"></el-table-column>
                         <el-table-column prop="icon" label="icon" align="center"></el-table-column>
@@ -98,11 +98,11 @@
                                                         <el-input v-model="formData.name"/>
                                                     </el-form-item>
                                                 </el-col>
-                                                <el-col :span="12">
-                                                    <el-form-item label="详情页面">
-                                                        <el-input v-model="formData.linkURL"/>
-                                                    </el-form-item>
-                                                </el-col>
+<!--                                                <el-col :span="12">-->
+<!--                                                    <el-form-item label="详情页面">-->
+<!--                                                        <el-input v-model="formData.linkURL"/>-->
+<!--                                                    </el-form-item>-->
+<!--                                                </el-col>-->
                                             </el-row>
                                             <el-row>
                                                 <el-col :span="12">
@@ -183,18 +183,18 @@
                                                         <el-input v-model="formData.name"/>
                                                     </el-form-item>
                                                 </el-col>
-                                                <el-col :span="12">
-                                                    <el-form-item label="详情页面">
-                                                        <el-input v-model="formData.linkUrl"/>
-                                                    </el-form-item>
-                                                </el-col>
+<!--                                                <el-col :span="12">-->
+<!--                                                    <el-form-item label="详情页面">-->
+<!--                                                        <el-input v-model="formData.linkUrl"/>-->
+<!--                                                    </el-form-item>-->
+<!--                                                </el-col>-->
                                             </el-row>
                                             <el-row>
-                                                <el-col :span="12">
-                                                    <el-form-item label="path" prop="path">
-                                                        <el-input v-model="formData.path"/>
-                                                    </el-form-item>
-                                                </el-col>
+<!--                                                <el-col :span="12">-->
+<!--                                                    <el-form-item label="path" prop="path">-->
+<!--                                                        <el-input v-model="formData.path"/>-->
+<!--                                                    </el-form-item>-->
+<!--                                                </el-col>-->
                                                 <el-col :span="12">
                                                     <el-form-item label="priority" prop="priority">
                                                         <el-input v-model="formData.priority"/>
@@ -214,11 +214,11 @@
                                                         <el-input v-model="formData.parentMenuId"/>
                                                     </el-form-item>
                                                 </el-col>
-                                                <el-col :span="12">
-                                                    <el-form-item label="等级" prop="level">
-                                                        <el-input v-model="formData.level"/>
-                                                    </el-form-item>
-                                                </el-col>
+<!--                                                <el-col :span="12">-->
+<!--                                                    <el-form-item label="等级" prop="level">-->
+<!--                                                        <el-input v-model="formData.level"/>-->
+<!--                                                    </el-form-item>-->
+<!--                                                </el-col>-->
                                             </el-row>
                                         </el-form>
                                     </el-tab-pane>
@@ -420,10 +420,39 @@
                     }).then(() => {
                         //发送删除请求
                         axios.get("/menu/deleteById.do?id="+row.id).then(res=>{
-                            this.$message({
-                                message: res.data.message,
-                                type: res.data.flag ? 'success':'error'
-                            });
+                            if (res.data.flag){
+                                this.$message({
+                                    type: 'success',
+                                    message: res.data.message
+                                });
+                            }else {
+                                if (res.data.message=='删除菜单失败'){
+                                    this.$message({
+                                        type: 'error',
+                                        message: res.data.message
+                                    });
+                                }else {
+                                    this.$confirm('该菜单项已关联相应角色, 是否继续?', '提示', {
+                                        confirmButtonText: '确定',
+                                        cancelButtonText: '取消',
+                                        type: 'warning'
+                                    }).then(() => {
+                                        //发送异步请求删除该项菜单及其与角色的关联信息
+                                        axios.post("/menu/deleteMenuAndRelWithRole.do?id="+row.id).then(res=>{
+                                            this.$message({
+                                                message: res.data.message,
+                                                type: res.data.flag ? 'success':'error'
+                                            });
+                                            this.findPage();//分页查询
+                                        })
+                                    }).catch(()=>{
+                                        this.$message({
+                                            type: 'info',
+                                            message: '已取消删除'
+                                        });
+                                    })
+                                }
+                            }
                             this.findPage();//分页查询
                         }).catch(error=>{
                             this.showMessage(error);

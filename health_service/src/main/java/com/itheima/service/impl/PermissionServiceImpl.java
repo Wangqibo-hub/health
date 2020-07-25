@@ -44,22 +44,13 @@ public class PermissionServiceImpl implements PermissionService{
         //查询条件
         String queryString = queryPageBean.getQueryString();
 
-        if (queryString != null && queryString.length()>0){
-            //根据条件查询权限数据的数量
-            int count = permissionDao.findByCondition(queryString);
-            if ((count/pageSize+1) < currentPage){
-                currentPage = count/pageSize+1;
-            }
-        }
-
         //第一步：设置分页参数
         PageHelper.startPage(currentPage,pageSize);
         //第二步：查询数据库（代码一定要紧跟设置分页代码 ）
         Page<Permission> permissionPage =permissionDao.findPage(queryString);
 
-        return new PageResult(permissionPage.getTotal(),permissionPage.getResult(),permissionPage.getPageNum());
+        return new PageResult(permissionPage.getTotal(),permissionPage.getResult());
     }
-
 
     /**
      * 新增权限
@@ -74,12 +65,12 @@ public class PermissionServiceImpl implements PermissionService{
         //新增权限前先查询次权限是否已存在
         int count1 =permissionDao.findByKeyword(keyword);
         if (count1 > 0){
-            throw new RuntimeException(MessageConstant.ADD_PERMISSION_FAIL3);
+            throw new RuntimeException(MessageConstant.ADD_PERMISSION_FAIL);
         }
         //新增权限前先查询此权限是否已存在
         int count = permissionDao.findByName(permissionName);
         if (count > 0){
-            throw new RuntimeException(MessageConstant.ADD_PERMISSION_FAIL2);
+            throw new RuntimeException(MessageConstant.ADD_PERMISSION_FAIL);
         }
         //新增权限
         permissionDao.add(permission);
@@ -136,13 +127,13 @@ public class PermissionServiceImpl implements PermissionService{
         try {
             List<Role> roleList = permissionDao.findRoleByPermissionId(id);
             if (roleList != null && roleList.size()>0){
-                return new Result(false, MessageConstant.DELETE_PERMISSION_FAIL);
+                return new Result(false, MessageConstant.DELETE_PERMISSION_FAIL2);
             }
             permissionDao.deleteById(id);
             return new Result(true,MessageConstant.DELETE_PERMISSION_SUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Result(false,MessageConstant.DELETE_PERMISSION_FAIL2);
+            return new Result(false,MessageConstant.DELETE_PERMISSION_FAIL);
         }
     }
     /**
@@ -166,4 +157,18 @@ public class PermissionServiceImpl implements PermissionService{
         return permissionDao.findRoleByPermissionId(permissionId);
     }
 
+    /**
+    * @Description: 删除权限及其与角色的关联关系
+    * @Param: [id]
+    * @Return: void
+    * @Author: Wangqibo
+    * @Date: 2020/7/24/0024
+    */
+    @Override
+    public void deletePermissionAndRelWithRole(Integer id) {
+        //删除关联关系
+        permissionDao.deletePermissionRelRoleByPermissionId(id);
+        //删除权限
+        permissionDao.deleteById(id);
+    }
 }

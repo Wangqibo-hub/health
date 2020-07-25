@@ -46,6 +46,13 @@ public class RoleController {
     public Result add(@RequestBody Role role, Integer[] menuIds, Integer[] permissionIds, Integer[] userIds) {
         try {
             roleService.add(role, menuIds, permissionIds, userIds);
+            //更新redis中用户的菜单信息
+            if (userIds != null && userIds.length > 0){
+                for (Integer userId : userIds) {
+                    User user = userService.findById(userId);
+                    menuService.generateMenuListInRedis(user.getUsername());
+                }
+            }
             return new Result(true, MessageConstant.ADD_ROLE_SUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
@@ -136,7 +143,7 @@ public class RoleController {
             List<User> userList = userService.findUserByRoleId(id);
             //调用service删除角色
             roleService.deleteById(id);
-            //更新redis中用户色菜单信息
+            //更新redis中用户菜单信息
             if (userList != null && userList.size() > 0) {
                 for (User user : userList) {
                     menuService.generateMenuListInRedis(user.getUsername());
@@ -152,6 +159,17 @@ public class RoleController {
         }
     }
 
+    @RequestMapping(value = "/deleteRoleAndRel", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('ROLE_DELETE')")
+    public Result deleteRoleAndRel(Integer id) {
+        try {
+            roleService.deleteRoleAndRel(id);
+            return new Result(true,MessageConstant.DELETE_ROLE_SUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(false,MessageConstant.DELETE_ROLE_FAIL);
+        }
+    }
 
     /**
      * 查询所有角色
