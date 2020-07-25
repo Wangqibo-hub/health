@@ -12,6 +12,8 @@ public class MessageConstant {
     public static final String EDIT_USER_FAIL = "编辑用户失败";
     public static final String DELETE_USER_SUCCESS = "删除用户成功";
     public static final String ADD_USER_FAIL2 = "用户已存在,请重新添加用户";
+    public static final String EDIT_USER_FAIL2 = "用户名已存在,请重新编辑用户名";
+
     //
     public static final String ADD_MENU_SUCCESS = "新增菜单成功";
     public static final String DELETE_PERMISSION_FAIL2 = "删除权限失败";

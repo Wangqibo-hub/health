@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import redis.clients.jedis.JedisPool;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -66,7 +67,7 @@ public class UserController {
         try {
             String username = user.getUsername();
             com.itheima.pojo.User user1 = userService.findUserByUsername(username);
-            if(user1 != null){
+            if (user1 != null) {
                 return new Result(false, MessageConstant.ADD_USER_FAIL2);
             }
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
@@ -120,6 +121,19 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('USER_EDIT')")
     public Result edit(@RequestBody com.itheima.pojo.User user, Integer[] roleIds) {
         try {
+            String password = user.getPassword();
+            String username = user.getUsername();
+            com.itheima.pojo.User user1 = userService.findById(user.getId());
+            if (!user1.getPassword().equals(password)) {
+                user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+            }
+            List<com.itheima.pojo.User> userList = userService.findAll();
+            for (com.itheima.pojo.User user2 : userList) {
+                if (user2 != null && !username.equals(user1.getUsername())) {
+                    return new Result(false, MessageConstant.EDIT_USER_FAIL2);
+                }
+            }
+
             userService.edit(user, roleIds);
             //更新redis中该用户的菜单信息
             menuService.generateMenuListInRedis(user.getUsername());
@@ -160,9 +174,9 @@ public class UserController {
         try {
             List<com.itheima.pojo.User> userList = userService.findAll();
             for (com.itheima.pojo.User user : userList) {
-                if (user.getStation().equals("1")){
+                if (user.getStation().equals("1")) {
                     user.setStation("是");
-                }else {
+                } else {
                     user.setStation("否");
                 }
             }
