@@ -1,8 +1,10 @@
 package com.itheima.dao;
 
 import com.github.pagehelper.Page;
+import com.itheima.pojo.Role;
 import com.itheima.pojo.User;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -88,4 +90,9 @@ public interface UserDao {
     * @Date: 2020/7/23/0023
     */
     List<User> findUserListByMenuId(Integer id);
+
+
+    Role findRoleByUserId(Integer id);
+
+    void setLeaveUserData(HashMap<String, Object> map);
 }
