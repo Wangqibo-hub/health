@@ -50,9 +50,16 @@ public interface PermissionService {
     List<Role> findRoleByPermissionId(Integer permissionId);
 
     /**
-     * 新增、编辑权限时异步校验权限名和权限码
+     * 新增、编辑权限时异步校验权限名
      * @param permission
      * @return
      */
-    Result verifyByPermission(Permission permission);
+    Result verifyPermissionName(Permission permission);
+
+    /**
+     * 新增、编辑权限时异步校验权限码
+     * @param permission
+     * @return
+     */
+    Result verifyPermissionKeyword(Permission permission);
 }

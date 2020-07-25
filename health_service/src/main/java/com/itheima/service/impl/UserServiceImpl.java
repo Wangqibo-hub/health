@@ -6,11 +6,10 @@ import com.github.pagehelper.PageHelper;
 import com.itheima.constant.MessageConstant;
 import com.itheima.dao.UserDao;
 import com.itheima.entity.PageResult;
-import com.itheima.entity.Result;
 import com.itheima.pojo.User;
 import com.itheima.service.UserService;
+import com.itheima.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
@@ -55,18 +54,13 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void add(User user, Integer[] roleIds) {
-        //第一步：保存用户表
-//        String username = user.getUsername();
-//        List<com.itheima.pojo.User> userList = userDao.findAll();
-//        for (com.itheima.pojo.User user1 : userList) {
-//            if(!user1.getUsername().equals(username)){
-                userDao.add(user);
-                //第二步：获取用户id
-                Integer userId = user.getId();
-                //第三步：往用户角色中间表 遍历插入关系数据
-                setUserAndRole(userId,roleIds);
-//            }
-//        }
+        //第一步：设置新建用户默认状态是否禁用为否,并保存用户表
+        user.setStation("1");
+        userDao.add(user);
+        //第二步：获取用户id
+        Integer userId = user.getId();
+        //第三步：往用户角色中间表 遍历插入关系数据
+        setUserAndRole(userId, roleIds);
     }
 
     /**
@@ -79,10 +73,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public PageResult findPage(Integer currentPage, Integer pageSize, String queryString) {
         //第一步：设置分页参数
-        PageHelper.startPage(currentPage,pageSize);
+        PageHelper.startPage(currentPage, pageSize);
         //第二步：查询数据库（代码一定要紧跟设置分页代码）
         Page<User> userPage = userDao.selectPageByCondition(queryString);
-        return new PageResult(userPage.getTotal(),userPage.getResult());
+        Page<Map> maps = new Page<>();
+        for (User user : userPage) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("station",user.getStation());
+            try {
+                map.put("birthday",DateUtils.parseDate2String(user.getBirthday()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            map.put("id",user.getId());
+            map.put("gender",user.getGender());
+            map.put("username",user.getUsername());
+            map.put("remark",user.getRemark());
+            map.put("telephone",user.getTelephone());
+            maps.add(map);
+        }
+        return new PageResult(maps.getTotal(), maps.getResult());
     }
     /**
      * 根据用户id查询用户
@@ -106,7 +116,7 @@ public class UserServiceImpl implements UserService {
         //1.先根据用户id从用户角色中间表 删除关系数据
         userDao.deleteRelByUserId(user.getId());
         //2.根据页面传入的角色ids 和 用户重新建立关系
-        setUserAndRole(user.getId(),roleIds);
+        setUserAndRole(user.getId(), roleIds);
         //3根据用户id 更新用户数据
         userDao.edit(user);
     }
@@ -119,7 +129,7 @@ public class UserServiceImpl implements UserService {
     public void deleteById(Integer id) {
         //1.根据用户id查询用户角色中间表（count(*)）
         int count = userDao.findCountRoleByUserId(id);
-        if(count > 0){
+        if (count > 0) {
             throw new RuntimeException(MessageConstant.DELETE_CHECKITEM_FAIL2);
         }
         //2.根据用户id删除用户记录

@@ -72,5 +72,14 @@
     <select id="findByPermissionName" resultType="com.itheima.pojo.Permission">
         select * from t_permission where name = #{permissionName}
     </select>
+    <!--新增、编辑权限时异步校验权限名和权限码-查询所有权限（编辑时当前的权限除外）-->
+    <select id="findPermissionAll" resultType="com.itheima.pojo.Permission" parameterType="com.itheima.pojo.Permission">
+        select * from t_permission
+        <where>
+            <if test="id != null">
+                id != #{id}
+            </if>
+        </where>
+    </select>
 
 </mapper>

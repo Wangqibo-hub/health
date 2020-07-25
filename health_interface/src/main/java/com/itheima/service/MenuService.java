@@ -52,4 +52,6 @@ public interface MenuService {
     * @Date: 2020/7/24/0024
     */
     void add(Menu menu, Integer[] roleIds);
+
+    void deleteMenuAndRelWithRole(Integer id);
 }

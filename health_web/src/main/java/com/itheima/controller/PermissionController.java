@@ -38,6 +38,7 @@ public class PermissionController {
         return pageResult;
     }
 
+
     /**
      * 新增权限
      * @param permission
@@ -126,14 +127,24 @@ public class PermissionController {
     }
 
     /**
-     * 新增、编辑权限时异步校验权限名和权限码
+     * 新增、编辑权限时异步校验权限名
      * @param permission
      * @return
      */
-    @RequestMapping("/verifyByPermission")
-    public Result verifyByPermission(@RequestBody Permission permission){
-        Result result = permissionService.verifyByPermission(permission);
+    @RequestMapping("/verifyPermissionName")
+    public Result verifyPermissionName(@RequestBody Permission permission){
+        Result result = permissionService.verifyPermissionName(permission);
         return result;
     }
 
+    /**
+     * 新增、编辑权限时异步校验权限码
+     * @param permission
+     * @return
+     */
+    @RequestMapping("/verifyPermissionKeyword")
+    public Result verifyPermissionKeyword(@RequestBody Permission permission){
+        Result result = permissionService.verifyPermissionKeyword(permission);
+        return result;
+    }
 }

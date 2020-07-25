@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="../css/style.css">
     <!-- 引入组件库 -->
+    <script src="../plugins/health.js"></script>
     <script type="text/javascript" src="../js/jquery.min.js"></script>
     <script src="../js/vue.js"></script>
     <script src="../plugins/elementui/index.js"></script>
@@ -63,7 +64,6 @@
             <el-table size="small" current-row-key="id" :data="dataList" stripe highlight-current-row>
                 <el-table-column type="index" align="center" label="序号"></el-table-column>
                 <el-table-column prop="username" label="用户名" align="center"></el-table-column>
-<!--                <el-table-column prop="password" label="密码" align="center"></el-table-column>-->
                 <el-table-column label="性别" align="center">
                     <template slot-scope="scope">
                         <span>{{scope.row.gender == '2' ? '女' : '男'}}</span>
@@ -132,16 +132,6 @@
                                                         placeholder="选择日期">
                                                 </el-date-picker>
                                             </div>
-                                            </el-form-item>
-                                        </el-col>
-                                    </el-row>
-                                    <el-row>
-                                        <el-col :span="24">
-                                            <el-form-item label="是否禁用" prop="station">
-                                                <el-select v-model="formData.station">
-                                                    <el-option label="是" value="1"></el-option>
-                                                    <el-option label="否" value="0"></el-option>
-                                                </el-select>
                                             </el-form-item>
                                         </el-col>
                                     </el-row>
@@ -320,11 +310,11 @@
             rules: {//校验规则
                 username: [{required: true, message: '用户名为必填项', trigger: 'blur'}],
                 password: [{required: true, message: '密码为必填项', trigger: 'blur'}],
-                gender: [{required: true, message: '密码为必填项', trigger: 'change'}],
-                birthday: [{required: true, message: '密码为必填项', trigger: 'blur'}],
-                station: [{required: true, message: '密码为必填项', trigger: 'change'}],
-                telephone: [{required: true, message: '密码为必填项', trigger: 'blur'}],
-                remark: [{required: true, message: '密码为必填项', trigger: 'blur'}]
+                gender: [{required: true, message: '性别为必填项', trigger: 'change'}],
+                birthday: [{required: true, message: '生日为必填项', trigger: 'blur'}],
+                station: [{required: true, message: '状态为必填项', trigger: 'change'}],
+                telephone: [{required: true, message: '电话为必填项', trigger: 'blur'}],
+                remark: [{required: true, message: '备注为必填项', trigger: 'blur'}]
             }
         },
         created() {

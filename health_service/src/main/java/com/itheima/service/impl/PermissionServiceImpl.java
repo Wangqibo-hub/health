@@ -58,9 +58,8 @@ public class PermissionServiceImpl implements PermissionService{
         //第二步：查询数据库（代码一定要紧跟设置分页代码 ）
         Page<Permission> permissionPage =permissionDao.findPage(queryString);
 
-        return new PageResult(permissionPage.getTotal(),permissionPage.getResult(),permissionPage.getPageNum());
+        return new PageResult(permissionPage.getTotal(),permissionPage.getResult(),currentPage);
     }
-
 
     /**
      * 新增权限
@@ -168,31 +167,40 @@ public class PermissionServiceImpl implements PermissionService{
     }
 
     /**
-     * 新增、编辑权限时异步校验权限名和权限码
+     * 新增、编辑权限时异步校验权限名
      * @param permission
      * @return
      */
     @Override
-    public Result verifyByPermission(Permission permission) {
-        String ResName = permission.getName();
-        String ResKeyword = permission.getKeyword();
-
-        List<Permission> DatabasePermissionList = permissionDao.findAll();
+    public Result verifyPermissionName(Permission permission) {
+        List<Permission> DatabasePermissionList = permissionDao.findPermissionAll(permission);
+        int size = DatabasePermissionList.size();
 
         for (Permission DatabasePermission : DatabasePermissionList) {
-            if (ResName != null && ResName.length() > 0){
-                if (DatabasePermission.getName().equals(ResName)){
+            String name1 = DatabasePermission.getName();
+            String name = permission.getName();
+            if (name1.equals(name)){
                     return new Result(false,MessageConstant.ADD_PERMISSION_FAIL2);
                 }
             }
+        return new Result(true,MessageConstant.ADD_PERMISSION_SUCCESS2);
+    }
 
-            if (ResKeyword != null && ResKeyword.length() >0){
-                if (DatabasePermission.getKeyword().equals(ResKeyword)){
-                    return new Result(false,MessageConstant.ADD_PERMISSION_FAIL3);
-                }
+    /**
+     * 新增、编辑权限时异步校验权限码
+     * @param permission
+     * @return
+     */
+    @Override
+    public Result verifyPermissionKeyword(Permission permission) {
+        List<Permission> DatabasePermissionList = permissionDao.findPermissionAll(permission);
+
+        for (Permission DatabasePermission : DatabasePermissionList) {
+            if (DatabasePermission.getKeyword().equals(permission.getKeyword())){
+                return new Result(false,MessageConstant.ADD_PERMISSION_FAIL3);
             }
         }
-        return null;
+        return new Result(true,MessageConstant.ADD_PERMISSION_SUCCESS3);
     }
 
 }

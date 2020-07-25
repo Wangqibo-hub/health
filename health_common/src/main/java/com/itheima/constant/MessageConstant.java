@@ -12,6 +12,8 @@ public class MessageConstant {
     public static final String EDIT_USER_FAIL = "编辑用户失败";
     public static final String DELETE_USER_SUCCESS = "删除用户成功";
     public static final String ADD_USER_FAIL2 = "用户已存在,请重新添加用户";
+    public static final String EDIT_USER_FAIL2 = "用户名已存在,请重新编辑用户名";
+
     //
     public static final String ADD_MENU_SUCCESS = "新增菜单成功";
     public static final String DELETE_PERMISSION_FAIL2 = "删除权限失败";
@@ -21,9 +23,10 @@ public class MessageConstant {
     public static final String DELETE_PERMISSION_SUCCESS = "删除权限成功";
     public static final String ADD_PERMISSION_SUCCESS = "新增权限成功";
     public static final String ADD_PERMISSION_FAIL = "新增权限失败";
-    public static final String ADD_PERMISSION_FAIL2 = "此权限名已存在，新增权限失败";
-    public static final String ADD_PERMISSION_FAIL3 = "此权限码已存在，新增权限失败";
-
+    public static final String ADD_PERMISSION_FAIL2 = "此权限名已存在";
+    public static final String ADD_PERMISSION_FAIL3 = "此权限码已存在";
+    public static final String ADD_PERMISSION_SUCCESS2 = "此权限名可用";
+    public static final String ADD_PERMISSION_SUCCESS3 = "此权限码可用";
     public static final String EDIT_PERMISSION_SUCCESS = "编辑权限成功";
     public static final String EDIT_PERMISSION_FAIL = "编辑权限失败";
     public static final String QUERY_PERMISSION_SUCCESS = "查询权限成功";
@@ -95,6 +98,9 @@ public class MessageConstant {
     public static final String QUERY_SETMEALLIST_FAIL = "查询套餐列表数据失败";
     public static final String QUERY_SETMEAL_SUCCESS = "查询套餐数据成功";
     public static final String QUERY_SETMEAL_FAIL = "查询套餐数据失败";
+    public static final String QUERY_ROLENAME_SUCCESS = "该角色名合格";
+    public static final String QUERY_ROLENAME_FAIL = "该角色名已存在!";
+    public static final String QUERY_ROLEKEYWORD_FAIL = "该关键词已存在!";
     public static final String SEND_VALIDATECODE_FAIL = "验证码发送失败";
     public static final String SEND_VALIDATECODE_SUCCESS = "验证码发送成功";
     public static final String SELECTED_DATE_CANNOT_ORDER = "所选日期不能进行体检预约";

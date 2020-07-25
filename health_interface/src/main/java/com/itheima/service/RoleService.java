@@ -15,14 +15,18 @@ public interface RoleService {
 
     List<Integer> findMenuIdsByRoleId(Integer roleId);
 
-
     void deleteById(Integer id);
 
     List<Role> findAll();
 
-    void add(Role role, Integer[] menuIds, Integer[] permissionIds);
-
-    void edit(Role role, Integer[] menuIds, Integer[] permissionIds);
+    void edit(Role role, Integer[] menuIds, Integer[] permissionIds,Integer[] userIds);
 
     List<Integer> findPermissionIdsByRoleId(Integer roleId);
+
+    void add(Role role, Integer[] menuIds, Integer[] permissionIds, Integer[] userIds);
+
+    List<Integer> findUserIdsByRoleId(Integer roleId);
+
+
+    int findRoleExist(String roleName);
 }
