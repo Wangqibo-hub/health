@@ -8,6 +8,7 @@ import com.itheima.dao.UserDao;
 import com.itheima.entity.PageResult;
 import com.itheima.pojo.User;
 import com.itheima.service.UserService;
+import com.itheima.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +27,6 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 根据用户查询用户对象
-     *
      * @param username
      * @return
      */
@@ -36,12 +36,12 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * @Description: 根据角色id查询用户列表
-     * @Param: [id]
-     * @Return: java.util.List<com.itheima.pojo.user>
-     * @Author: Wangqibo
-     * @Date: 2020/7/22/0022
-     */
+    * @Description: 根据角色id查询用户列表
+    * @Param: [id]
+    * @Return: java.util.List<com.itheima.pojo.user>
+    * @Author: Wangqibo
+    * @Date: 2020/7/22/0022
+    */
     @Override
     public List<User> findUserByRoleId(Integer id) {
         return userDao.findUserByRoleId(id);
@@ -49,7 +49,6 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 新增用户
-     *
      * @param user
      * @param roleIds
      */
@@ -66,7 +65,6 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 用户分页查询
-     *
      * @param currentPage
      * @param pageSize
      * @param queryString
@@ -78,9 +76,24 @@ public class UserServiceImpl implements UserService {
         PageHelper.startPage(currentPage, pageSize);
         //第二步：查询数据库（代码一定要紧跟设置分页代码）
         Page<User> userPage = userDao.selectPageByCondition(queryString);
-        return new PageResult(userPage.getTotal(), userPage.getResult());
+        Page<Map> maps = new Page<>();
+        for (User user : userPage) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("station",user.getStation());
+            try {
+                map.put("birthday",DateUtils.parseDate2String(user.getBirthday()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            map.put("id",user.getId());
+            map.put("gender",user.getGender());
+            map.put("username",user.getUsername());
+            map.put("remark",user.getRemark());
+            map.put("telephone",user.getTelephone());
+            maps.add(map);
+        }
+        return new PageResult(maps.getTotal(), maps.getResult());
     }
-
     /**
      * 根据用户id查询用户
      */
@@ -88,7 +101,6 @@ public class UserServiceImpl implements UserService {
     public User findById(Integer userId) {
         return userDao.findById(userId);
     }
-
     /**
      * 根据用户id 查询角色ids
      */
@@ -96,7 +108,6 @@ public class UserServiceImpl implements UserService {
     public List<Integer> findRoleIdsByUserId(Integer userId) {
         return userDao.findRoleIdsByUserId(userId);
     }
-
     /**
      * 编辑用户
      */
@@ -104,16 +115,13 @@ public class UserServiceImpl implements UserService {
     public void edit(User user, Integer[] roleIds) {
         //1.先根据用户id从用户角色中间表 删除关系数据
         userDao.deleteRelByUserId(user.getId());
-
         //2.根据页面传入的角色ids 和 用户重新建立关系
         setUserAndRole(user.getId(), roleIds);
         //3根据用户id 更新用户数据
         userDao.edit(user);
     }
-
     /**
      * 根据用户id删除用户
-     *
      * @param id
      * @return
      */
@@ -129,12 +137,12 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * @Description: 根据菜单id查询关联的用户信息
-     * @Param: [id]
-     * @Return: java.util.List<com.itheima.pojo.User>
-     * @Author: Wangqibo
-     * @Date: 2020/7/23/0023
-     */
+    * @Description: 根据菜单id查询关联的用户信息
+    * @Param: [id]
+    * @Return: java.util.List<com.itheima.pojo.User>
+    * @Author: Wangqibo
+    * @Date: 2020/7/23/0023
+    */
     @Override
     public List<User> findUserListByMenuId(Integer id) {
         return userDao.findUserListByMenuId(id);
@@ -150,16 +158,15 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 设置用户和角色中间表
-     *
      * @param userId
      * @param roleIds
      */
     private void setUserAndRole(Integer userId, Integer[] roleIds) {
-        if (roleIds != null && roleIds.length > 0) {
+        if(roleIds != null && roleIds.length>0){
             for (Integer roleId : roleIds) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("roleId", roleId);
-                map.put("userId", userId);
+                Map<String,Object> map =new HashMap<>();
+                map.put("roleId",roleId);
+                map.put("userId",userId);
                 userDao.setUserAndRole(map);
             }
         }

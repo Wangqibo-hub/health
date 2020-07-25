@@ -92,7 +92,7 @@
     select * from t_menu
 </select>
     <!-- 根据菜单id查询所有菜单 -->
-    <select id="findById" parameterType="int" resultType="com.itheima.pojo.Menu">
+    <select id="findById" parameterType="int" resultMap="menuMap">
     select * from t_menu where id = #{id}
 </select>
     <!-- 根据菜单id查询角色id -->
