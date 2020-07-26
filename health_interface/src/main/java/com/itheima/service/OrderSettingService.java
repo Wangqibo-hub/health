@@ -30,5 +30,5 @@ public interface OrderSettingService {
      * (在数据库中新建了t_ordersetting_bak表用于存储历史数据)
      * @param date
      */
-    void clearOrderSetingJob(Date date);
+    void clearOrderSetingJob(String date);
 }

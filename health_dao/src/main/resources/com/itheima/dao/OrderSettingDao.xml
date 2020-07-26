@@ -47,7 +47,7 @@
     </update>
 
     <!--根据时间,获取当前日期之前的预约设置数据-->
-    <select id="getHostoricalDate" resultType="com.itheima.pojo.OrderSetting" parameterType="date">
+    <select id="getHostoricalDate" resultType="com.itheima.pojo.OrderSetting" parameterType="String">
         select * from t_ordersetting where orderDate &lt; #{date}
     </select>
 
@@ -58,7 +58,7 @@
     </insert>
 
     <!--删除t_ordersetting表的历史数据-->
-    <delete id="deleteOrderSetting" parameterType="date">
+    <delete id="deleteOrderSetting" parameterType="String">
         delete from t_ordersetting where orderDate &lt; #{date}
     </delete>
 </mapper>
