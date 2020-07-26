@@ -327,7 +327,7 @@
                 axios.post("/user/findUserExist.do", this.formData).then(res => {
                     if (!res.data.flag) {
                         alert("该用户名已存在!!!");
-                        this.resetForm('dataAddForm');
+                        // this.resetForm('dataAddForm');
                     }
                 })
             },
