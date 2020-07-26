@@ -37,6 +37,7 @@
     <delete id="deletePermissionRelRoleByPermissionId" parameterType="int">
        delete from t_role_permission where permission_id = #{permissionId}
     </delete>
+
     <!--分页查询权限-->
     <select id="findPage" resultType="com.itheima.pojo.Permission" parameterType="string">
         select * from t_permission
