@@ -104,7 +104,7 @@
                                     <el-row>
                                         <el-col :span="12">
                                             <el-form-item label="用户名" prop="username">
-                                                <el-input v-model="formData.username" placeholder="用户名"/>
+                                                <el-input v-model="formData.username" placeholder="用户名" @input="findUserExist()"/>
                                             </el-form-item>
                                         </el-col>
                                         <el-col :span="12">
@@ -321,6 +321,16 @@
             this.findPage();
         },
         methods: {
+            //新增表单,异步请求,校验角色名存在
+            findUserExist() {
+                //发送异步请求,进行校验
+                axios.post("/user/findUserExist.do", this.formData).then(res => {
+                    if (!res.data.flag) {
+                        alert("该用户名已存在!!!");
+                        this.resetForm('dataAddForm');
+                    }
+                })
+            },
             //编辑
             handleEdit() {
                 //校验表单输入项是否合法

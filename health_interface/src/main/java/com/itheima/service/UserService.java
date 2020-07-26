@@ -76,4 +76,6 @@ public interface UserService {
     * @Date: 2020/7/23/0023
     */
     List<User> findUserListByMenuId(Integer id);
+
+    int findUserExist(String username);
 }
