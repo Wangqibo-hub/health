@@ -99,20 +99,18 @@
                                                     </el-form-item>
                                                 </el-col>
                                             </el-row>
+
                                             <el-row>
                                                 <el-col :span="12">
-                                                    <el-form-item label="优先级" prop="priority">
-                                                        <el-input v-model="formData.priority"/>
+                                                    <el-form-item label="菜单等级" prop="level">
+                                                        <el-radio-group :change="levelChange()" v-model="formData.level" size="small">
+                                                            <el-radio label="1" border>一级菜单</el-radio>
+                                                            <el-radio label="2" border>二级菜单</el-radio>
+                                                        </el-radio-group>
                                                     </el-form-item>
                                                 </el-col>
                                             </el-row>
-                                            <el-row>
-                                                <el-col :span="24">
-                                                    <el-form-item label="说明" prop="description">
-                                                        <el-input v-model="formData.description" type="textarea"></el-input>
-                                                    </el-form-item>
-                                                </el-col>
-                                            </el-row>
+
                                             <el-row>
                                                 <el-col :span="12">
                                                     <el-form-item  label="父菜单">
@@ -129,6 +127,20 @@
                                                                 </el-option>
                                                             </el-option-group>
                                                         </el-select>
+                                                    </el-form-item>
+                                                </el-col>
+                                            </el-row>
+                                            <el-row>
+                                                <el-col :span="12">
+                                                    <el-form-item label="优先级" prop="priority">
+                                                        <el-input v-model="formData.priority"/>
+                                                    </el-form-item>
+                                                </el-col>
+                                            </el-row>
+                                            <el-row>
+                                                <el-col :span="24">
+                                                    <el-form-item label="说明" prop="description">
+                                                        <el-input v-model="formData.description" type="textarea"></el-input>
                                                     </el-form-item>
                                                 </el-col>
                                             </el-row>
@@ -284,6 +296,14 @@
                 this.findPage();
             },
             methods: {
+                levelChange(){
+                    if (this.formData.level == '2') {
+                        //选中的是一级菜单，发送异步请求，获取所有一级菜单
+                        this.getParentMenu();
+                    }else {
+                        this.options=null;
+                    }
+                },
                 //编辑
                 handleEdit() {
                     //校验表单输入项是否合法
@@ -384,8 +404,7 @@
                                     this.roleIds = res.data;//回显的角色勾选
                                 })
                             })
-                        })
-                    this.getParentMenu();
+                        });
                 },
                 // 弹出添加窗口
                 handleCreate() {
@@ -400,8 +419,7 @@
                         } else {
                             this.$message.error(res.data.message);
                         }
-                    })
-                    this.getParentMenu();
+                    });
                 },
                 //切换页码
                 handleCurrentChange(currentPage) {
