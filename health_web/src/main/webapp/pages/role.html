@@ -523,6 +523,8 @@
             },
             // 弹出添加窗口
             handleCreate() {
+                //修复点击编辑,然后点击新建出现编辑的数据残留Bug
+                this.formData = {};
                 //弹出新增窗口
                 this.dialogFormVisible = true;
                 axios.post("/menu/findAll.do").then(res => {
