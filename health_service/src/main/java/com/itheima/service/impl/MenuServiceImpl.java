@@ -284,7 +284,7 @@ public class MenuServiceImpl implements MenuService {
         Menu menuInDb = menuDao.findById(menu.getId());
         Integer priority = menu.getPriority();
         //判断编辑的是几级菜单
-        if (menu.getLevel()==1) {
+        if (menuInDb.getLevel()==1) {
             //编辑一级菜单
             List<Menu> firstMenuList = menuDao.findfirstMenu();
             //a)	判断名称有没有更改
@@ -344,7 +344,6 @@ public class MenuServiceImpl implements MenuService {
             //设置本次编辑菜单的path
             String path = "/" + targerParentMenu.getPath() + "-" + (menu.getPriority());
             menu.setPath(path);
-            menu.setLevel(1);
             //更新其他信息
             menuDao.edit(menu);
         }

@@ -405,7 +405,7 @@
                             //选中的是一级菜单，发送异步请求，获取所有一级菜单
                             this.getParentMenu();
                         }
-                    }else {
+                    }else if (this.formData.level == '1') {
                         this.options=null;
                         this.formData.parentMenuId=null;
                     }
