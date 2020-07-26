@@ -195,4 +195,9 @@ public class UserServiceImpl implements UserService {
             }
         }
     }
+
+    @Override
+    public int findUserExist(String username) {
+        return userDao.findUserExist(username);
+    }
 }

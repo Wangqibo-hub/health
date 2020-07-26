@@ -180,4 +180,16 @@ public class UserController {
             return new Result(false, MessageConstant.QUERY_USER_FAIL);
         }
     }
+
+    /**
+     * 判断角色名是否存在
+     */
+    @RequestMapping(value = "/findUserExist", method = RequestMethod.POST)
+    public Result findUserExist(@RequestBody com.itheima.pojo.User user) {
+        int count = userService.findUserExist(user.getUsername());
+        if (count>0){
+            return new Result(false, MessageConstant.QUERY_USERNAME_FAIL2);
+        }
+        return new Result(true, MessageConstant.QUERY_USER_SUCCESS2);
+    }
 }

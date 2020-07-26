@@ -100,7 +100,9 @@ public class MessageConstant {
     public static final String QUERY_SETMEAL_SUCCESS = "查询套餐数据成功";
     public static final String QUERY_SETMEAL_FAIL = "查询套餐数据失败";
     public static final String QUERY_ROLENAME_SUCCESS = "该角色名合格";
+    public static final String QUERY_USER_SUCCESS2 = "该用户名合格";
     public static final String QUERY_ROLENAME_FAIL = "该角色名已存在!";
+    public static final String QUERY_USERNAME_FAIL2 = "该用户名已存在!";
     public static final String QUERY_ROLEKEYWORD_FAIL = "该关键词已存在!";
     public static final String SEND_VALIDATECODE_FAIL = "验证码发送失败";
     public static final String SEND_VALIDATECODE_SUCCESS = "验证码发送成功";
