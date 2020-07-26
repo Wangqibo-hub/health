@@ -215,6 +215,9 @@ public class PermissionServiceImpl implements PermissionService{
     */
     @Override
     public void deletePermissionAndRel(Integer id) {
+        //删除权限和角色表的中间表
         permissionDao.deletePermissionRelRoleByPermissionId(id);
+        //删除权限表
+        permissionDao.deleteById(id);
     }
 }

@@ -437,13 +437,13 @@
                                     })
                                 }
                             }
-                    }).catch(() => {
+                    })
+                }).catch(() => {
                         this.$message({
                             type: 'info',
                             message: '已取消删除'
                         });
                     });
-                })
                 },
                 //取消按钮
                 handleCancel(formName){
