@@ -401,8 +401,10 @@
             methods: {
                 levelChange(){
                     if (this.formData.level == '2') {
-                        //选中的是一级菜单，发送异步请求，获取所有一级菜单
-                        this.getParentMenu();
+                        if (this.options == null) {
+                            //选中的是一级菜单，发送异步请求，获取所有一级菜单
+                            this.getParentMenu();
+                        }
                     }else {
                         this.options=null;
                         this.formData.parentMenuId=null;
