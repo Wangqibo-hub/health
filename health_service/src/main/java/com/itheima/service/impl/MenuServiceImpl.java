@@ -348,6 +348,16 @@ public class MenuServiceImpl implements MenuService {
             String path = null;
             if (menu.getLevel() == 1) {
                 List<Menu> firstMenuList = menuDao.findfirstMenu();
+                //更新一级菜单的优先级
+                for (Menu firstMenu : firstMenuList) {
+                    Integer priorityExist = firstMenu.getPriority();
+                    if (priorityExist >= priority) {
+                        firstMenu.setPriority(priorityExist + 1);
+                        //更新父menu的优先级
+                        menuDao.edit(firstMenu);
+                    }
+                }
+                //设置修改菜单的path
                 int size = firstMenuList.size();
                 path = generatePath(size, firstMenuList);
             } else {
