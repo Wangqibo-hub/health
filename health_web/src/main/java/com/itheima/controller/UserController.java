@@ -182,7 +182,7 @@ public class UserController {
     }
 
     /**
-     * 判断角色名是否存在
+     * 判断用户名是否存在
      */
     @RequestMapping(value = "/findUserExist", method = RequestMethod.POST)
     public Result findUserExist(@RequestBody com.itheima.pojo.User user) {

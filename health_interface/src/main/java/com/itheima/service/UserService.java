@@ -77,5 +77,10 @@ public interface UserService {
     */
     List<User> findUserListByMenuId(Integer id);
 
+    /**
+     * 判断用户名是否存在
+     * @param username
+     * @return
+     */
     int findUserExist(String username);
 }

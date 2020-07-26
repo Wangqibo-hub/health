@@ -97,5 +97,10 @@ public interface UserDao {
 
     void setLeaveUserData(HashMap<String, Object> map);
 
+    /**
+     * 判断用户名是否存在
+     * @param username
+     * @return
+     */
     int findUserExist(@Param("username") String username);
 }
