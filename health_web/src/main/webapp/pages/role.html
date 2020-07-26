@@ -658,6 +658,8 @@
                                                 type: res.data.flag ? 'success':'error'
                                             });
                                             this.findPage();//分页查询
+                                        }).catch((error)=>{
+                                            this.showMessage(error);
                                         })
                                     }).catch(()=>{
                                         this.$message({

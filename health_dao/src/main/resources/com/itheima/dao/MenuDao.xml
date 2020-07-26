@@ -73,6 +73,9 @@
             <if test="parentMenuId!=null">
                 parentMenuId=#{parentMenuId},
             </if>
+            <if test="level!=null">
+                level=#{level},
+            </if>
         </set>
         where id = #{id}
     </update>
