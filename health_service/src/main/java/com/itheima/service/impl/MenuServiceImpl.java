@@ -115,7 +115,7 @@ public class MenuServiceImpl implements MenuService {
             }
             //设置新增菜单的path
             int size = firstMenuList.size();
-            String newPath = generatePath(size,firstMenuList);
+            String newPath = generatePath(size, firstMenuList);
             menu.setPath(newPath);
             //添加该菜单
             menuDao.add(menu);
@@ -128,7 +128,7 @@ public class MenuServiceImpl implements MenuService {
                     menuDao.setMenuAndRole(map);
                 }
             }
-        }else {
+        } else {
             //添加的是二级菜单
             //新增菜单的父菜单id
             Integer parentMenuId = menu.getParentMenuId();
@@ -171,18 +171,18 @@ public class MenuServiceImpl implements MenuService {
     }
 
     /**
-    * @Description: 产生新路径
-    * @Param: [firstMenuList]
-    * @Return: java.lang.String
-    * @Author: Wangqibo
-    * @Date: 2020/7/26/0026
-    */
-    private String generatePath(Integer count,List<Menu> firstMenuList) {
-        String newPath = String.valueOf(count+1);
+     * @Description: 产生新路径
+     * @Param: [firstMenuList]
+     * @Return: java.lang.String
+     * @Author: Wangqibo
+     * @Date: 2020/7/26/0026
+     */
+    private String generatePath(Integer count, List<Menu> firstMenuList) {
+        String newPath = String.valueOf(count + 1);
         for (Menu menu : firstMenuList) {
             if (menu.getPath().equals(newPath)) {
                 count++;
-                newPath = generatePath(count,firstMenuList);
+                newPath = generatePath(count, firstMenuList);
             }
         }
         return newPath;
@@ -232,20 +232,6 @@ public class MenuServiceImpl implements MenuService {
             }
             map1.put("options", mapList);
         }
-        /*//封装所有二级菜单
-        List<Menu> menuList4Two = menuDao.findMenuByLevel(2);
-        Map<String, Object> map2 = new HashMap<>();
-        map2.put("label", "二级菜单");
-        if (menuList4Two != null && menuList4Two.size() > 0) {
-            List<Map<String, Object>> mapList = new ArrayList<>();
-            for (Menu menu : menuList4Two) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("menuId", menu.getId());
-                map.put("menuName", menu.getName());
-                mapList.add(map);
-            }
-            map2.put("options", mapList);
-        }*/
         resultList.add(map1);
         //resultList.add(map2);
         return resultList;
@@ -292,116 +278,75 @@ public class MenuServiceImpl implements MenuService {
                 setMenuAndRole(menu.getId(), roleId);
             }
         }
+
         //3 更新菜单表数据
-        //获取数据库中该菜单的信息
+        //获取数据库原先菜单信息
         Menu menuInDb = menuDao.findById(menu.getId());
-        //获取数据库父菜单id
-        Integer parentMenuId = menuInDb.getParentMenuId();
-        //获取目标父菜单id
-        Integer targetParentId = menu.getParentMenuId();
-        //获取目标父菜单
-        Menu targetParentMenu = menuDao.findById(menu.getParentMenuId());
-        if (parentMenuId != null) {
-            //编辑的是子菜单
-            //查询要编辑的菜单是否有子菜单
-            List<Menu> childrenByParentId = menuDao.findChildrenByParentId(menu.getId());
-            if (childrenByParentId != null && childrenByParentId.size() > 0) {
-                //要编辑的菜单有子菜单
-                //a 先处理自身
-                changeChildMenu(targetParentMenu, menu);
-                //b 再处理子菜单
-                for (Menu child : childrenByParentId) {
-                    changeChildMenu(menu, child);
+        Integer priority = menu.getPriority();
+        //判断编辑的是几级菜单
+        if (menu.getLevel().equals("1")) {
+            //编辑一级菜单
+            List<Menu> firstMenuList = menuDao.findfirstMenu();
+            //a)	判断名称有没有更改
+            if (!menuInDb.getName().equals(menu.getName())) {
+                //b)名称改变，判断有没有和其他一级菜单重名，重名返回运行时异常
+                for (Menu firstMenu1 : firstMenuList) {
+                    if (firstMenu1.getName().equals(menu.getName())) {
+                        //有重名的一级菜单
+                        throw new RuntimeException(MessageConstant.ADD_MENU_FAIL3);
+                    }
                 }
-            } else {
-                //要编辑的菜单没有子菜单
-                changeChildMenu(targetParentMenu, menu);
             }
+            //c)名称没变，或没有重名，更改优先级
+            for (Menu firstMenu : firstMenuList) {
+                Integer priorityExist = firstMenu.getPriority();
+                if (priorityExist >= priority) {
+                    firstMenu.setPriority(priorityExist + 1);
+                    //更新父menu的优先级
+                    menuDao.edit(firstMenu);
+                }
+            }
+            //d)更新其他信息
+            menuDao.edit(menu);
         } else {
-            //编辑的是一级菜单
-            changeChildMenu(targetParentMenu, menu);
-            //查询要编辑的菜单是否有子菜单
-            List<Menu> childrenByParentId = menuDao.findChildrenByParentId(menu.getId());
-            if (childrenByParentId != null && childrenByParentId.size() > 0) {
-                //要编辑的菜单有子菜单
-                //a 先处理自身
-                changeChildMenu(targetParentMenu, menu);
-                //b 再处理子菜单
-                for (Menu child : childrenByParentId) {
-                    changeChildMenu(menu, child);
-                }
-            } else {
-                //要编辑的菜单没有子菜单
-                changeChildMenu(targetParentMenu, menu);
-            }
-        }
-    }
-
-    /**
-     * @Description: 修改子菜单的方法
-     * @Param: [parent, child]
-     * @Return: void
-     * @Author: Wangqibo
-     * @Date: 2020/7/25/0025
-     */
-    public void changeChildMenu(Menu parent, Menu child) {
-        //获取父菜单的path
-        String parentMenuPath = parent.getPath();
-        //根据父id查询leave 获得父leavel
-        Integer targetParentMenuLevel = parent.getLevel();
-        //设置该level menu.setlevel (fuleavel +1),
-        child.setLevel(targetParentMenuLevel + 1);
-        //获取该父菜单的所有子菜单
-        List<Menu> menuChildren = parent.getChildren();
-        if (menuChildren != null && menuChildren.size() > 0) {
-            //该父菜单有子菜单,更新子菜单信息
-            //判断被编辑的菜单是否在父菜单的子菜单中
-            Menu contain = isContain(menuChildren, child);
-            if (contain != null) {
-                //父菜单的子菜单中包含被编辑的菜单
-                if (contain.getPriority() != child.getPriority()) {
-                    //优先级改变了，更新优先级
-                    for (Menu menuChild : menuChildren) {
-                        Integer childPriority = menuChild.getPriority();
-                        if (childPriority >= child.getPriority()) {
-                            //更新优先级
-                            menuChild.setPriority(childPriority + 1);
-                            //更新path
-                            String childPath = "/" + parentMenuPath + "-" + (childPriority + 1);
-                            menuChild.setPath(childPath);
-                            menuDao.edit(menuChild);
-                        }
-                    }
-                }
-            } else {
-                //父菜单的子菜单中不包含被编辑的菜单
-                for (Menu menuChild : menuChildren) {
-                    Integer childPriority = menuChild.getPriority();
-                    if (childPriority >= child.getPriority()) {
-                        //更新优先级
-                        menuChild.setPriority(childPriority + 1);
-                        //更新path
-                        String childPath = "/" + parentMenuPath + "-" + (childPriority + 1);
-                        menuChild.setPath(childPath);
-                        menuDao.edit(menuChild);
+            //编辑二级菜单
+            List<Menu> secondMenuList = menuDao.findMenuByLevel(2);
+            //a)判断名称有没有更改
+            if (!menuInDb.getName().equals(menu.getName())) {
+                //名称改变，判断有没有和其他二级菜单重名，重名返回运行时异常
+                for (Menu secondMenu1 : secondMenuList) {
+                    if (secondMenu1.getName().equals(menu.getName())) {
+                        //有重名的二级菜单
+                        throw new RuntimeException(MessageConstant.ADD_MENU_FAIL3);
                     }
                 }
             }
-        }
-        //插入新菜单
-        String nowPath = "/" + parentMenuPath + "-" + child.getPriority();
-        child.setPath(nowPath);
-        menuDao.edit(child);
-    }
-
-    //子菜单是否包含被编辑的菜单
-    public Menu isContain(List<Menu> menuList, Menu menu) {
-        for (Menu menu1 : menuList) {
-            if (menu.getId() == menu1.getId()) {
-                return menu1;
+            //名称没变，或没有重名
+            //获取目标父菜单及其子菜单
+            Menu targerParentMenu = menuDao.findById(menu.getParentMenuId());
+            List<Menu> children = menuDao.findChildrenByParentId(targerParentMenu.getId());
+            //更改目标父菜单子菜单集合的优先级和path
+            if (children != null && children.size() > 0) {
+                for (Menu ziMenu : children) {
+                    //获取子菜单的优先级
+                    Integer priorityExist = ziMenu.getPriority();
+                    if (priorityExist >= priority) {
+                        //更新zimenu的优先级
+                        ziMenu.setPriority(priorityExist + 1);
+                        //更新子菜单的path
+                        String ziPath = "/" + targerParentMenu.getPath() + "-" + (ziMenu.getPriority());
+                        ziMenu.setPath(ziPath);
+                        //更新子菜单
+                        menuDao.edit(ziMenu);
+                    }
+                }
             }
+            //设置本次编辑菜单的path
+            String path = "/" + targerParentMenu.getPath() + "-" + (menu.getPriority());
+            menu.setPath(path);
+            //更新其他信息
+            menuDao.edit(menu);
         }
-        return null;
     }
 
     /**

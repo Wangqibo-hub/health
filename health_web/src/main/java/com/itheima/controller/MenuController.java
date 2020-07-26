@@ -137,7 +137,10 @@ public class MenuController {
                 }
             }
             return new Result(true, MessageConstant.EDIT_MENU_SUCCESS);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return new Result(false, e.getMessage());
+        }catch (Exception e) {
             e.printStackTrace();
             return new Result(false, MessageConstant.EDIT_MENU_FAIL);
         }
