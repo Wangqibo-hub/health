@@ -123,11 +123,10 @@ public class UserController {
             if (!user1.getPassword().equals(password)) {
                 user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
             }
-            List<com.itheima.pojo.User> userList = userService.findAll();
-            for (com.itheima.pojo.User user2 : userList) {
-                if (user2 != null && !username.equals(user1.getUsername())) {
-                    return new Result(false, MessageConstant.EDIT_USER_FAIL2);
-                }
+
+            com.itheima.pojo.User user3 = userService.findUserByUsername(username);
+            if (user3 != null && !username.equals(user1.getUsername())) {
+                return new Result(false, MessageConstant.EDIT_USER_FAIL2);
             }
             userService.edit(user, roleIds);
             //更新redis中该用户的菜单信息
