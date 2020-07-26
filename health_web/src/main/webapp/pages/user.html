@@ -321,6 +321,22 @@
             this.findPage();
         },
         methods: {
+            //发送验证码
+            sendValidateCode(){
+                var telephone = this.formatDate().telephone;
+                if (!checkTelephone(telephone)) {
+                    this.$message.error('请输入正确的手机号');
+                    return false;
+                }
+                validateCodeButton = $("#validateCodeButton")[0];
+                clock = window.setInterval(doLoop, 1000); //一秒执行一次
+                axios.post("/validateCode/send4Login.do?telephone=" + telephone).then((response) => {
+                    if(!response.data.flag){
+                        //验证码发送失败
+                        this.$message.error('验证码发送失败，请检查手机号输入是否正确');
+                    }
+                });
+            },
             //新增表单,异步请求,校验角色名存在
             findUserExist() {
                 //发送异步请求,进行校验
