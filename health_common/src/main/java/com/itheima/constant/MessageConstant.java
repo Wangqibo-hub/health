@@ -33,7 +33,7 @@ public class MessageConstant {
     public static final String QUERY_PERMISSION_FAIL = "查询权限失败";
     public static final String EDIT_MENU_SUCCESS = "编辑菜单成功";
     public static final String EDIT_MENU_FAIL = "编辑菜单失败";
-    public static final String QUERY_MENU_SUCCESS = "查询所有菜单成功";
+    public static final String QUERY_MENU_SUCCESS = "查询菜单成功";
     public static final String QUERY_MENU_FAIL = "查询所有菜单失败";
     public static final String DELETE_MENU_SUCCESS = "删除菜单成功";
     public static final String DELETE_MENU_FAIL = "删除菜单失败";

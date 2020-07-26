@@ -420,13 +420,15 @@
                                 });
                                 this.resetForm("dataEditForm");
                                 //关闭窗口
-                                this.dialogFormVisible4Edit = false;
+                                this.dialogFormVisible4EditFirst = false;
+                                this.dialogFormVisible4EditSecond = false;
                                 this.findPage();//分页查询
                             }).catch(error=>{
                                 this.showMessage(error);
                                 //关闭窗口
                                 this.resetForm("dataEditForm");
-                                this.dialogFormVisible4Edit = false;
+                                this.dialogFormVisible4EditFirst = false;
+                                this.dialogFormVisible4EditSecond = false;
                             })
                         } else {
                             //输入不合法，弹窗提示
