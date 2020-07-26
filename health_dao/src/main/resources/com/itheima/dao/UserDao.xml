@@ -107,7 +107,12 @@
         select * from t_user
         where id in (select user_id from t_user_role where role_id in (select role_id from t_role_menu where menu_id = #{menuId}));
     </select>
+
     <select id="findRoleByUserId" resultType="com.itheima.pojo.Role">
         select * from t_role where id in(select role_id from t_user_role where user_id=#{id})
+    </select>
+    <!--判断用户名是否存在-->
+    <select id="findUserExist" resultType="java.lang.Integer">
+        select count(*) from t_user where username=#{username}
     </select>
 </mapper>

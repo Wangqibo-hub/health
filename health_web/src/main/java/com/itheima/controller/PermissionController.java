@@ -45,6 +45,7 @@ public class PermissionController {
      * @return
      */
     @RequestMapping("/add")
+    @PreAuthorize("hasAnyAuthority('PERMISSION_CONTROLLER')")
     public Result add(@RequestBody Permission permission,Integer[] roleIds){
         try {
             permissionService.add(permission,roleIds);
@@ -61,6 +62,7 @@ public class PermissionController {
      * @return
      */
     @RequestMapping("/edit")
+    @PreAuthorize("hasAnyAuthority('PERMISSION_CONTROLLER')")
     public Result edit(@RequestBody Permission permission,Integer[] roleIds){
         try {
             permissionService.edit(permission,roleIds);
@@ -94,7 +96,7 @@ public class PermissionController {
      * @return
      */
     @RequestMapping("/deleteById")
-    @PreAuthorize("hasAnyAuthority('')")
+    @PreAuthorize("hasAnyAuthority('PERMISSION_CONTROLLER')")
     public Result deleteById(Integer id){
         Result result = permissionService.deleteById(id);
         return result;
@@ -108,6 +110,7 @@ public class PermissionController {
     * @Date: 2020/7/25/0025
     */
     @RequestMapping(value = "/deletePermissionAndRel",method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('PERMISSION_CONTROLLER')")
     public Result deletePermissionAndRel(Integer id){
         try {
             permissionService.deletePermissionAndRel(id);
@@ -150,6 +153,7 @@ public class PermissionController {
      * @return
      */
     @RequestMapping("/verifyPermissionName")
+    @PreAuthorize("hasAnyAuthority('PERMISSION_CONTROLLER')")
     public Result verifyPermissionName(@RequestBody Permission permission){
         Result result = permissionService.verifyPermissionName(permission);
         return result;
@@ -161,6 +165,7 @@ public class PermissionController {
      * @return
      */
     @RequestMapping("/verifyPermissionKeyword")
+    @PreAuthorize("hasAnyAuthority('PERMISSION_CONTROLLER')")
     public Result verifyPermissionKeyword(@RequestBody Permission permission){
         Result result = permissionService.verifyPermissionKeyword(permission);
         return result;

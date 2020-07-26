@@ -137,7 +137,10 @@ public class PermissionServiceImpl implements PermissionService{
             List<Role> roleList = permissionDao.findRoleByPermissionId(id);
             if (roleList != null && roleList.size()>0){
                 return new Result(false, MessageConstant.DELETE_PERMISSION_FAIL);
+                //删除权限和角色表的中间表
+                //permissionDao.deletePermissionRelRoleByPermissionId(id);
             }
+            //删除权限表
             permissionDao.deleteById(id);
             return new Result(true,MessageConstant.DELETE_PERMISSION_SUCCESS);
         } catch (Exception e) {
@@ -212,6 +215,9 @@ public class PermissionServiceImpl implements PermissionService{
     */
     @Override
     public void deletePermissionAndRel(Integer id) {
+        //删除权限和角色表的中间表
         permissionDao.deletePermissionRelRoleByPermissionId(id);
+        //删除权限表
+        permissionDao.deleteById(id);
     }
 }
