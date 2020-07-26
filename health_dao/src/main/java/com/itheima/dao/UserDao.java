@@ -3,6 +3,7 @@ package com.itheima.dao;
 import com.github.pagehelper.Page;
 import com.itheima.pojo.Role;
 import com.itheima.pojo.User;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
 import java.util.List;
@@ -94,4 +95,10 @@ public interface UserDao {
     void setLeaveUserData(Map<String, Object> map);
 
     List<Role> findRoleByUserId(Integer id);
+    /**
+     * 判断用户名是否存在
+     * @param username
+     * @return
+     */
+    int findUserExist(@Param("username") String username);
 }

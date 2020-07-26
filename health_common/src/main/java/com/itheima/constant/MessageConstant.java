@@ -37,6 +37,7 @@ public class MessageConstant {
     public static final String QUERY_MENU_FAIL = "查询所有菜单失败";
     public static final String DELETE_MENU_SUCCESS = "删除菜单成功";
     public static final String DELETE_MENU_FAIL = "删除菜单失败";
+    public static final String DELETE_MENU_FAIL_CHILDREN = "该菜单包含子菜单删除失败";
     public static final String DELETE_CHECKITEM_FAIL = "删除检查项失败";
     public static final String DELETE_CHECKITEM_FAIL2 = "检查项已经关联检查组无法删除";
     public static final String DELETE_MENU_FAIL2 = "菜单已经关联角色无法删除";
@@ -99,7 +100,9 @@ public class MessageConstant {
     public static final String QUERY_SETMEAL_SUCCESS = "查询套餐数据成功";
     public static final String QUERY_SETMEAL_FAIL = "查询套餐数据失败";
     public static final String QUERY_ROLENAME_SUCCESS = "该角色名合格";
+    public static final String QUERY_USER_SUCCESS2 = "该用户名合格";
     public static final String QUERY_ROLENAME_FAIL = "该角色名已存在!";
+    public static final String QUERY_USERNAME_FAIL2 = "该用户名已存在!";
     public static final String QUERY_ROLEKEYWORD_FAIL = "该关键词已存在!";
     public static final String SEND_VALIDATECODE_FAIL = "验证码发送失败";
     public static final String SEND_VALIDATECODE_SUCCESS = "验证码发送成功";
@@ -124,4 +127,5 @@ public class MessageConstant {
     public static final String GET_SETMEAL_LIST_FAIL = "查询套餐列表数据失败";
     public static final String GET_PARENTMENU_LIST_SUCCESS = "查询父菜单数据成功";
     public static final String GET_PARENTMENU_LIST_FAIL = "查询父菜单数据失败";
+
 }

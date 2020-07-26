@@ -62,4 +62,13 @@ public interface PermissionService {
      * @return
      */
     Result verifyPermissionKeyword(Permission permission);
+
+    /**
+    * @Description: 删除权限及其关联的角色关系
+    * @Param: [id]
+    * @Return: void
+    * @Author: Wangqibo
+    * @Date: 2020/7/25/0025
+    */
+    void deletePermissionAndRel(Integer id);
 }

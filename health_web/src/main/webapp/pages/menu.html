@@ -99,20 +99,18 @@
                                                     </el-form-item>
                                                 </el-col>
                                             </el-row>
+
                                             <el-row>
                                                 <el-col :span="12">
-                                                    <el-form-item label="优先级" prop="priority">
-                                                        <el-input v-model="formData.priority"/>
+                                                    <el-form-item label="菜单等级" prop="level">
+                                                        <el-radio-group :change="levelChange()" v-model="formData.level" size="small">
+                                                            <el-radio label="1" border>一级菜单</el-radio>
+                                                            <el-radio label="2" border>二级菜单</el-radio>
+                                                        </el-radio-group>
                                                     </el-form-item>
                                                 </el-col>
                                             </el-row>
-                                            <el-row>
-                                                <el-col :span="24">
-                                                    <el-form-item label="说明" prop="description">
-                                                        <el-input v-model="formData.description" type="textarea"></el-input>
-                                                    </el-form-item>
-                                                </el-col>
-                                            </el-row>
+
                                             <el-row>
                                                 <el-col :span="12">
                                                     <el-form-item  label="父菜单">
@@ -129,6 +127,20 @@
                                                                 </el-option>
                                                             </el-option-group>
                                                         </el-select>
+                                                    </el-form-item>
+                                                </el-col>
+                                            </el-row>
+                                            <el-row>
+                                                <el-col :span="12">
+                                                    <el-form-item label="优先级" prop="priority">
+                                                        <el-input v-model="formData.priority"/>
+                                                    </el-form-item>
+                                                </el-col>
+                                            </el-row>
+                                            <el-row>
+                                                <el-col :span="24">
+                                                    <el-form-item label="说明" prop="description">
+                                                        <el-input v-model="formData.description" type="textarea"></el-input>
                                                     </el-form-item>
                                                 </el-col>
                                             </el-row>
@@ -278,40 +290,20 @@
                     level: [{required: true, message: '等级为必填项', trigger: 'blur'}],
                 },
                 options:null
-                    /*[
-                    {
-                        label: '一级菜单',
-                        options: [{
-                            menuId: 'Shanghai',
-                            menuName: '上海'
-                        }, {
-                            menuId: 'Beijing',
-                            menuName: '北京'
-                        }]
-                    },
-                    {
-                        label: '二级菜单',
-                        options: [{
-                            menuId: 'Chengdu',
-                            menuName: '成都'
-                        }, {
-                            menuId: 'Shenzhen',
-                            menuName: '深圳'
-                        }, {
-                            menuId: 'Guangzhou',
-                            menuName: '广州'
-                        }, {
-                            menuId: 'Dalian',
-                            menuName: '大连'
-                        }]
-                    }
-                ]*/
             },
 
             created() {
                 this.findPage();
             },
             methods: {
+                levelChange(){
+                    if (this.formData.level == '2') {
+                        //选中的是一级菜单，发送异步请求，获取所有一级菜单
+                        this.getParentMenu();
+                    }else {
+                        this.options=null;
+                    }
+                },
                 //编辑
                 handleEdit() {
                     //校验表单输入项是否合法
@@ -412,11 +404,12 @@
                                     this.roleIds = res.data;//回显的角色勾选
                                 })
                             })
-                        })
-                    this.getParentMenu();
+                        });
                 },
                 // 弹出添加窗口
                 handleCreate() {
+                    //修复点击编辑,然后点击新建出现编辑的数据残留Bug
+                    this.formData = {};
                     this.dialogFormVisible = true;
                     axios.get("/role/findAll.do").then(res => {
                         if (res.data.flag) {
@@ -428,8 +421,7 @@
                         } else {
                             this.$message.error(res.data.message);
                         }
-                    })
-                    this.getParentMenu();
+                    });
                 },
                 //切换页码
                 handleCurrentChange(currentPage) {
@@ -442,23 +434,74 @@
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
                         type: 'warning'
-                    }).then(() => {
+                    }).then(()=>{
                         //发送删除请求
                         axios.get("/menu/deleteById.do?id="+row.id).then(res=>{
-                            this.$message({
-                                message: res.data.message,
-                                type: res.data.flag ? 'success':'error'
-                            });
-                            this.findPage();//分页查询
-                        }).catch(error=>{
-                            this.showMessage(error);
+                            if (res.data.flag){
+                                this.$message({
+                                    type: 'success',
+                                    message: res.data.message
+                                });
+                                this.findPage();//分页查询
+                            }else {
+                                if (res.data.message == '删除菜单失败'){
+                                    this.$message({
+                                        type: 'error',
+                                        message: res.data.message
+                                    });
+                                }else {
+                                    this.$confirm('该菜单项已关联相应角色, 是否继续?', '提示', {
+                                        confirmButtonText: '确定',
+                                        cancelButtonText: '取消',
+                                        type: 'warning'
+                                    }).then(() => {
+                                        //发送异步请求删除该项菜单及其与角色的关联信息
+                                        axios.post("/menu/deleteMenuAndRel.do?id=" + row.id).then(res => {
+                                            if (res.data.flag){
+                                                this.$message({
+                                                    type: 'success',
+                                                    message: res.data.message
+                                                });
+                                                this.findPage();//分页查询
+                                            }else {
+                                                if (res.data.message == '该菜单包含子菜单删除失败') {
+                                                    this.$confirm('该菜单项还包含子菜单, 是否继续?', '提示', {
+                                                        confirmButtonText: '确定',
+                                                        cancelButtonText: '取消',
+                                                        type: 'warning'
+                                                    }).then(()=>{
+                                                        //发送异步请求删除该项菜单及其子菜单
+                                                        axios.post("/menu/deleteMenuAndChildren.do?id=" + row.id).then(res => {
+                                                            this.$message({
+                                                                message: res.data.message,
+                                                                type: res.data.flag ? 'success' : 'error'
+                                                            });
+                                                            this.findPage();//分页查询
+                                                        })
+                                                    }).catch(()=>{
+                                                        this.$message({
+                                                            type: 'info',
+                                                            message: '已取消删除'
+                                                        });
+                                                    })
+                                                }
+                                            }
+                                        })
+                                    }).catch(()=>{
+                                        this.$message({
+                                            type: 'info',
+                                            message: '已取消删除'
+                                        });
+                                    })
+                                }
+                            }
                         })
-                    }).catch(() => {
+                    }).catch(()=>{
                         this.$message({
                             type: 'info',
                             message: '已取消删除'
                         });
-                    });
+                    })
                 },
                 //取消按钮
                 handleCancel(formName){

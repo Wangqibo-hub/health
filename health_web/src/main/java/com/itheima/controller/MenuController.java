@@ -211,4 +211,63 @@ public class MenuController {
 
         }
     }
+
+    /**
+    * @Description: 直接删除菜单及其与角色的关联关系
+    * @Param: [id]
+    * @Return: com.itheima.entity.Result
+    * @Author: Wangqibo
+    * @Date: 2020/7/25/0025
+    */
+    @RequestMapping(value = "/deleteMenuAndRel", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('MENU_DELETE')")
+    public Result deleteMenuAndRel(Integer id) {
+        try {
+            //获取该菜单关联的所有用户（这一行一定要在第一行）
+            List<User> userList = userService.findUserListByMenuId(id);
+            menuService.deleteMenuAndRelWithRole(id);
+            //菜单删除成功后，更新redis中用户的菜单信息
+            if (userList != null && userList.size() > 0) {
+                //更新redis中这些用户的菜单信息
+                for (User user : userList) {
+                    menuService.generateMenuListInRedis(user.getUsername());
+                }
+            }
+            return new Result(true,MessageConstant.DELETE_MENU_SUCCESS);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return new Result(false,e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(false,MessageConstant.DELETE_MENU_FAIL);
+        }
+    }
+
+    /**
+    * @Description: 删除菜单及其子菜单
+    * @Param: [id]
+    * @Return: com.itheima.entity.Result
+    * @Author: Wangqibo
+    * @Date: 2020/7/25/0025
+    */
+    @RequestMapping(value = "/deleteMenuAndChildren", method = RequestMethod.POST)
+    @PreAuthorize("hasAnyAuthority('MENU_DELETE')")
+    public Result deleteMenuAndChildren(Integer id) {
+        try {
+            //获取该菜单关联的所有用户（这一行一定要在第一行）
+            List<User> userList = userService.findUserListByMenuId(id);
+            menuService.deleteMenuAndChildren(id);
+            //菜单删除成功后，更新redis中用户的菜单信息
+            if (userList != null && userList.size() > 0) {
+                //更新redis中这些用户的菜单信息
+                for (User user : userList) {
+                    menuService.generateMenuListInRedis(user.getUsername());
+                }
+            }
+            return new Result(true,MessageConstant.DELETE_MENU_SUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(false,MessageConstant.DELETE_MENU_FAIL);
+        }
+    }
 }
