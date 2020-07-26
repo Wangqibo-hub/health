@@ -176,7 +176,7 @@
                     </div>
 
                     <!-- 编辑标签弹层（一级菜单） -->
-                    <div class="add-form">
+                    <div class="edit-form">
                         <el-dialog title="编辑菜单" :visible.sync="dialogFormVisible4EditFirst">
                             <template>
                                 <el-tabs v-model="activeName" type="card">
@@ -193,10 +193,14 @@
                                             <el-row>
                                                 <el-col :span="12">
                                                     <el-form-item label="菜单等级" prop="level">
-                                                        <el-radio-group v-model="formData.level" size="small">
-                                                            <el-radio label="1" border disabled>一级菜单</el-radio>
-                                                            <el-radio label="2" border disabled>二级菜单</el-radio>
-                                                        </el-radio-group>
+                                                        <!--<el-radio-group v-model="formData.level" size="small">
+                                                            <el-radio v-model="formData.level" label="1" border>一级菜单</el-radio>
+                                                            <el-radio v-model="formData.level" label="2" border>二级菜单</el-radio>
+                                                        </el-radio-group>-->
+                                                        <el-select disabled  v-model="formData.level">
+                                                            <el-option  label="一级菜单" value="1"></el-option>
+                                                            <el-option  label="二级菜单" value="2"></el-option>
+                                                        </el-select>
                                                     </el-form-item>
                                                 </el-col>
                                             </el-row>
@@ -269,7 +273,7 @@
                         </el-dialog>
                     </div>
                     <!-- 编辑标签弹层（二级菜单） -->
-                    <div class="add-form">
+                    <div class="edit-form">
                         <el-dialog title="编辑菜单" :visible.sync="dialogFormVisible4EditSecond">
                             <template>
                                 <el-tabs v-model="activeName" type="card">
@@ -286,10 +290,14 @@
                                             <el-row>
                                                 <el-col :span="12">
                                                     <el-form-item label="菜单等级" prop="level">
-                                                        <el-radio-group :change="levelChange()" v-model="formData.level" size="small">
+                                                        <!--<el-radio-group :change="levelChange()" v-model="formData.level" size="small">
                                                             <el-radio label="1" border>一级菜单</el-radio>
                                                             <el-radio label="2" border>二级菜单</el-radio>
-                                                        </el-radio-group>
+                                                        </el-radio-group>-->
+                                                        <el-select disabled  v-model="formData.level">
+                                                            <el-option  label="一级菜单" value="1"></el-option>
+                                                            <el-option  label="二级菜单" value="2"></el-option>
+                                                        </el-select>
                                                     </el-form-item>
                                                 </el-col>
                                             </el-row>
