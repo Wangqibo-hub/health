@@ -638,6 +638,7 @@
                                     type: 'success',
                                     message: res.data.message
                                 });
+                                this.findPage();//分页查询
                             }else {
                                 if (res.data.message == '角色删除失败'){
                                     this.$message({

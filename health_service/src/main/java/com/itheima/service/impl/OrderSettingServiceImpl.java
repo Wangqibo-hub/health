@@ -90,7 +90,7 @@ public class OrderSettingServiceImpl implements OrderSettingService {
      * @param date
      */
     @Override
-    public void clearOrderSetingJob(Date date) {
+    public void clearOrderSetingJob(String date) {
         //根据时间,获取当前日期之前的预约设置对象集合
         List<OrderSetting> orderSettings = orderSettingDao.getHostoricalDate(date);
         //遍历集合,备份数据到备份表t_ordersetting_bak中

@@ -55,7 +55,7 @@ public interface OrderSettingDao {
      * @param date
      * @return
      */
-    List<OrderSetting> getHostoricalDate(Date  date);
+    List<OrderSetting> getHostoricalDate(String  date);
 
     /**
      * 备份数据到备份表t_ordersetting_bak中
@@ -67,5 +67,5 @@ public interface OrderSettingDao {
      * 删除t_ordersetting表的历史数据
      * @param date
      */
-    void deleteOrderSetting(Date  date);
+    void deleteOrderSetting(String  date);
 }

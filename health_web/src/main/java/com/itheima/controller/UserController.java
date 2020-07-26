@@ -64,7 +64,7 @@ public class UserController {
         try {
             String username = user.getUsername();
             com.itheima.pojo.User user1 = userService.findUserByUsername(username);
-            if(user1 != null){
+            if (user1 != null) {
                 return new Result(false, MessageConstant.ADD_USER_FAIL2);
             }
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
@@ -123,11 +123,10 @@ public class UserController {
             if (!user1.getPassword().equals(password)) {
                 user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
             }
-            List<com.itheima.pojo.User> userList = userService.findAll();
-            for (com.itheima.pojo.User user2 : userList) {
-                if (user2 != null && !username.equals(user1.getUsername())) {
-                    return new Result(false, MessageConstant.EDIT_USER_FAIL2);
-                }
+
+            com.itheima.pojo.User user3 = userService.findUserByUsername(username);
+            if (user3 != null && !username.equals(user1.getUsername())) {
+                return new Result(false, MessageConstant.EDIT_USER_FAIL2);
             }
             userService.edit(user, roleIds);
             //更新redis中该用户的菜单信息
@@ -168,9 +167,9 @@ public class UserController {
         try {
             List<com.itheima.pojo.User> userList = userService.findAll();
             for (com.itheima.pojo.User user : userList) {
-                if (user.getStation().equals("1")){
+                if (user.getStation().equals("1")) {
                     user.setStation("否");
-                }else {
+                } else {
                     user.setStation("是");
                 }
             }
@@ -186,10 +185,16 @@ public class UserController {
      */
     @RequestMapping(value = "/findUserExist", method = RequestMethod.POST)
     public Result findUserExist(@RequestBody com.itheima.pojo.User user) {
-        int count = userService.findUserExist(user.getUsername());
-        if (count>0){
+        String username = user.getUsername();
+
+        com.itheima.pojo.User user1 = userService.findUserByUsername(username);
+        if (user1 != null) {
             return new Result(false, MessageConstant.QUERY_USERNAME_FAIL2);
         }
+//        int count = userService.findUserExist(user.getUsername());
+//        if (count > 0) {
+//            return new Result(false, MessageConstant.QUERY_USERNAME_FAIL2);
+//        }
         return new Result(true, MessageConstant.QUERY_USER_SUCCESS2);
     }
 }

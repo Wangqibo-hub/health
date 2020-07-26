@@ -40,7 +40,6 @@ public interface UserDao {
      * @param user
      */
     void add(User user);
-
     /**
      * 根据分页条件对用户分页查询
      * @param queryString
@@ -93,10 +92,9 @@ public interface UserDao {
     List<User> findUserListByMenuId(Integer id);
 
 
-    Role findRoleByUserId(Integer id);
+    void setLeaveUserData(Map<String, Object> map);
 
-    void setLeaveUserData(HashMap<String, Object> map);
-
+    List<Role> findRoleByUserId(Integer id);
     /**
      * 判断用户名是否存在
      * @param username
