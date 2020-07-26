@@ -344,6 +344,7 @@ public class MenuServiceImpl implements MenuService {
             //设置本次编辑菜单的path
             String path = "/" + targerParentMenu.getPath() + "-" + (menu.getPriority());
             menu.setPath(path);
+            menu.setLevel(1);
             //更新其他信息
             menuDao.edit(menu);
         }
