@@ -101,4 +101,5 @@ public interface PermissionDao {
      * @return
      */
     List<Permission> findPermissionAll(Permission permission);
+
 }
