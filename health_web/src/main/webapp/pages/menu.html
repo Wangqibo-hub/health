@@ -409,9 +409,11 @@
             methods: {
                 levelChange(){
                     if (this.formData.level == '2') {
-                        //选中的是一级菜单，发送异步请求，获取所有一级菜单
-                        this.getParentMenu();
-                    }else {
+                        if (this.options == null) {
+                            //选中的是一级菜单，发送异步请求，获取所有一级菜单
+                            this.getParentMenu();
+                        }
+                    }else if (this.formData.level == '1') {
                         this.options=null;
                         this.formData.parentMenuId=null;
                     }
@@ -428,13 +430,15 @@
                                 });
                                 this.resetForm("dataEditForm");
                                 //关闭窗口
-                                this.dialogFormVisible4Edit = false;
+                                this.dialogFormVisible4EditFirst = false;
+                                this.dialogFormVisible4EditSecond = false;
                                 this.findPage();//分页查询
                             }).catch(error=>{
                                 this.showMessage(error);
                                 //关闭窗口
                                 this.resetForm("dataEditForm");
-                                this.dialogFormVisible4Edit = false;
+                                this.dialogFormVisible4EditFirst = false;
+                                this.dialogFormVisible4EditSecond = false;
                             })
                         } else {
                             //输入不合法，弹窗提示
