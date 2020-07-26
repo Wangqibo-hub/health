@@ -324,7 +324,10 @@ public class MenuServiceImpl implements MenuService {
             //名称没变，或没有重名
             //获取目标父菜单及其子菜单
             Menu targerParentMenu = menuDao.findById(menu.getParentMenuId());
-            List<Menu> children = menuDao.findChildrenByParentId(targerParentMenu.getId());
+            List<Menu> children = null;
+            if (targerParentMenu != null) {
+                 children = menuDao.findChildrenByParentId(targerParentMenu.getId());
+            }
             //更改目标父菜单子菜单集合的优先级和path
             if (children != null && children.size() > 0) {
                 for (Menu ziMenu : children) {
@@ -342,7 +345,14 @@ public class MenuServiceImpl implements MenuService {
                 }
             }
             //设置本次编辑菜单的path
-            String path = "/" + targerParentMenu.getPath() + "-" + (menu.getPriority());
+            String path = null;
+            if (menu.getLevel() == 1) {
+                List<Menu> firstMenuList = menuDao.findfirstMenu();
+                int size = firstMenuList.size();
+                path = generatePath(size, firstMenuList);
+            } else {
+                path = "/" + targerParentMenu.getPath() + "-" + (menu.getPriority());
+            }
             menu.setPath(path);
             //更新其他信息
             menuDao.edit(menu);
