@@ -14,10 +14,7 @@ import com.itheima.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 用户服务接口实现类
@@ -98,7 +95,7 @@ public class UserServiceImpl implements UserService {
             map.put("telephone",user.getTelephone());
             maps.add(map);
         }
-        return new PageResult(maps.getTotal(), maps.getResult());
+        return new PageResult(userPage.getTotal(), maps.getResult());
     }
     /**
      * 根据用户id查询用户
@@ -135,29 +132,46 @@ public class UserServiceImpl implements UserService {
     public void deleteById(Integer id) {
         //删除之前,将该用户涉及的角色取出
         //从中间表查询到角色id,再去角色表中查询<多表查询或者中间表>
-        Role role = userDao.findRoleByUserId(id);
-        //查询到角色后,取出该角色名称
-        //创建Map集合,用于存放后端数据表所需的字段(属性)
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("roleName",role.getName());
-        //在删除该用户前,去用户表中把用户的属性查询出来存入map集合
-        User user = userDao.findById(id);
-        map.put("username",user.getUsername());
-        map.put("gender",user.getGender());
-        map.put("leaveDate",new Date());
-        map.put("telephone",user.getTelephone());
-        //调用setLeaveUserData()方法,将其存入t_user_bk表中
-        userDao.setLeaveUserData(map);
-        System.out.println(map);
-        //删除与用户相关联的所有中间表
-        //1.先根据角色id从角色/菜单中间表 删除关系数据
-        roleDao.deleteRelByRoleById(role.getId());
-        //2.先根据角色id从角色/权限中间表 删除关系数据
-        roleDao.deletePermissionRelByRoleById(role.getId());
-        //3.先根据用户id从角色/用户中间表 删除关系数据
-        userDao.deleteRelByUserId(id);
-        //2.根据用户id删除用户记录
-        userDao.deleteById(id);
+        List<Role> roleList = userDao.findRoleByUserId(id);
+        //创建mapList集合,用于封装每一个删除的用户信息(map=user)
+        List<Map> mapList = new ArrayList<>();
+        //判断该角色列表是否为空
+        if (roleList != null && roleList.size()>0) {
+            //遍历用户的角色列表
+            for (Role role : roleList) {
+                //查询到角色后,取出该角色名称
+                //创建Map集合,用于存放后端数据表所需的字段(属性)
+                Map<String, Object> map = new HashMap<>();
+                map.put("roleName",role.getName());
+                //在删除该用户前,去用户表中把用户的属性查询出来存入map集合
+                User user = userDao.findById(id);
+                map.put("username",user.getUsername());
+                map.put("gender",user.getGender());
+                map.put("leaveDate",new Date());
+                map.put("telephone",user.getTelephone());
+                //调用setLeaveUserData()方法,将其存入t_user_bk表中
+                mapList.add(map);
+                //System.out.println(map);
+                //删除与用户相关联的所有中间表
+            }
+            for (Map map1 : mapList) {
+                userDao.setLeaveUserData(map1);
+            }
+            //3.先根据用户id从角色/用户中间表 删除关系数据
+            userDao.deleteRelByUserId(id);
+            //4.根据用户id删除用户记录
+            userDao.deleteById(id);
+        }else {
+            Map<String, Object> map = new HashMap<>();
+            User user = userDao.findById(id);
+            map.put("username",user.getUsername());
+            map.put("gender",user.getGender());
+            map.put("leaveDate",new Date());
+            map.put("telephone",user.getTelephone());
+            userDao.setLeaveUserData(map);
+            //4.根据用户id删除用户记录
+            userDao.deleteById(id);
+        }
     }
 
     /**

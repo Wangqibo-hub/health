@@ -114,7 +114,8 @@ public class MenuServiceImpl implements MenuService {
                 }
             }
             //设置新增菜单的path
-            String newPath = generatePath(firstMenuList);
+            int size = firstMenuList.size();
+            String newPath = generatePath(size,firstMenuList);
             menu.setPath(newPath);
             //添加该菜单
             menuDao.add(menu);
@@ -176,12 +177,12 @@ public class MenuServiceImpl implements MenuService {
     * @Author: Wangqibo
     * @Date: 2020/7/26/0026
     */
-    private String generatePath(List<Menu> firstMenuList) {
-        int count = firstMenuList.size();
+    private String generatePath(Integer count,List<Menu> firstMenuList) {
         String newPath = String.valueOf(count+1);
         for (Menu menu : firstMenuList) {
             if (menu.getPath().equals(newPath)) {
-                newPath = generatePath(firstMenuList);
+                count++;
+                newPath = generatePath(count,firstMenuList);
             }
         }
         return newPath;
