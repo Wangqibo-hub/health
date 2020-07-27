@@ -70,9 +70,7 @@
             <if test="description!=null and description.length>0">
                 description=#{description},
             </if>
-            <if test="parentMenuId!=null">
                 parentMenuId=#{parentMenuId},
-            </if>
             <if test="level!=null">
                 level=#{level},
             </if>
