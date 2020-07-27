@@ -43,9 +43,6 @@ public class TestDeletePic {
 
     @Test
     public void test12(){
-        String name1 = "擦和四个人";
-        String name2 = "擦和四个人";
-        boolean equals = name1.equals(name2);
-        System.out.println(equals);
-    }
+
+}
 }

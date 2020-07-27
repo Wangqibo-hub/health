@@ -18,6 +18,18 @@ public class Menu implements Serializable{
     private List<Menu> children = new ArrayList<>();//子菜单集合
     private Integer parentMenuId;//父菜单id
     private Integer level;//等级
+    private Double dpriority; //排序临时优先级 get值等于priority值
+
+    public Menu() {
+    }
+
+    public Double getDpriority() {
+        return dpriority;
+    }
+
+    public void setDpriority(Double dpriority) {
+        this.dpriority = dpriority;
+    }
 
     public Integer getLevel() {
         return level;

@@ -14,7 +14,9 @@
     <!--根据用户名称查询菜单列表-->
     <select id="getMenuListByUsername" parameterType="string" resultMap="menuMap">
         select * from t_menu
-        where id in(select menu_id from t_role_menu where role_id in (select role_id from t_user_role where user_id = (select id from t_user where username = #{username}))) and level = 1  order by priority
+        where id in(select menu_id from t_role_menu where role_id in
+        (select role_id from t_user_role where user_id = (select id from t_user where username = #{username})))
+         and level = 1  order by priority
     </select>
 
     <!--根据父菜单id查询子菜单-->
@@ -70,9 +72,9 @@
             <if test="description!=null and description.length>0">
                 description=#{description},
             </if>
-            <if test="parentMenuId!=null">
+
                 parentMenuId=#{parentMenuId},
-            </if>
+
             <if test="level!=null">
                 level=#{level},
             </if>
@@ -130,4 +132,13 @@
         select * from t_menu where level = 1;
     </select>
 
+    <!--查询所有一级菜单 除自己id外-->
+    <select id="findFirstMenuExceptSelf" resultType="com.itheima.pojo.Menu">
+        select * from t_menu where parentMenuId is null and id != #{id}
+    </select>
+
+    <!--根据父id 查询子菜单 除自己外-->
+    <select id="findBrotherMenuExceptSelfByParentID" resultType="com.itheima.pojo.Menu">
+        select * from t_menu where parentMenuId = #{parentId} and  id != #{menuId};
+    </select>
 </mapper>

@@ -13,10 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import redis.clients.jedis.JedisPool;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Wangqibo
@@ -265,9 +263,12 @@ public class MenuServiceImpl implements MenuService {
         return menuDao.findRoleIdsByMenuId(menuId);
     }
 
-    /**
-     * 编辑菜单
-     */
+   /**
+   * @Author: cz
+   * @Description: 编辑菜单
+   * @Param: [menu, roleIds]
+   * @Return: void
+   */
     @Override
     public void edit(Menu menu, Integer[] roleIds) {
         //1.先根据菜单id从菜单角色中间表 删除关系数据
@@ -280,92 +281,75 @@ public class MenuServiceImpl implements MenuService {
         }
 
         //3 更新菜单表数据
-        //获取数据库原先菜单信息
-        Menu menuInDb = menuDao.findById(menu.getId());
+        //判断菜单名 根据前端用户名查询后端  与自身除外
+        Menu menuDB2 = menuDao.findByMenuName(menu.getName());
+        if (menuDB2 != null && menuDB2.getId()!= menu.getId()) {
+            //重复返回异常 不能重复 与自身除外
+            throw new RuntimeException("菜单名已经存在 请重新输入");
+        }
+        //不重复查询出来为null继续{}
+        //if.1 根据id查询menudb  查询优先级 判断编辑的菜单原始等级
+        Menu menuDB =menuDao.findById(menu.getId());
+        Integer level = menuDB.getLevel();
         Integer priority = menu.getPriority();
-        //判断编辑的是几级菜单
-        if (menuInDb.getLevel()==1) {
-            //编辑一级菜单
-            List<Menu> firstMenuList = menuDao.findfirstMenu();
-            //a)	判断名称有没有更改
-            if (!menuInDb.getName().equals(menu.getName())) {
-                //b)名称改变，判断有没有和其他一级菜单重名，重名返回运行时异常
-                for (Menu firstMenu1 : firstMenuList) {
-                    if (firstMenu1.getName().equals(menu.getName())) {
-                        //有重名的一级菜单
-                        throw new RuntimeException(MessageConstant.ADD_MENU_FAIL3);
-                    }
+        Integer priorityDB = menuDB.getPriority();
+        if (level==1) {
+        //说明编辑是一级菜单 只能改优先级 不能改为别人的子菜单
+            // 判断db和前端的优先级是否改变
+            if (priorityDB==priority) {
+                //if.1.1优先级没有改变 直接更新
+                menuDao.edit(menu);
+                return;
+            }else {
+                //if.1.2 //优先级发生改变
+                //查询同级一级菜单 自身除外
+               List<Menu> brotherList = menuDao.findFirstMenuExceptSelf(menu.getId());
+                //更新数据库level 优先级和path方法： 按优先级排序 编辑设置优先级和path
+                editListPathByPriority(brotherList, menu,null);
+            }
+        }else{
+            // if.2 查询数据库优先级 // 说明编辑的是二级菜单
+            //判断父id是否发生改变
+            Integer parentMenuId = menu.getParentMenuId();
+            Integer parentMenuIdDB = menuDB.getParentMenuId();
+            if (parentMenuIdDB == parentMenuId) {
+               // 父id未改变 说明未更换父菜单 等级不需要改变
+                //判断db和前端的优先级是否改变
+                if (menuDB.getPriority() == menu.getPriority()){
+                    //优先级没有改变 直接更新
+                    menuDao.edit(menu);
+                    return;
+                }else{
+                    //父id没有改变 仅仅优先级发生改变
+                    //根据父id 查询子菜单 除自己外
+                    List<Menu> brotherList = menuDao.findBrotherMenuExceptSelfByParentID(parentMenuIdDB,menu.getId());
+                    //更新优先级和方法：集合按照优先级排序按优先级排序 编辑设置优先级和path
+                    editListPathByPriority(brotherList,menu,parentMenuIdDB);
+
+                }
+            }else {
+                //父id改变  1 改为null  2 改为别的父id
+                //处理剩下前同级子菜单 的优先级和path
+                List<Menu> brotherList = menuDao.findBrotherMenuExceptSelfByParentID(parentMenuIdDB,menu.getId());
+                //前同级子菜单优先级排序 编辑优先级和path 并更新到数据库
+                editListPathByPriority(brotherList,null,parentMenuIdDB);
+                //处理自己
+                if (parentMenuId != null) {
+                    //说明二级菜单更换父菜单 仍然为二级菜单
+                    // 查询出要插入的父菜单底下的子菜单
+                    List<Menu> targetBrotherList = menuDao.findChildrenByParentId(parentMenuId);
+
+                    //调用方法更新优先级 调用方法  //更新优先级和方法
+                    editListPathByPriority(targetBrotherList,menu,parentMenuIdDB);
+
+                }else {
+                    //父id为null 说明更新为了一级菜单
+                    menu.setLevel(1);
+                    //查询出所有一级菜单
+                    List<Menu> firstMenuList = menuDao.findfirstMenu();
+                    editListPathByPriority(firstMenuList,menu,null);
                 }
             }
-            //c)名称没变，或没有重名，更改优先级
-            for (Menu firstMenu : firstMenuList) {
-                Integer priorityExist = firstMenu.getPriority();
-                if (priorityExist >= priority) {
-                    firstMenu.setPriority(priorityExist + 1);
-                    //更新父menu的优先级
-                    menuDao.edit(firstMenu);
-                }
-            }
-            //d)更新其他信息
-            menuDao.edit(menu);
-        } else {
-            //编辑二级菜单
-            List<Menu> secondMenuList = menuDao.findMenuByLevel(2);
-            //a)判断名称有没有更改
-            if (!menuInDb.getName().equals(menu.getName())) {
-                //名称改变，判断有没有和其他二级菜单重名，重名返回运行时异常
-                for (Menu secondMenu1 : secondMenuList) {
-                    if (secondMenu1.getName().equals(menu.getName())) {
-                        //有重名的二级菜单
-                        throw new RuntimeException(MessageConstant.ADD_MENU_FAIL3);
-                    }
-                }
-            }
-            //名称没变，或没有重名
-            //获取目标父菜单及其子菜单
-            Menu targerParentMenu = menuDao.findById(menu.getParentMenuId());
-            List<Menu> children = null;
-            if (targerParentMenu != null) {
-                 children = menuDao.findChildrenByParentId(targerParentMenu.getId());
-            }
-            //更改目标父菜单子菜单集合的优先级和path
-            if (children != null && children.size() > 0) {
-                for (Menu ziMenu : children) {
-                    //获取子菜单的优先级
-                    Integer priorityExist = ziMenu.getPriority();
-                    if (priorityExist >= priority) {
-                        //更新zimenu的优先级
-                        ziMenu.setPriority(priorityExist + 1);
-                        //更新子菜单的path
-                        String ziPath = "/" + targerParentMenu.getPath() + "-" + (ziMenu.getPriority());
-                        ziMenu.setPath(ziPath);
-                        //更新子菜单
-                        menuDao.edit(ziMenu);
-                    }
-                }
-            }
-            //设置本次编辑菜单的path
-            String path = null;
-            if (menu.getLevel() == 1) {
-                List<Menu> firstMenuList = menuDao.findfirstMenu();
-                //更新一级菜单的优先级
-                for (Menu firstMenu : firstMenuList) {
-                    Integer priorityExist = firstMenu.getPriority();
-                    if (priorityExist >= priority) {
-                        firstMenu.setPriority(priorityExist + 1);
-                        //更新父menu的优先级
-                        menuDao.edit(firstMenu);
-                    }
-                }
-                //设置修改菜单的path
-                int size = firstMenuList.size();
-                path = generatePath(size, firstMenuList);
-            } else {
-                path = "/" + targerParentMenu.getPath() + "-" + (menu.getPriority());
-            }
-            menu.setPath(path);
-            //更新其他信息
-            menuDao.edit(menu);
         }
     }
 
@@ -421,6 +405,55 @@ public class MenuServiceImpl implements MenuService {
         }
         //删除该菜单及其与角色的关联关系
         deleteMenuAndRelWithRole(id);
+    }
+
+
+    /**
+    * @Author: cz
+    * @Description:  更新优先级和方法：按照优先级排序按优先级排序 编辑设置优先级和path
+    * @Param: [menuList, newMenu, parentMenuId]
+    * @Return: void
+    */
+    public void editListPathByPriority(List<Menu> menuList,Menu newMenu, Integer parentMenuId){
+        //设置menu新增的属性 dpriority
+        for (Menu menu1 : menuList) {
+            menu1.setDpriority(Double.valueOf(menu1.getPriority()));
+        }
+        if (newMenu != null) {
+            //优化自身优先级 便于排序
+            newMenu.setDpriority(newMenu.getPriority()-0.5);
+            menuList.add(newMenu);
+        }
+        Collections.sort(menuList, new Comparator<Menu>() {
+            @Override
+            public int compare(Menu o1, Menu o2) {
+                return (int)((o1.getDpriority()-o2.getDpriority())*10);
+            }
+        });
+        //List<Menu> result = menuList.stream().sorted(Comparator.comparingDouble(Menu::getDpriority)).collect(Collectors.toList());
+        int p = 1;
+        for (Menu menu : menuList) {
+            System.out.println(menu.getName());
+        }
+        for (Menu menu : menuList) {
+            //修改排序好的优先级
+            menu.setPriority(p);
+            menu.setDpriority(Double.valueOf(p));
+            p++;
+            //修改每个path
+            String path = null;
+
+            if (parentMenuId!=null) {
+                Menu parentMenuDB = menuDao.findById(parentMenuId);
+                String parentPath = parentMenuDB.getPath();
+                path = "/"+parentPath+"-"+(p-1);
+                menu.setPath(path);
+            }else {
+                path= p-1+"";
+                menu.setPath(path);
+            }
+            menuDao.edit(menu);
+        }
     }
 }
 

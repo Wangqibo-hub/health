@@ -3,6 +3,7 @@ package com.itheima.dao;
 import com.github.pagehelper.Page;
 import com.itheima.pojo.CheckItem;
 import com.itheima.pojo.Menu;
+import org.apache.ibatis.annotations.Param;
 
 
 import java.util.List;
@@ -101,4 +102,19 @@ public interface MenuDao {
     */
     List<Menu> findMenuByLevel(Integer level);
 
+    /**
+    * @Author: cz
+    * @Description: 查询所有一级菜单 除自己id外
+    * @Param: [id]
+    * @Return: java.util.List<com.itheima.pojo.Menu>
+    */
+    List<Menu> findFirstMenuExceptSelf(Integer id);
+
+    /**
+    * @Author: cz
+    * @Description: 根据父id 查询子菜单 除自己外
+    * @Param: [parentMenuIdDB, id]
+    * @Return: java.util.List<com.itheima.pojo.Menu>
+    */
+    List<Menu> findBrotherMenuExceptSelfByParentID(@Param("parentId") Integer parentMenuIdDB, @Param("menuId") Integer id);
 }
