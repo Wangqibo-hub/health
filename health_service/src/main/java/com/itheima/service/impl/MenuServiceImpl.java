@@ -278,26 +278,25 @@ public class MenuServiceImpl implements MenuService {
                 setMenuAndRole(menu.getId(), roleId);
             }
         }
-
         //3 更新菜单表数据
         //获取数据库原先菜单信息
         Menu menuInDb = menuDao.findById(menu.getId());
+        //判断菜单名称是否改变
+        if (!menuInDb.getName().equals(menu.getName())) {
+            //名称改变，判断是否重名，重名返回异常
+            Menu byMenuName = menuDao.findByMenuName(menu.getName());
+            if (byMenuName != null) {
+                throw new RuntimeException("该菜单名称已经存在");
+            }
+        }
+        //名称没变，或不重名，判断编辑的是几级菜单
         Integer priority = menu.getPriority();
-        //判断编辑的是几级菜单
+        Menu targetParentMenu = menuDao.findById(menu.getParentMenuId());
+        String path = null;
         if (menuInDb.getLevel()==1) {
             //编辑一级菜单
+            //更改一级菜单的优先级
             List<Menu> firstMenuList = menuDao.findfirstMenu();
-            //a)	判断名称有没有更改
-            if (!menuInDb.getName().equals(menu.getName())) {
-                //b)名称改变，判断有没有和其他一级菜单重名，重名返回运行时异常
-                for (Menu firstMenu1 : firstMenuList) {
-                    if (firstMenu1.getName().equals(menu.getName())) {
-                        //有重名的一级菜单
-                        throw new RuntimeException(MessageConstant.ADD_MENU_FAIL3);
-                    }
-                }
-            }
-            //c)名称没变，或没有重名，更改优先级
             for (Menu firstMenu : firstMenuList) {
                 Integer priorityExist = firstMenu.getPriority();
                 if (priorityExist >= priority) {
@@ -306,60 +305,35 @@ public class MenuServiceImpl implements MenuService {
                     menuDao.edit(firstMenu);
                 }
             }
-            //d)更新其他信息
-            menuDao.edit(menu);
+            //设置本次修改菜单的path
+            int size = firstMenuList.size();
+            path = generatePath(size, firstMenuList);
+            menu.setPath(path);
         } else {
-            //编辑二级菜单
-            String path = null;
-            //获取目标父菜单及其子菜单
-            Menu targerParentMenu = menuDao.findById(menu.getParentMenuId());
-            List<Menu> children = null;
-            if (targerParentMenu != null) {
-                //本次编辑的菜单级别没变
-                //a)判断名称有没有更改
-                List<Menu> secondMenuList = menuDao.findMenuByLevel(2);
-                if (!menuInDb.getName().equals(menu.getName())) {
-                    //名称改变，判断有没有和其他二级菜单重名，重名返回运行时异常
-                    for (Menu secondMenu1 : secondMenuList) {
-                        if (secondMenu1.getName().equals(menu.getName())) {
-                            //有重名的二级菜单
-                            throw new RuntimeException(MessageConstant.ADD_MENU_FAIL3);
-                        }
-                    }
-                }
-                children = menuDao.findChildrenByParentId(targerParentMenu.getId());
-                //名称没变，或没有重名
-                //更改目标父菜单子菜单集合的优先级和path
+            //编辑二级菜单，判断是否是二级变一级菜单
+            if (targetParentMenu != null) {
+                //级别没变
+                List<Menu> children = menuDao.findChildrenByParentId(menu.getParentMenuId());
+                //更改目标父菜单的子菜单优先级和path
                 if (children != null && children.size() > 0) {
                     for (Menu ziMenu : children) {
-                        //获取子菜单的优先级
                         Integer priorityExist = ziMenu.getPriority();
                         if (priorityExist >= priority) {
-                            //更新zimenu的优先级
+                            //更新优先级
                             ziMenu.setPriority(priorityExist + 1);
-                            //更新子菜单的path
-                            String ziPath = "/" + targerParentMenu.getPath() + "-" + (ziMenu.getPriority());
+                            //更新path
+                            String ziPath = "/" + targetParentMenu.getPath() + "-" + (ziMenu.getPriority());
                             ziMenu.setPath(ziPath);
-                            //更新子菜单
                             menuDao.edit(ziMenu);
                         }
                     }
                 }
-                path = "/" + targerParentMenu.getPath() + "-" + (menu.getPriority());
+                //更改本次编辑菜单的path
+                path = "/" + targetParentMenu.getPath() + "-" + (menu.getPriority());
+                menu.setPath(path);
             }else{
-                //二级变一级
-                //a)判断名称有没有更改
+                //二级变一级，更新一级菜单的优先级
                 List<Menu> firstMenuList = menuDao.findfirstMenu();
-                if (!menuInDb.getName().equals(menu.getName())) {
-                    //b)名称改变，判断有没有和其他一级菜单重名，重名返回运行时异常
-                    for (Menu firstMenu1 : firstMenuList) {
-                        if (firstMenu1.getName().equals(menu.getName())) {
-                            //有重名的一级菜单
-                            throw new RuntimeException(MessageConstant.ADD_MENU_FAIL3);
-                        }
-                    }
-                }
-                //更新一级菜单的优先级
                 for (Menu firstMenu : firstMenuList) {
                     Integer priorityExist = firstMenu.getPriority();
                     if (priorityExist >= priority) {
@@ -367,16 +341,14 @@ public class MenuServiceImpl implements MenuService {
                         menuDao.edit(firstMenu);
                     }
                 }
-                //设置修改菜单的path
+                //设置本次修改菜单的path
                 int size = firstMenuList.size();
                 path = generatePath(size, firstMenuList);
-                //去掉父菜单
-                menu.setParentMenuId(null);
+                menu.setPath(path);
             }
-            menu.setPath(path);
-            //更新其他信息
-            menuDao.edit(menu);
         }
+        //更新其他信息
+        menuDao.edit(menu);
     }
 
     /**
