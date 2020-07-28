@@ -119,7 +119,7 @@ public class MenuServiceImpl implements MenuService {
             //添加的是二级菜单
             //获取其同级子菜单
             Integer parentMenuId = menu.getParentMenuId();
-            List<Menu> childrenByParentId = menuDao.findChildrenByParentId(parentMenuId);
+            List<Menu> childrenByParentId = menuDao.findBrotherMenuExceptSelfByParentID(parentMenuId,id);
             //更新优先级和path
             editListPathAndPriority(childrenByParentId,menu,parentMenuId);
         }
