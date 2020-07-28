@@ -134,7 +134,7 @@
 
     <!--查询所有一级菜单 除自己id外-->
     <select id="findFirstMenuExceptSelf" resultType="com.itheima.pojo.Menu">
-        select * from t_menu where parentMenuId is null and id != #{id}
+        select * from t_menu where level = 1 and id != #{id}
     </select>
 
     <!--根据父id 查询子菜单 除自己外-->
