@@ -262,6 +262,12 @@ public class MenuServiceImpl implements MenuService {
                 //if.1.2 //优先级发生改变
                 //查询同级一级菜单 自身除外
                List<Menu> brotherList = menuDao.findFirstMenuExceptSelf(menu.getId());
+               //同级改变判断优先级变化趋势 以dpriority作为flag 小变大 记为1 大变小 记为-1
+                if(priorityDB<priority){
+                    menu.setDpriority(1.0);
+                }else {
+                    menu.setDpriority(-1.0);
+                }
                 //更新数据库level 优先级和path方法： 按优先级排序 编辑设置优先级和path
                 editListPathAndPriority(brotherList, menu,null);
             }
@@ -273,17 +279,22 @@ public class MenuServiceImpl implements MenuService {
             if (parentMenuIdDB == parentMenuId) {
                // 父id未改变 说明未更换父菜单 等级不需要改变
                 //判断db和前端的优先级是否改变
-                if (menuDB.getPriority() == menu.getPriority()){
+                if (priorityDB == priority){
                     //优先级没有改变 直接更新
                     menuDao.edit(menu);
                     return;
                 }else{
-                    //父id没有改变 仅仅优先级发生改变
+                    //优先级发生改变
                     //根据父id 查询子菜单 除自己外
                     List<Menu> brotherList = menuDao.findBrotherMenuExceptSelfByParentID(parentMenuIdDB,menu.getId());
+                    //同级改变判断优先级变化趋势 以dpriority作为flag 上升 记为1 下降 记为-1
+                    if(priorityDB<priority){
+                        menu.setDpriority(1.0);
+                    }else {
+                        menu.setDpriority(-1.0);
+                    }
                     //更新优先级和方法：集合按照优先级排序按优先级排序 编辑设置优先级和path
                     editListPathAndPriority(brotherList,menu,parentMenuIdDB);
-
                 }
             }else {
                 //父id改变  1 改为null  2 改为别的父id
@@ -296,7 +307,6 @@ public class MenuServiceImpl implements MenuService {
                     //说明二级菜单更换父菜单 仍然为二级菜单
                     // 查询出要插入的父菜单底下的子菜单
                     List<Menu> targetBrotherList = menuDao.findChildrenByParentId(parentMenuId);
-
                     //调用方法更新优先级 调用方法  //更新优先级和方法
                     editListPathAndPriority(targetBrotherList,menu,parentMenuIdDB);
 
@@ -381,8 +391,14 @@ public class MenuServiceImpl implements MenuService {
             menu1.setDpriority(Double.valueOf(menu1.getPriority()));
         }
         if (newMenu != null) {
-            //优化自身优先级 便于排序
-            newMenu.setDpriority(newMenu.getPriority()-0.5);
+            Double flag = newMenu.getDpriority();
+            //取出变化趋势
+            if (flag!=null && flag >0) {
+                //优化自身优先级 便于排序
+                newMenu.setDpriority(newMenu.getPriority()+0.5);
+            }else {
+                newMenu.setDpriority(newMenu.getPriority()-0.5);
+            }
             menuList.add(newMenu);
         }
         Collections.sort(menuList, new Comparator<Menu>() {
