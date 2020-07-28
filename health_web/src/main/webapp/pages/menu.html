@@ -457,7 +457,7 @@
                     //检验表单项输入是否合法
                     this.$refs['dataAddForm'].validate((valid) => {
                         if (valid) {
-                            //提交表单数据 //校验表单输入项是否合法
+                            //提交表单数据
                             axios.post("/menu/add.do?roleIds=" + this.roleIds,this.formData).then(res=>{
                                 this.$message({
                                     message: res.data.message,
